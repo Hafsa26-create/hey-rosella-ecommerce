@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>My Account - Hey Rosella</title>
+
+    <style>
+
+        body {
+            margin: 10;
+            font-family: Arial, sans-serif;
+            background: #facbdb;
+            color: #38221e;
+            font-size: 16px;
+        }
+
+       .account-page {
+    max-width: 900px;
+    margin: 25px auto 0;
+    padding: 35px;
+}
+
+        .account-box {
+
+            background: rgb(255, 231, 231);
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .account-header {
+
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .account-header h1 {
+
+            margin-bottom: 10px;
+        }
+
+        .profile-info {
+
+            padding: 12px;
+            background: #facbdb;
+            border-radius: 18px;
+            margin-bottom: 80px;
+            font-size: 15px;
+        }
+
+        .account-button {
+
+    display: block;
+    width: 200px;
+    padding: 10px;
+    margin: 9px auto 0;
+    border-radius: 8px;
+    box-sizing: border-box;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    font-size: 15px;
+}
+
+        .gold-button {
+
+            background: #d4af37;
+            color: rgb(255, 255, 255);
+        }
+
+        .brown-button {
+
+            background: #38221e;
+            color: rgb(255, 255, 255);
+        }
+
+        .logout-button {
+   
+            width: 150px;
+   
+            padding: 8px;
+    
+            margin: 20px auto 0;
+    
+            background: #facbdb;
+    
+            color: #38221e;
+    
+            border: none;
+    
+            text-align: center;
+    
+            border-radius: 8px;
+    
+            cursor: pointer;
+    
+            display: block;
+            font-size: 13px;
+
+        }
+
+        .back-button {
+    width: 150px;
+    display: block;
+    text-align: center;
+    margin: 30px 0 0 0;
+    padding: 2px;
+    background: #38221e;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 13px;
+}
+
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="account-page">
+
+        <div class="account-box">
+
+            <div class="account-header">
+
+                <h1>
+                    Your Little Heaven
+                </h1>
+
+                
+
+            </div>
+
+
+            <!-- CUSTOMER INFORMATION -->
+
+            <div class="profile-info">
+
+                <p>
+                    <strong>Name:</strong>
+
+                    <span id="profile-name">
+                        Loading...
+                    </span>
+                </p>
+
+
+                <p>
+                    <strong>Email:</strong>
+
+                    <span id="profile-email">
+                        Loading...
+                    </span>
+                </p>
+
+            </div>
+
+<!-- EMAIL VERIFICATION -->
+
+<div
+    id="email-verification-section"
+    style="
+        display: none;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: #facbdb;
+        border: 1px solid #d4af37;
+        border-radius: 8px;
+    "
+>
+
+    <strong>
+        ⚠️ Email Not Verified
+    </strong>
+
+    <p>
+        Your email is not verified yet.
+        You can verify it now or do it later.
+    </p>
+
+    <button
+        type="button"
+        onclick="sendVerificationEmail()"
+        style="
+            width: 95%;
+            padding: 11px;
+            background: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        "
+    >
+        Verify Email
+    </button>
+
+</div>
+
+            <!-- MY ORDERS -->
+
+            <a
+                href="my-orders.html"
+                class="account-button gold-button"
+            >
+                 My Orders
+            </a>
+
+            <!-- WISHLIST -->
+
+<a
+    href="wishlist.html"
+    class="account-button gold-button"
+>
+Wishlist
+</a>
+
+            <!-- EDIT PROFILE -->
+
+            <a
+                href="edit-profile.html"
+                class="account-button gold-button"
+            >
+                Edit Profile
+            </a>
+
+
+            <!-- FORGOT PASSWORD -->
+
+            <a
+                href="forgot-password.html"
+                class="account-button brown-button"
+            >
+                Forgot Password
+            </a>
+
+
+            <a
+              href="change-password.html"
+              class="account-button brown-button"
+            >
+               Change Password
+            </a>
+
+
+            <!-- LOGOUT -->
+
+            <button
+                type="button"
+                class="logout-button"
+                onclick="logoutCustomer()"
+            >
+                 Logout
+            </button>
+
+
+            <!-- BACK HOME -->
+
+            <a
+                href="index.html"
+                class="back-button"
+            >
+                ← Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        async function loadCustomerAccount() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(error);
+
+                return;
+            }
+
+
+            const session = data.session;
+
+
+            if (!session) {
+
+                alert(
+                    "Please login to view your account."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
+
+
+            const user = session.user;
+
+
+document.getElementById(
+    "profile-name"
+).textContent =
+    user.user_metadata?.full_name ||
+    "Customer";
+
+
+document.getElementById(
+    "profile-email"
+).textContent =
+    user.email || "";
+
+
+// CHECK EMAIL VERIFICATION
+
+const verificationSection =
+    document.getElementById(
+        "email-verification-section"
+    );
+
+
+if (
+    verificationSection &&
+    !user.email_confirmed_at
+) {
+
+    verificationSection.style.display =
+        "block";
+
+}
+
+        }
+
+
+        async function logoutCustomer() {
+
+            const {
+                error
+            } =
+                await supabaseClient.auth.signOut();
+
+
+            if (error) {
+
+                alert(
+                    "Could not logout.\n\n" +
+                    error.message
+                );
+
+                return;
+            }
+
+
+            alert(
+                "You have been logged out."
+            );
+
+
+            window.location.href =
+                "index.html";
+
+        }
+
+              // email verification
+        
+                  async function sendVerificationEmail() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (
+                error ||
+                !data.session
+            ) {
+
+                alert(
+                    "Please login first."
+                );
+
+                return;
+            }
+
+
+            const email =
+                data.session.user.email;
+
+
+            const {
+                error: resendError
+            } =
+                await supabaseClient.auth.resend({
+
+                    type: "signup",
+
+                    email: email
+
+                });
+
+
+            if (resendError) {
+
+                alert(
+                    "Could not send verification email.\n\n" +
+                    resendError.message
+                );
+
+                return;
+            }
+
+
+            alert(
+                "📧 Verification email sent!\n\n" +
+                "Please check your email and verify your account."
+            );
+
+        }
+
+
+        loadCustomerAccount();
+
+    </script>
+
+</body>
+
+</html>

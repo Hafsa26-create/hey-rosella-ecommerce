@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Order Tracking - Hey Rosella</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff0f5;
+            color: #3e2723;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .admin-header {
+            background: #3e2723;
+            color: white;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .admin-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-badge {
+            background: #d4af37;
+            color: white;
+            padding: 7px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: #6d4c41;
+            font-size: 16px;
+        }
+
+
+        /* =========================
+           SEARCH SECTION
+        ========================= */
+
+        .search-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .search-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .search-box:focus {
+            border-color: #d4af37;
+        }
+
+
+        /* =========================
+           FILTER
+        ========================= */
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-row label {
+            margin: 0;
+        }
+
+        .filter-select {
+            padding: 11px 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            color: #3e2723;
+            cursor: pointer;
+        }
+
+
+        /* =========================
+           TRACKING LIST
+        ========================= */
+
+        .tracking-list {
+            display: grid;
+            gap: 25px;
+        }
+
+        .tracking-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .tracking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .order-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .order-date {
+            font-size: 13px;
+            color: #795548;
+            margin-top: 5px;
+        }
+
+
+        /* =========================
+           STATUS BADGES
+        ========================= */
+
+        .status-badge {
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .processing {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .shipped {
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+
+        .delivered {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .cancelled {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+
+        /* =========================
+           CUSTOMER INFO
+        ========================= */
+
+        .customer-info {
+            background: #fff8fa;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .customer-info h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
+
+        .customer-info p {
+            margin: 7px 0;
+            font-size: 14px;
+        }
+
+
+        /* =========================
+           TIMELINE
+        ========================= */
+
+        .timeline {
+            margin: 25px 0;
+        }
+
+        .timeline-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            position: relative;
+            padding-bottom: 25px;
+        }
+
+        .timeline-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #ddd;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            flex-shrink: 0;
+            font-size: 15px;
+        }
+
+        .timeline-step.completed .timeline-icon {
+            background: #d4af37;
+            color: white;
+        }
+
+        .timeline-step.current .timeline-icon {
+            background: #3e2723;
+            color: white;
+        }
+
+        .timeline-content strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .timeline-content span {
+            font-size: 13px;
+            color: #795548;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 17px;
+            top: 35px;
+            width: 2px;
+            height: calc(100% - 10px);
+            background: #ddd;
+        }
+
+        .timeline-step.completed .timeline-line {
+            background: #d4af37;
+        }
+
+
+        /* =========================
+           UPDATE SECTION
+        ========================= */
+
+        .update-section {
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .update-section label {
+            font-weight: bold;
+        }
+
+        .status-select {
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            color: #3e2723;
+            cursor: pointer;
+        }
+
+        .update-button {
+            border: none;
+            background: #d4af37;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .update-button:hover {
+            background: #b8962e;
+        }
+
+
+        /* =========================
+           NO RESULTS
+        ========================= */
+
+        .no-results {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            color: #795548;
+            display: none;
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-section {
+            margin-top: 35px;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            display: inline-block;
+            text-decoration: none;
+            background: #3e2723;
+            color: white;
+            padding: 11px 18px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .back-button:hover {
+            background: #2b1b18;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .admin-header {
+                padding: 15px 20px;
+            }
+
+            .admin-logo {
+                font-size: 20px;
+            }
+
+            .container {
+                margin-top: 30px;
+            }
+
+            .page-title h1 {
+                font-size: 27px;
+            }
+
+            .tracking-card {
+                padding: 18px;
+            }
+
+            .update-section {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .status-select,
+            .update-button {
+                width: 100%;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="admin-header">
+
+        <div class="admin-logo">
+            Hey Rosella 💎
+        </div>
+
+        <div class="admin-badge">
+            ADMIN
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN CONTAINER
+    ========================= -->
+
+    <main class="container">
+
+
+        <div class="page-title">
+
+            <h1>
+                🚚 Order Tracking
+            </h1>
+
+            <p>
+                Track and update customer order delivery status.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             SEARCH + FILTER
+        ========================= -->
+
+        <section class="search-section">
+
+            <label for="searchInput">
+                🔍 Search Order
+            </label>
+
+            <input
+                type="text"
+                id="searchInput"
+                class="search-box"
+                placeholder="Search by order ID, customer name or phone..."
+            >
+
+
+            <div class="filter-row">
+
+                <label for="statusFilter">
+                    Filter Status:
+                </label>
+
+                <select
+                    id="statusFilter"
+                    class="filter-select"
+                >
+
+                    <option value="all">
+                        All Orders
+                    </option>
+
+                    <option value="Pending">
+                        Pending
+                    </option>
+
+                    <option value="Processing">
+                        Processing
+                    </option>
+
+                    <option value="Shipped">
+                        Shipped
+                    </option>
+
+                    <option value="Delivered">
+                        Delivered
+                    </option>
+
+                    <option value="Cancelled">
+                        Cancelled
+                    </option>
+
+                </select>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             ORDERS
+        ========================= -->
+
+        <section>
+
+            <div
+                id="trackingList"
+                class="tracking-list"
+            >
+
+
+                <!-- =========================
+                     ORDER HR1001
+                ========================= -->
+
+                <div
+                    class="tracking-card"
+                    data-status="Pending"
+                    data-search="HR1001 Hafsa customer@example.com 01700000000 Dhaka"
+                >
+
+                    <div class="tracking-header">
+
+                        <div>
+
+                            <div class="order-number">
+                                Order #HR1001
+                            </div>
+
+                            <div class="order-date">
+                                18 August 2026
+                            </div>
+
+                        </div>
+
+                        <span
+                            class="status-badge pending"
+                            id="status-HR1001"
+                        >
+                            Pending
+                        </span>
+
+                    </div>
+
+
+                    <div class="customer-info">
+
+                        <h3>
+                            👤 Customer Information
+                        </h3>
+
+                        <p>
+                            <strong>Name:</strong>
+                            Hafsa
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong>
+                            customer@example.com
+                        </p>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            01700000000
+                        </p>
+
+                        <p>
+                            <strong>Address:</strong>
+                            Dhaka, Bangladesh
+                        </p>
+
+                    </div>
+
+
+                    <div class="timeline">
+
+                        <div class="timeline-title">
+                            📍 Delivery Timeline
+                        </div>
+
+
+                        <div class="timeline-step completed">
+
+                            <div class="timeline-icon">
+                                ✓
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Order Placed
+                                </strong>
+
+                                <span>
+                                    18 August 2026
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step current">
+
+                            <div class="timeline-icon">
+                                2
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Processing
+                                </strong>
+
+                                <span>
+                                    Waiting for processing.
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon">
+                                3
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Shipped
+                                </strong>
+
+                                <span>
+                                    Not shipped yet.
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon">
+                                4
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Delivered
+                                </strong>
+
+                                <span>
+                                    Not delivered yet.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="update-section">
+
+                        <label>
+                            Update Status:
+                        </label>
+
+                        <select
+                            id="select-HR1001"
+                            class="status-select"
+                        >
+
+                            <option value="Pending" selected>
+                                Pending
+                            </option>
+
+                            <option value="Processing">
+                                Processing
+                            </option>
+
+                            <option value="Shipped">
+                                Shipped
+                            </option>
+
+                            <option value="Delivered">
+                                Delivered
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            class="update-button"
+                            onclick="updateOrderStatus('HR1001')"
+                        >
+                            Update Status
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     ORDER HR1002
+                ========================= -->
+
+                <div
+                    class="tracking-card"
+                    data-status="Processing"
+                    data-search="HR1002 Customer Two customer2@example.com 01800000000 Chattogram"
+                >
+
+                    <div class="tracking-header">
+
+                        <div>
+
+                            <div class="order-number">
+                                Order #HR1002
+                            </div>
+
+                            <div class="order-date">
+                                18 August 2026
+                            </div>
+
+                        </div>
+
+                        <span
+                            class="status-badge processing"
+                            id="status-HR1002"
+                        >
+                            Processing
+                        </span>
+
+                    </div>
+
+
+                    <div class="customer-info">
+
+                        <h3>
+                            👤 Customer Information
+                        </h3>
+
+                        <p>
+                            <strong>Name:</strong>
+                            Customer Two
+                        </p>
+
+                        <p>
+                            <strong>Email:</strong>
+                            customer2@example.com
+                        </p>
+
+                        <p>
+                            <strong>Phone:</strong>
+                            01800000000
+                        </p>
+
+                        <p>
+                            <strong>Address:</strong>
+                            Chattogram, Bangladesh
+                        </p>
+
+                    </div>
+
+
+                    <div class="timeline">
+
+                        <div class="timeline-title">
+                            📍 Delivery Timeline
+                        </div>
+
+
+                        <div class="timeline-step completed">
+
+                            <div class="timeline-icon">
+                                ✓
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Order Placed
+                                </strong>
+
+                                <span>
+                                    18 August 2026
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step current">
+
+                            <div class="timeline-icon">
+                                2
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Processing
+                                </strong>
+
+                                <span>
+                                    Order is currently being processed.
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon">
+                                3
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Shipped
+                                </strong>
+
+                                <span>
+                                    Not shipped yet.
+                                </span>
+
+                            </div>
+
+                            <div class="timeline-line"></div>
+
+                        </div>
+
+
+                        <div class="timeline-step">
+
+                            <div class="timeline-icon">
+                                4
+                            </div>
+
+                            <div class="timeline-content">
+
+                                <strong>
+                                    Delivered
+                                </strong>
+
+                                <span>
+                                    Not delivered yet.
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="update-section">
+
+                        <label>
+                            Update Status:
+                        </label>
+
+                        <select
+                            id="select-HR1002"
+                            class="status-select"
+                        >
+
+                            <option value="Pending">
+                                Pending
+                            </option>
+
+                            <option value="Processing" selected>
+                                Processing
+                            </option>
+
+                            <option value="Shipped">
+                                Shipped
+                            </option>
+
+                            <option value="Delivered">
+                                Delivered
+                            </option>
+
+                            <option value="Cancelled">
+                                Cancelled
+                            </option>
+
+                        </select>
+
+
+                        <button
+                            class="update-button"
+                            onclick="updateOrderStatus('HR1002')"
+                        >
+                            Update Status
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <div
+                id="noResults"
+                class="no-results"
+            >
+
+                <h3>
+                    No orders found
+                </h3>
+
+                <p>
+                    Try another order ID, customer name or phone.
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BACK BUTTON
+        ========================= -->
+
+        <div class="back-section">
+
+            <a
+                href="admin.html"
+                class="back-button"
+            >
+                ← Back to Admin Dashboard
+            </a>
+
+        </div>
+
+
+    </main>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================= -->
+
+    <script>
+
+        /* =========================
+           SEARCH ORDERS
+        ========================= */
+
+        function searchOrders() {
+
+            const searchInput =
+                document
+                    .getElementById("searchInput")
+                    .value
+                    .toLowerCase()
+                    .trim();
+
+
+            const selectedStatus =
+                document
+                    .getElementById("statusFilter")
+                    .value;
+
+
+            const cards =
+                document.querySelectorAll(
+                    ".tracking-card"
+                );
+
+
+            let visibleCount = 0;
+
+
+            cards.forEach(function(card) {
+
+                const searchData = (
+                    card.getAttribute("data-search") || ""
+                ).toLowerCase();
+
+
+                const cardStatus =
+                    card.getAttribute("data-status");
+
+
+                const matchesSearch =
+                    searchData.includes(searchInput);
+
+
+                const matchesStatus =
+                    selectedStatus === "all" ||
+                    cardStatus === selectedStatus;
+
+
+                if (
+                    matchesSearch &&
+                    matchesStatus
+                ) {
+
+                    card.style.display = "";
+
+                    visibleCount++;
+
+                } else {
+
+                    card.style.display = "none";
+
+                }
+
+            });
+
+
+            const noResults =
+                document.getElementById(
+                    "noResults"
+                );
+
+
+            if (visibleCount === 0) {
+
+                noResults.style.display = "block";
+
+            } else {
+
+                noResults.style.display = "none";
+
+            }
+
+        }
+
+
+        /* =========================
+           FILTER ORDERS
+        ========================= */
+
+        function filterOrders() {
+
+            searchOrders();
+
+        }
+
+
+        /* =========================
+           UPDATE STATUS
+        ========================= */
+
+        function updateOrderStatus(orderId) {
+
+            const select =
+                document.getElementById(
+                    "select-" + orderId
+                );
+
+
+            const newStatus =
+                select.value;
+
+
+            const statusBadge =
+                document.getElementById(
+                    "status-" + orderId
+                );
+
+
+            statusBadge.textContent =
+                newStatus;
+
+
+            statusBadge.className =
+                "status-badge";
+
+
+            if (newStatus === "Pending") {
+
+                statusBadge.classList.add(
+                    "pending"
+                );
+
+            }
+
+            else if (newStatus === "Processing") {
+
+                statusBadge.classList.add(
+                    "processing"
+                );
+
+            }
+
+            else if (newStatus === "Shipped") {
+
+                statusBadge.classList.add(
+                    "shipped"
+                );
+
+            }
+
+            else if (newStatus === "Delivered") {
+
+                statusBadge.classList.add(
+                    "delivered"
+                );
+
+            }
+
+            else if (newStatus === "Cancelled") {
+
+                statusBadge.classList.add(
+                    "cancelled"
+                );
+
+            }
+
+
+            const card =
+                statusBadge.closest(
+                    ".tracking-card"
+                );
+
+
+            card.setAttribute(
+                "data-status",
+                newStatus
+            );
+
+
+            alert(
+                "Order #" +
+                orderId +
+                " status updated to " +
+                newStatus +
+                "!"
+            );
+
+
+            /* Re-apply current search/filter */
+
+            searchOrders();
+
+        }
+
+
+        /* =========================
+           AUTOMATIC SEARCH
+        ========================= */
+
+        document
+            .getElementById("searchInput")
+            .addEventListener(
+                "input",
+                searchOrders
+            );
+
+
+        /* =========================
+           STATUS FILTER
+        ========================= */
+
+        document
+            .getElementById("statusFilter")
+            .addEventListener(
+                "change",
+                filterOrders
+            );
+
+    </script>
+
+
+</body>
+
+</html>
