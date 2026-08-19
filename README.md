@@ -67,31 +67,3 @@ hey-rosella-ecommerce/
 ├── forgot-password.html
 ├── change-password.html
 └── edit-profile.html
-
-
-
-## Project Goal
-
-The goal of this project was to build a responsive jewellery e-commerce website and practice real-world frontend web development, website structure, JavaScript functionality and GitHub deployment.
-
-## Developer
-
-**Hafsa Akter**
-
-Junior Web Developer
-
-### Skills
-
-- HTML
-- CSS
-- JavaScript
-- Responsive Web Design
-- Git & GitHub
-
-## Links
-
-**Live Website:**  
-https://hafsa26-create.github.io/hey-rosella-ecommerce/
-
-**GitHub Repository:**  
-https://github.com/Hafsa26-create/hey-rosella-ecommerce
