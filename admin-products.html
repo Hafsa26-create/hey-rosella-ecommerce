@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Manage Products - Hey Rosella</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff0f5;
+            color: #3e2723;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .admin-header {
+            background: #3e2723;
+            color: white;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-badge {
+            background: #d4af37;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .products-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #6d5550;
+        }
+
+
+        /* =========================
+           ADD PRODUCT
+        ========================= */
+
+        .product-form {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,0.08);
+
+            margin-bottom: 30px;
+        }
+
+        .product-form h2 {
+            margin-top: 0;
+        }
+
+        .form-group {
+            margin-top: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .gold-button {
+            background: #d4af37;
+            color: white;
+        }
+
+        .brown-button {
+            background: #3e2723;
+            color: white;
+        }
+
+        .gray-button {
+            background: #eee;
+            color: #3e2723;
+        }
+
+        .form-button {
+            width: 100%;
+            margin-top: 20px;
+        }
+
+
+        /* =========================
+           PRODUCT LIST
+        ========================= */
+
+        .products-section {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow:
+                0 4px 15px
+                rgba(0,0,0,0.08);
+        }
+
+        .products-section h2 {
+            margin-top: 0;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+
+        /* =========================
+           PRODUCT CARD
+        ========================= */
+
+        .admin-product-card {
+            background: #fff8fa;
+            border: 1px solid #f0dfe5;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .product-image {
+            height: 180px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .admin-product-card h3 {
+            margin: 5px 0;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #d4af37;
+            margin-bottom: 5px;
+        }
+
+        .product-category {
+            font-size: 13px;
+            color: #6d5550;
+            margin-bottom: 15px;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .product-actions button {
+            flex: 1;
+        }
+
+
+        /* =========================
+           BACK
+        ========================= */
+
+        .back-button {
+            display: block;
+            width: 250px;
+            margin: 30px auto;
+            padding: 12px;
+            background: #3e2723;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 800px) {
+
+            .products-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+        @media (max-width: 550px) {
+
+            .admin-header {
+                padding: 15px;
+            }
+
+            .admin-logo {
+                font-size: 19px;
+            }
+
+            .products-page {
+                padding: 0 15px;
+            }
+
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="admin-header">
+
+        <div class="admin-logo">
+            Hey Rosella 💎
+        </div>
+
+        <div class="admin-badge">
+            ADMIN
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         PRODUCTS PAGE
+    ========================= -->
+
+    <main class="products-page">
+
+
+        <div class="page-header">
+
+            <h1>
+                🛍️ Product Management
+            </h1>
+
+            <p>
+                Add and manage your Hey Rosella products.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             ADD PRODUCT FORM
+        ========================= -->
+
+        <section class="product-form">
+
+            <h2>
+                ➕ Add New Product
+            </h2>
+
+
+            <div class="form-group">
+
+                <label for="product-name">
+                    Product Name
+                </label>
+
+                <input
+                    type="text"
+                    id="product-name"
+                    placeholder="Example: Pearl Necklace"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product-price">
+                    Price (BDT)
+                </label>
+
+                <input
+                    type="number"
+                    id="product-price"
+                    placeholder="850"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product-category">
+                    Category
+                </label>
+
+                <select id="product-category">
+
+                    <option value="">
+                        Select Category
+                    </option>
+
+                    <option value="Earrings">
+                        Earrings
+                    </option>
+
+                    <option value="Jhumka">
+                        Jhumka
+                    </option>
+
+                    <option value="Chhoto Jhumka">
+                        Chhoto Jhumka
+                    </option>
+
+                    <option value="Kashmiri Jhumka">
+                        Kashmiri Jhumka
+                    </option>
+
+                    <option value="Pendant">
+                        Pendant
+                    </option>
+
+                    <option value="Rings">
+                        Rings
+                    </option>
+
+                    <option value="Necklace">
+                        Necklace
+                    </option>
+
+                    <option value="Bracelet">
+                        Bracelet
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product-description">
+                    Product Description
+                </label>
+
+                <textarea
+                    id="product-description"
+                    placeholder="Write a short product description..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="product-image">
+                    Product Image
+                </label>
+
+                <input
+                    type="file"
+                    id="product-image"
+                    accept="image/*"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                class="button gold-button form-button"
+                onclick="addAdminProduct()"
+            >
+                ➕ Add Product
+            </button>
+
+        </section>
+
+
+        <!-- =========================
+     PRODUCT LIST
+========================= -->
+
+<section class="products-section">
+
+    <h2>
+        📋 Current Products
+    </h2>
+
+    <div
+        id="admin-products-grid"
+        class="products-grid"
+    >
+    </div>
+
+</section>
+
+        <!-- BACK -->
+
+        <a
+            href="admin.html"
+            class="back-button"
+        >
+            ← Back to Admin Dashboard
+        </a>
+
+
+    </main>
+
+
+   <script>
+
+// =====================================================
+// ADMIN PRODUCT MANAGEMENT
+// =====================================================
+
+let editingProductId = null;
+
+
+// =====================================================
+// GET PRODUCTS FROM LOCAL STORAGE
+// =====================================================
+
+function getAdminProducts() {
+
+    return JSON.parse(
+        localStorage.getItem("heyRosellaAdminProducts")
+    ) || [];
+
+}
+
+
+// =====================================================
+// SAVE PRODUCTS
+// =====================================================
+
+function saveAdminProducts(products) {
+
+    localStorage.setItem(
+        "heyRosellaAdminProducts",
+        JSON.stringify(products)
+    );
+
+}
+
+
+// =====================================================
+// ADD / UPDATE PRODUCT
+// =====================================================
+
+function addAdminProduct() {
+
+    const name =
+        document.getElementById(
+            "product-name"
+        ).value.trim();
+
+
+    const price =
+        document.getElementById(
+            "product-price"
+        ).value;
+
+
+    const category =
+        document.getElementById(
+            "product-category"
+        ).value;
+
+
+    const description =
+        document.getElementById(
+            "product-description"
+        ).value.trim();
+
+
+    // CHECK REQUIRED FIELDS
+
+    if (
+        !name ||
+        !price ||
+        !category
+    ) {
+
+        alert(
+            "Please enter product name, price and category."
+        );
+
+        return;
+    }
+
+
+    let products =
+        getAdminProducts();
+
+
+    // =================================================
+    // UPDATE EXISTING PRODUCT
+    // =================================================
+
+    if (editingProductId !== null) {
+
+        const product =
+            products.find(
+                item =>
+                    item.id === editingProductId
+            );
+
+
+        if (product) {
+
+            product.name =
+                name;
+
+            product.price =
+                Number(price);
+
+            product.category =
+                category;
+
+            product.description =
+                description;
+
+        }
+
+
+        saveAdminProducts(
+            products
+        );
+
+
+        alert(
+            "✅ Product updated successfully!"
+        );
+
+
+        editingProductId =
+            null;
+
+    }
+
+
+    // =================================================
+    // ADD NEW PRODUCT
+    // =================================================
+
+    else {
+
+        const newProduct = {
+
+            id:
+                Date.now(),
+
+            name:
+                name,
+
+            price:
+                Number(price),
+
+            category:
+                category,
+
+            description:
+                description
+
+        };
+
+
+        products.push(
+            newProduct
+        );
+
+
+        saveAdminProducts(
+            products
+        );
+
+
+        alert(
+            "❤️ Product added successfully!"
+        );
+
+    }
+
+
+    clearProductForm();
+
+    renderAdminProducts();
+
+}
+
+
+// =====================================================
+// EDIT PRODUCT
+// =====================================================
+
+function editAdminProduct(productId) {
+
+    const products =
+        getAdminProducts();
+
+
+    const product =
+        products.find(
+            item =>
+                item.id === productId
+        );
+
+
+    if (!product) {
+
+        return;
+
+    }
+
+
+    // PUT PRODUCT DATA INTO FORM
+
+    document.getElementById(
+        "product-name"
+    ).value =
+        product.name;
+
+
+    document.getElementById(
+        "product-price"
+    ).value =
+        product.price;
+
+
+    document.getElementById(
+        "product-category"
+    ).value =
+        product.category;
+
+
+    document.getElementById(
+        "product-description"
+    ).value =
+        product.description || "";
+
+
+    // ENABLE EDIT MODE
+
+    editingProductId =
+        productId;
+
+
+    // CHANGE BUTTON TEXT
+
+    const addButton =
+        document.querySelector(
+            ".form-button"
+        );
+
+
+    if (addButton) {
+
+        addButton.textContent =
+            "✏️ Update Product";
+
+    }
+
+
+    // SCROLL TO FORM
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+}
+
+
+// =====================================================
+// DELETE PRODUCT
+// =====================================================
+
+function deleteAdminProduct(productId) {
+
+    const products =
+        getAdminProducts();
+
+
+    const product =
+        products.find(
+            item =>
+                item.id === productId
+        );
+
+
+    if (!product) {
+
+        return;
+
+    }
+
+
+    const confirmed =
+        confirm(
+            `Are you sure you want to delete "${product.name}"?`
+        );
+
+
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    const updatedProducts =
+        products.filter(
+            item =>
+                item.id !== productId
+        );
+
+
+    saveAdminProducts(
+        updatedProducts
+    );
+
+
+    alert(
+        "🗑️ Product deleted successfully."
+    );
+
+
+    renderAdminProducts();
+
+}
+
+
+// =====================================================
+// CLEAR FORM
+// =====================================================
+
+function clearProductForm() {
+
+    document.getElementById(
+        "product-name"
+    ).value = "";
+
+
+    document.getElementById(
+        "product-price"
+    ).value = "";
+
+
+    document.getElementById(
+        "product-category"
+    ).value = "";
+
+
+    document.getElementById(
+        "product-description"
+    ).value = "";
+
+
+    document.getElementById(
+        "product-image"
+    ).value = "";
+
+
+    editingProductId =
+        null;
+
+
+    const addButton =
+        document.querySelector(
+            ".form-button"
+        );
+
+
+    if (addButton) {
+
+        addButton.textContent =
+            "➕ Add Product";
+
+    }
+
+}
+
+
+// =====================================================
+// DISPLAY PRODUCTS
+// =====================================================
+
+function renderAdminProducts() {
+
+    const container =
+        document.getElementById(
+            "admin-products-grid"
+        );
+
+
+    if (!container) {
+
+        return;
+
+    }
+
+
+    const products =
+        getAdminProducts();
+
+
+    // CLEAR OLD CONTENT
+
+    container.innerHTML = "";
+
+
+    // NO PRODUCTS
+
+    if (products.length === 0) {
+
+        container.innerHTML = `
+
+            <p style="
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 30px;
+                color: #6d5550;
+            ">
+
+                No products added yet.
+
+            </p>
+
+        `;
+
+        return;
+
+    }
+
+
+    // CREATE PRODUCT CARDS
+
+    products.forEach(
+        function(product) {
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "admin-product-card";
+
+
+            card.innerHTML = `
+
+                <div class="product-image">
+
+                    Jewellery Image
+
+                </div>
+
+
+                <h3>
+                    ${product.name}
+                </h3>
+
+
+                <div class="product-price">
+
+                    ${product.price} BDT
+
+                </div>
+
+
+                <div class="product-category">
+
+                    ${product.category}
+
+                </div>
+
+
+                <p style="
+                    font-size: 13px;
+                    color: #6d5550;
+                ">
+
+                    ${product.description || ""}
+
+                </p>
+
+
+                <div class="product-actions">
+
+
+                    <button
+                        class="button brown-button"
+                        type="button"
+                        onclick="editAdminProduct(${product.id})"
+                    >
+
+                        ✏️ Edit
+
+                    </button>
+
+
+                    <button
+                        class="button gray-button"
+                        type="button"
+                        onclick="deleteAdminProduct(${product.id})"
+                    >
+
+                        🗑️ Delete
+
+                    </button>
+
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// LOAD PRODUCTS WHEN PAGE OPENS
+// =====================================================
+
+window.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        renderAdminProducts();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
