@@ -12,17 +12,24 @@
 
     <title>Manage Orders - Hey Rosella</title>
 
+
     <style>
 
         * {
             box-sizing: border-box;
         }
 
+
         body {
+
             margin: 0;
+
             font-family: Arial, sans-serif;
+
             background: #fff0f5;
+
             color: #3e2723;
+
         }
 
 
@@ -33,12 +40,15 @@
         .admin-header {
 
             background: #3e2723;
+
             color: white;
 
             padding: 18px 30px;
 
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
 
         }
@@ -47,6 +57,7 @@
         .admin-logo {
 
             font-size: 24px;
+
             font-weight: bold;
 
         }
@@ -102,7 +113,7 @@
 
 
         /* =========================
-           ORDER FILTER
+           FILTER
         ========================= */
 
         .filter-box {
@@ -114,8 +125,7 @@
             border-radius: 12px;
 
             box-shadow:
-                0 4px 15px
-                rgba(0,0,0,0.08);
+                0 4px 15px rgba(0,0,0,0.08);
 
             margin-bottom: 25px;
 
@@ -157,8 +167,7 @@
             border-radius: 12px;
 
             box-shadow:
-                0 4px 15px
-                rgba(0,0,0,0.08);
+                0 4px 15px rgba(0,0,0,0.08);
 
         }
 
@@ -218,6 +227,8 @@
             font-size: 13px;
 
             color: #6d5550;
+
+            margin-top: 5px;
 
         }
 
@@ -307,6 +318,8 @@
 
             margin: 7px 0;
 
+            word-break: break-word;
+
         }
 
 
@@ -326,6 +339,8 @@
             display: flex;
 
             justify-content: space-between;
+
+            gap: 15px;
 
             padding: 10px 0;
 
@@ -365,7 +380,7 @@
 
 
         /* =========================
-           ORDER ACTIONS
+           ACTIONS
         ========================= */
 
         .order-actions {
@@ -389,6 +404,8 @@
 
             border-radius: 6px;
 
+            background: white;
+
         }
 
 
@@ -405,15 +422,6 @@
         }
 
 
-        .gold-button {
-
-            background: #d4af37;
-
-            color: white;
-
-        }
-
-
         .brown-button {
 
             background: #3e2723;
@@ -423,11 +431,9 @@
         }
 
 
-        .gray-button {
+        .brown-button:hover {
 
-            background: #eee;
-
-            color: #3e2723;
+            opacity: 0.9;
 
         }
 
@@ -516,6 +522,15 @@
 
             }
 
+
+            .order-item {
+
+                flex-direction: column;
+
+                gap: 5px;
+
+            }
+
         }
 
     </style>
@@ -548,8 +563,9 @@
     </header>
 
 
+
     <!-- =========================
-         ORDERS PAGE
+         PAGE
     ========================= -->
 
     <main class="orders-page">
@@ -571,6 +587,7 @@
             </p>
 
         </div>
+
 
 
         <!-- =========================
@@ -598,35 +615,35 @@
                 </option>
 
 
-                <option value="Pending">
+                <option value="pending">
 
                     Pending
 
                 </option>
 
 
-                <option value="Processing">
+                <option value="processing">
 
                     Processing
 
                 </option>
 
 
-                <option value="Shipped">
+                <option value="shipped">
 
                     Shipped
 
                 </option>
 
 
-                <option value="Delivered">
+                <option value="delivered">
 
                     Delivered
 
                 </option>
 
 
-                <option value="Cancelled">
+                <option value="cancelled">
 
                     Cancelled
 
@@ -635,6 +652,7 @@
             </select>
 
         </section>
+
 
 
         <!-- =========================
@@ -652,14 +670,21 @@
 
             <div id="orders-list">
 
-                <!-- Orders will appear here -->
+                <div class="no-orders">
+
+                    ⏳ Loading orders...
+
+                </div>
 
             </div>
 
         </section>
 
 
-        <!-- BACK -->
+
+        <!-- =========================
+             BACK
+        ========================= -->
 
         <a
             href="admin.html"
@@ -674,109 +699,323 @@
     </main>
 
 
+
     <!-- =========================
-         JAVASCRIPT
+         SUPABASE
     ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <script>
 
 
         // =====================================================
-        // SAMPLE ORDERS
+        // SUPABASE CONFIGURATION
         // =====================================================
 
-        let adminOrders = [
-
-            {
-
-                id: "HR1001",
-
-                date: "18 August 2026",
-
-                customerName: "Hafsa",
-
-                email: "customer@example.com",
-
-                phone: "01700000000",
-
-                address: "Dhaka, Bangladesh",
-
-                items: [
-
-                    {
-
-                        name: "Elegant Necklace",
-
-                        quantity: 1,
-
-                        price: 850
-
-                    },
-
-                    {
-
-                        name: "Classic Earrings",
-
-                        quantity: 2,
-
-                        price: 650
-
-                    }
-
-                ],
-
-                total: 2150,
-
-                status: "Pending"
-
-            },
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
 
 
-            {
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
 
-                id: "HR1002",
 
-                date: "18 August 2026",
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-                customerName: "Customer Two",
 
-                email: "customer2@example.com",
 
-                phone: "01800000000",
+        // =====================================================
+        // GLOBAL ORDERS ARRAY
+        // =====================================================
 
-                address: "Chattogram, Bangladesh",
+        let adminOrders = [];
 
-                items: [
 
-                    {
 
-                        name: "Beautiful Bracelet",
+        // =====================================================
+        // ESCAPE HTML
+        // =====================================================
 
-                        quantity: 1,
+        function escapeHTML(value) {
 
-                        price: 750
+            if (
+                value === null ||
+                value === undefined
+            ) {
 
-                    }
-
-                ],
-
-                total: 750,
-
-                status: "Processing"
+                return "";
 
             }
 
-        ];
+
+            return String(value)
+
+                .replace(/&/g, "&amp;")
+
+                .replace(/</g, "&lt;")
+
+                .replace(/>/g, "&gt;")
+
+                .replace(/"/g, "&quot;")
+
+                .replace(/'/g, "&#039;");
+
+        }
+
 
 
         // =====================================================
-        // DISPLAY ORDERS
+        // ESCAPE JAVASCRIPT
+        // =====================================================
+
+        function escapeJS(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+
+                .replace(/\\/g, "\\\\")
+
+                .replace(/'/g, "\\'")
+
+                .replace(/"/g, '\\"')
+
+                .replace(/\n/g, "\\n")
+
+                .replace(/\r/g, "\\r");
+
+        }
+
+
+
+        // =====================================================
+        // CHECK ADMIN
+        // =====================================================
+
+        async function checkAdminAccess() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                alert(
+                    "Could not verify admin session."
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+
+            }
+
+
+            const session =
+                data.session;
+
+
+            if (!session) {
+
+                alert(
+                    "Please login as admin first."
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+
+            }
+
+
+            const email =
+                session.user.email;
+
+
+            console.log(
+                "Logged in admin:",
+                email
+            );
+
+
+            if (
+                email !==
+                "heyrosella26@gmail.com"
+            ) {
+
+                alert(
+                    "Access denied. Admin only."
+                );
+
+                await supabaseClient.auth.signOut();
+
+
+                window.location.href =
+                    "admin-login.html";
+
+
+                return false;
+
+            }
+
+
+            return true;
+
+        }
+
+
+
+        // =====================================================
+        // LOAD ORDERS FROM SUPABASE
+        // =====================================================
+
+        async function loadOrders() {
+
+            const container =
+                document.getElementById(
+                    "orders-list"
+                );
+
+
+            container.innerHTML = `
+
+                <div class="no-orders">
+
+                    ⏳ Loading orders...
+
+                </div>
+
+            `;
+
+
+            // CHECK ADMIN
+
+            const isAdmin =
+                await checkAdminAccess();
+
+
+            if (!isAdmin) {
+
+                return;
+
+            }
+
+
+
+            // GET ORDERS
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+
+                    .from("Hey Rosella")
+
+                    .select(`
+                        id,
+                        created_at,
+                        customer_name,
+                        customer_phone,
+                        customer_address,
+                        payment_method,
+                        products,
+                        total_amount,
+                        order_status,
+                        order_number,
+                        user_id
+                    `)
+
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+
+            // DATABASE ERROR
+
+            if (error) {
+
+                console.error(
+                    "Order fetch error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <div class="no-orders">
+
+                        ❌ Could not load orders.
+
+                        <br><br>
+
+                        ${escapeHTML(
+                            error.message
+                        )}
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+
+            console.log(
+                "Orders received:",
+                data
+            );
+
+
+            adminOrders =
+                data || [];
+
+
+            renderOrders(
+                adminOrders
+            );
+
+        }
+
+
+
+        // =====================================================
+        // RENDER ORDERS
         // =====================================================
 
         function renderOrders(
             orders = adminOrders
         ) {
-
 
             const container =
                 document.getElementById(
@@ -787,9 +1026,13 @@
             container.innerHTML = "";
 
 
+
             // NO ORDERS
 
-            if (orders.length === 0) {
+            if (
+                !orders ||
+                orders.length === 0
+            ) {
 
                 container.innerHTML = `
 
@@ -806,7 +1049,8 @@
             }
 
 
-            // CREATE ORDER CARDS
+
+            // CREATE CARDS
 
             orders.forEach(
                 function(order) {
@@ -822,104 +1066,135 @@
                         "order-card";
 
 
+
+                    // STATUS
+
+                    const status =
+                        String(
+                            order.order_status ||
+                            "pending"
+                        ).toLowerCase();
+
+
                     const statusClass =
-                        order.status
-                            .toLowerCase();
+                        status;
 
 
-                    card.innerHTML = `
 
-                        <div class="order-header">
+                    // DATE
 
-                            <div>
+                    const orderDate =
+                        order.created_at
 
-                                <div class="order-id">
+                            ? new Date(
+                                order.created_at
+                            ).toLocaleString(
+                                "en-GB"
+                            )
 
-                                    Order #${order.id}
-
-                                </div>
+                            : "Not available";
 
 
-                                <div class="order-date">
 
-                                    ${order.date}
+                    // PRODUCTS
 
-                                </div>
+                    let products = [];
+
+
+                    try {
+
+                        if (
+                            Array.isArray(
+                                order.products
+                            )
+                        ) {
+
+                            products =
+                                order.products;
+
+                        }
+
+                        else if (
+                            typeof order.products ===
+                            "string"
+                        ) {
+
+                            products =
+                                JSON.parse(
+                                    order.products
+                                );
+
+                        }
+
+                    }
+
+                    catch (error) {
+
+                        console.error(
+                            "Products parse error:",
+                            error
+                        );
+
+                    }
+
+
+
+                    let productsHTML =
+                        "";
+
+
+
+                    if (
+                        products.length === 0
+                    ) {
+
+                        productsHTML = `
+
+                            <div class="order-item">
+
+                                <span>
+
+                                    No product information
+
+                                </span>
 
                             </div>
 
+                        `;
 
-                            <span
-                                class="
-                                    status-badge
-                                    status-${statusClass}
-                                "
-                            >
+                    }
 
-                                ${order.status}
+                    else {
 
-                            </span>
+                        productsHTML =
 
-                        </div>
-
-
-                        <div class="customer-info">
-
-                            <p>
-
-                                <strong>
-                                    👤 Customer:
-                                </strong>
-
-                                ${order.customerName}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    📧 Email:
-                                </strong>
-
-                                ${order.email}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    📞 Phone:
-                                </strong>
-
-                                ${order.phone}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    📍 Address:
-                                </strong>
-
-                                ${order.address}
-
-                            </p>
-
-                        </div>
-
-
-                        <div class="order-items">
-
-                            <strong>
-                                🛍️ Ordered Products
-                            </strong>
-
-
-                            ${order.items.map(
+                            products.map(
                                 function(item) {
+
+
+                                    const name =
+                                        item.name ||
+                                        item.productName ||
+                                        "Product";
+
+
+                                    const quantity =
+                                        Number(
+                                            item.quantity
+                                        ) || 1;
+
+
+                                    const price =
+                                        Number(
+                                            item.price
+                                        ) || 0;
+
+
+                                    const subtotal =
+                                        price *
+                                        quantity;
+
+
 
                                     return `
 
@@ -929,19 +1204,22 @@
 
                                             <span>
 
-                                                ${item.name}
+                                                ${escapeHTML(
+                                                    name
+                                                )}
+
                                                 ×
-                                                ${item.quantity}
+
+                                                ${quantity}
 
                                             </span>
 
 
                                             <span>
 
-                                                ${
-                                                    item.price *
-                                                    item.quantity
-                                                }
+                                                ${subtotal.toLocaleString(
+                                                    "en-BD"
+                                                )}
 
                                                 BDT
 
@@ -952,19 +1230,230 @@
                                     `;
 
                                 }
-                            ).join("")}
+                            ).join("");
+
+                    }
+
+
+
+                    // ORDER ID
+
+                    const orderNumber =
+                        order.order_number ||
+                        order.id ||
+                        "N/A";
+
+
+
+                    // CUSTOMER
+
+                    const customerName =
+                        order.customer_name ||
+                        "Not available";
+
+
+                    const customerPhone =
+                        order.customer_phone ||
+                        "Not available";
+
+
+                    const customerAddress =
+                        order.customer_address ||
+                        "Not available";
+
+
+                    const paymentMethod =
+                        order.payment_method ||
+                        "Not specified";
+
+
+
+                    // CARD HTML
+
+                    card.innerHTML = `
+
+                        <div class="order-header">
+
+
+                            <div>
+
+                                <div class="order-id">
+
+                                    Order #
+
+                                    ${escapeHTML(
+                                        orderNumber
+                                    )}
+
+                                </div>
+
+
+                                <div class="order-date">
+
+                                    ${escapeHTML(
+                                        orderDate
+                                    )}
+
+                                </div>
+
+                            </div>
+
+
+
+                            <span
+                                class="
+                                    status-badge
+                                    status-${escapeHTML(
+                                        statusClass
+                                    )}
+                                "
+                            >
+
+                                ${escapeHTML(
+                                    status
+                                )}
+
+                            </span>
+
 
                         </div>
 
+
+
+                        <!-- CUSTOMER INFO -->
+
+                        <div class="customer-info">
+
+
+                            <p>
+
+                                <strong>
+
+                                    👤 Customer:
+
+                                </strong>
+
+
+                                ${escapeHTML(
+                                    customerName
+                                )}
+
+                            </p>
+
+
+
+                            <p>
+
+                                <strong>
+
+                                    📞 Phone:
+
+                                </strong>
+
+
+                                ${escapeHTML(
+                                    customerPhone
+                                )}
+
+                            </p>
+
+
+
+                            <p>
+
+                                <strong>
+
+                                    📍 Address:
+
+                                </strong>
+
+
+                                ${escapeHTML(
+                                    customerAddress
+                                )}
+
+                            </p>
+
+
+
+                            <p>
+
+                                <strong>
+
+                                    💳 Payment:
+
+                                </strong>
+
+
+                                ${escapeHTML(
+                                    paymentMethod
+                                )}
+
+                            </p>
+
+
+
+                            <p>
+
+                                <strong>
+
+                                    👤 User ID:
+
+                                </strong>
+
+
+                                ${escapeHTML(
+                                    order.user_id ||
+                                    "Not available"
+                                )}
+
+                            </p>
+
+
+                        </div>
+
+
+
+                        <!-- PRODUCTS -->
+
+                        <div class="order-items">
+
+
+                            <strong>
+
+                                🛍️ Ordered Products
+
+                            </strong>
+
+
+                            ${productsHTML}
+
+
+                        </div>
+
+
+
+                        <!-- TOTAL -->
 
                         <div class="order-total">
 
                             Total:
-                            ${order.total}
+
+
+                            ${Number(
+                                order.total_amount || 0
+                            ).toLocaleString(
+                                "en-BD"
+                            )}
+
+
                             BDT
 
                         </div>
 
+
+
+                        <!-- ACTIONS -->
 
                         <div class="order-actions">
 
@@ -972,17 +1461,21 @@
                             <select
                                 onchange="
                                     updateOrderStatus(
-                                        '${order.id}',
+                                        '${escapeJS(
+                                            order.id
+                                        )}',
                                         this.value
                                     )
                                 "
                             >
 
+
                                 <option
-                                    value="Pending"
+                                    value="pending"
+
                                     ${
-                                        order.status ===
-                                        "Pending"
+                                        status ===
+                                        "pending"
                                             ? "selected"
                                             : ""
                                     }
@@ -993,11 +1486,13 @@
                                 </option>
 
 
+
                                 <option
-                                    value="Processing"
+                                    value="processing"
+
                                     ${
-                                        order.status ===
-                                        "Processing"
+                                        status ===
+                                        "processing"
                                             ? "selected"
                                             : ""
                                     }
@@ -1008,11 +1503,13 @@
                                 </option>
 
 
+
                                 <option
-                                    value="Shipped"
+                                    value="shipped"
+
                                     ${
-                                        order.status ===
-                                        "Shipped"
+                                        status ===
+                                        "shipped"
                                             ? "selected"
                                             : ""
                                     }
@@ -1023,11 +1520,13 @@
                                 </option>
 
 
+
                                 <option
-                                    value="Delivered"
+                                    value="delivered"
+
                                     ${
-                                        order.status ===
-                                        "Delivered"
+                                        status ===
+                                        "delivered"
                                             ? "selected"
                                             : ""
                                     }
@@ -1038,11 +1537,13 @@
                                 </option>
 
 
+
                                 <option
-                                    value="Cancelled"
+                                    value="cancelled"
+
                                     ${
-                                        order.status ===
-                                        "Cancelled"
+                                        status ===
+                                        "cancelled"
                                             ? "selected"
                                             : ""
                                     }
@@ -1052,15 +1553,24 @@
 
                                 </option>
 
+
                             </select>
+
 
 
                             <button
                                 type="button"
-                                class="button brown-button"
+
+                                class="
+                                    button
+                                    brown-button
+                                "
+
                                 onclick="
                                     deleteOrder(
-                                        '${order.id}'
+                                        '${escapeJS(
+                                            order.id
+                                        )}'
                                     )
                                 "
                             >
@@ -1069,7 +1579,9 @@
 
                             </button>
 
+
                         </div>
+
 
                     `;
 
@@ -1084,61 +1596,150 @@
         }
 
 
+
         // =====================================================
         // UPDATE ORDER STATUS
         // =====================================================
 
-        function updateOrderStatus(
+        async function updateOrderStatus(
             orderId,
             newStatus
         ) {
 
+            try {
 
-            const order =
-                adminOrders.find(
-                    function(item) {
 
-                        return item.id ===
-                            orderId;
+                const {
+                    error
+                } =
 
-                    }
+                    await supabaseClient
+
+                        .from("Hey Rosella")
+
+                        .update({
+
+                            order_status:
+                                newStatus
+
+                        })
+
+                        .eq(
+                            "id",
+                            orderId
+                        );
+
+
+
+                if (error) {
+
+                    console.error(
+                        "Status update error:",
+                        error
+                    );
+
+
+                    alert(
+                        "Could not update order status.\n\n" +
+                        error.message
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                // UPDATE LOCAL DATA
+
+                const order =
+                    adminOrders.find(
+                        function(item) {
+
+                            return (
+                                item.id ===
+                                orderId
+                            );
+
+                        }
+                    );
+
+
+
+                if (order) {
+
+                    order.order_status =
+                        newStatus;
+
+                }
+
+
+
+                // RE-RENDER
+
+                const selectedFilter =
+                    document.getElementById(
+                        "order-filter"
+                    ).value;
+
+
+                if (
+                    selectedFilter ===
+                    "all"
+                ) {
+
+                    renderOrders(
+                        adminOrders
+                    );
+
+                }
+
+                else {
+
+                    filterOrders();
+
+                }
+
+
+
+                alert(
+                    "✅ Order status updated successfully!"
                 );
 
 
-            if (!order) {
+            }
 
-                return;
+            catch (error) {
+
+                console.error(
+                    "Unexpected status error:",
+                    error
+                );
+
+
+                alert(
+                    "Something went wrong while updating the order."
+                );
 
             }
 
-
-            order.status =
-                newStatus;
-
-
-            alert(
-                "✅ Order status updated to " +
-                newStatus
-            );
-
-
-            renderOrders();
-
         }
+
 
 
         // =====================================================
         // DELETE ORDER
         // =====================================================
 
-        function deleteOrder(
+        async function deleteOrder(
             orderId
         ) {
 
 
             const confirmed =
                 confirm(
-                    "Are you sure you want to delete this order?"
+                    "Are you sure you want to permanently delete this order?"
                 );
 
 
@@ -1149,25 +1750,92 @@
             }
 
 
-            adminOrders =
-                adminOrders.filter(
-                    function(order) {
 
-                        return order.id !==
-                            orderId;
+            try {
 
-                    }
+
+                const {
+                    error
+                } =
+
+                    await supabaseClient
+
+                        .from("Hey Rosella")
+
+                        .delete()
+
+                        .eq(
+                            "id",
+                            orderId
+                        );
+
+
+
+                if (error) {
+
+                    console.error(
+                        "Delete order error:",
+                        error
+                    );
+
+
+                    alert(
+                        "Could not delete order.\n\n" +
+                        error.message
+                    );
+
+
+                    return;
+
+                }
+
+
+
+                // REMOVE FROM LOCAL ARRAY
+
+                adminOrders =
+                    adminOrders.filter(
+                        function(order) {
+
+                            return (
+                                order.id !==
+                                orderId
+                            );
+
+                        }
+                    );
+
+
+
+                // RE-RENDER
+
+                filterOrders();
+
+
+
+                alert(
+                    "🗑️ Order deleted successfully."
                 );
 
 
-            alert(
-                "🗑️ Order deleted successfully."
-            );
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Unexpected delete error:",
+                    error
+                );
 
 
-            renderOrders();
+                alert(
+                    "Something went wrong while deleting the order."
+                );
+
+            }
 
         }
+
 
 
         // =====================================================
@@ -1183,6 +1851,9 @@
                 ).value;
 
 
+
+            // ALL
+
             if (
                 selectedStatus ===
                 "all"
@@ -1197,15 +1868,29 @@
             }
 
 
+
+            // FILTER BY order_status
+
             const filteredOrders =
                 adminOrders.filter(
                     function(order) {
 
-                        return order.status ===
-                            selectedStatus;
+                        return (
+
+                            String(
+                                order.order_status ||
+                                "pending"
+                            ).toLowerCase()
+
+                            ===
+
+                            selectedStatus
+
+                        );
 
                     }
                 );
+
 
 
             renderOrders(
@@ -1215,15 +1900,16 @@
         }
 
 
+
         // =====================================================
-        // LOAD PAGE
+        // PAGE LOAD
         // =====================================================
 
         window.addEventListener(
             "DOMContentLoaded",
             function() {
 
-                renderOrders();
+                loadOrders();
 
             }
         );

@@ -22,58 +22,49 @@
         }
 
         .orders-page {
-
             max-width: 860px;
             margin: 40px auto;
             padding: 20px;
         }
 
         .orders-header {
-
             text-align: center;
             margin-bottom: 25px;
         }
 
         .orders-header h1 {
-
             font-size: 25px;
             margin-bottom: 8px;
         }
 
         .orders-header p {
-
             color: #474242;
         }
 
         .order-card {
-
             background: rgb(255, 231, 231);
             padding: 15px;
             margin-bottom: 25px;
             border-radius: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-             font-size: 15px;
+            font-size: 15px;
         }
 
         .order-card h3 {
-
-            margin-top: 7;
+            margin-top: 7px;
             color: #3e2723;
         }
 
         .order-info {
-
             margin: 8px 0;
         }
 
         .order-status {
-
             font-weight: bold;
             margin-top: 10px;
         }
 
         .track-button {
-
             display: inline-block;
             margin-top: 20px;
             padding: 5px 20px;
@@ -82,11 +73,10 @@
             text-decoration: none;
             border-radius: 8px;
             cursor: pointer;
-             font-size: 13px;
+            font-size: 13px;
         }
 
         .back-button {
-
             display: inline-block;
             margin-top: 40px;
             padding: 2px 20px;
@@ -94,7 +84,7 @@
             color: white;
             text-decoration: none;
             border-radius: 8px;
-             font-size: 13px;
+            font-size: 13px;
         }
 
     </style>
@@ -119,74 +109,359 @@
         </div>
 
 
-        <!-- ORDER 1 -->
+        <!-- ORDERS WILL APPEAR HERE -->
 
-        <div class="order-card">
+        <div id="orders-container">
 
-            <h3>
-                Order #HR1001
-            </h3>
-
-            <div class="order-info">
-                Product: Elegant Necklace
-            </div>
-
-            <div class="order-info">
-                Price: 850 BDT
-            </div>
-
-            <div class="order-status">
-                Status: Shipped
-            </div>
-
-            <a
-                href="order-tracking.html"
-                class="track-button"
-            >
-                🚚 Track This Order
-            </a>
+            <p style="text-align: center;">
+                Loading your orders...
+            </p>
 
         </div>
 
 
-        <!-- ORDER 2 -->
-
-        <div class="order-card">
-
-            <h3>
-                Order #HR1002
-            </h3>
-
-            <div class="order-info">
-                Product: Beautiful Bracelet
-            </div>
-
-            <div class="order-info">
-                Price: 750 BDT
-            </div>
-
-            <div class="order-status">
-                Status: Shipped
-            </div>
-
-            <a
-                href="order-tracking.html"
-                class="track-button"
-            >
-                🚚 Track This Order
-            </a>
-
-        </div>
-
+        <!-- BACK TO ACCOUNT -->
 
         <a
-           href="my-account.html"
-           class="back-button"
+            href="my-account.html"
+            class="back-button"
         >
-          ← Back to My Account
+            ← Back to My Account
         </a>
 
     </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // LOAD CUSTOMER ORDERS
+        // ==========================================
+
+        async function loadMyOrders() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            // SESSION ERROR
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                return;
+            }
+
+
+            const session =
+                data.session;
+
+
+            // USER NOT LOGGED IN
+
+            if (!session) {
+
+                alert(
+                    "Please login to view your orders."
+                );
+
+                window.location.href =
+                    "index.html";
+
+                return;
+            }
+
+
+            const user =
+                session.user;
+
+
+            console.log(
+                "Logged in user:",
+                user.id
+            );
+
+
+            // ==========================================
+            // GET ORDERS
+            // ==========================================
+
+            const {
+                data: orders,
+                error: ordersError
+            } =
+                await supabaseClient
+                    .from("Hey Rosella")
+                    .select("*")
+                    .eq(
+                        "user_id",
+                        user.id
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            // ORDER ERROR
+
+            if (ordersError) {
+
+                console.error(
+                    "Orders loading error:",
+                    ordersError
+                );
+
+                document.getElementById(
+                    "orders-container"
+                ).innerHTML = `
+
+                    <div class="order-card">
+
+                        <h3>
+                            Could not load orders
+                        </h3>
+
+                        <p class="order-info">
+                            ${ordersError.message}
+                        </p>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            const container =
+                document.getElementById(
+                    "orders-container"
+                );
+
+
+            // ==========================================
+            // NO ORDERS
+            // ==========================================
+
+            if (
+                !orders ||
+                orders.length === 0
+            ) {
+
+                container.innerHTML = `
+
+                    <div class="order-card">
+
+                        <h3>
+                            No Orders Yet
+                        </h3>
+
+                        <p class="order-info">
+                            You haven't placed any orders yet.
+                        </p>
+
+                        <a
+                            href="index.html#shop"
+                            class="track-button"
+                        >
+                            🛍️ Start Shopping
+                        </a>
+
+                    </div>
+
+                `;
+
+                return;
+            }
+
+
+            // ==========================================
+            // SHOW ORDERS
+            // ==========================================
+
+            container.innerHTML = "";
+
+
+            orders.forEach(
+                function(order) {
+
+                    let productsHTML = "";
+
+
+                    // PRODUCTS
+
+                    if (
+                        Array.isArray(
+                            order.products
+                        )
+                    ) {
+
+                        order.products.forEach(
+                            function(product) {
+
+                                productsHTML += `
+
+                                    <div class="order-info">
+
+                                        ${product.name}
+
+                                        ×
+
+                                        ${product.quantity}
+
+                                        -
+
+                                        ${product.price} BDT
+
+                                    </div>
+
+                                `;
+
+                            }
+                        );
+
+                    }
+
+
+                    // DATE
+
+                    const orderDate =
+                        order.created_at
+                            ? new Date(
+                                order.created_at
+                            ).toLocaleDateString()
+                            : "N/A";
+
+
+                    // ORDER CARD
+
+                    const orderCard =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    orderCard.className =
+                        "order-card";
+
+
+                    orderCard.innerHTML = `
+
+                        <h3>
+                            Order #${order.order_number}
+                        </h3>
+
+
+                        <div class="order-info">
+
+                            <strong>
+                                Date:
+                            </strong>
+
+                            ${orderDate}
+
+                        </div>
+
+
+                        <div class="order-info">
+
+                            <strong>
+                                Products:
+                            </strong>
+
+                        </div>
+
+
+                        ${productsHTML}
+
+
+                        <div class="order-info">
+
+                            <strong>
+                                Total:
+                            </strong>
+
+                            ${order.total_amount} BDT
+
+                        </div>
+
+
+                        <div class="order-info">
+
+                            <strong>
+                                Payment:
+                            </strong>
+
+                            ${order.payment_method}
+
+                        </div>
+
+
+                        <div class="order-status">
+
+                            Status:
+
+                            ${order.order_status}
+
+                        </div>
+
+
+                        <a
+                            href="order-tracking.html?order=${encodeURIComponent(order.order_number)}"
+                            class="track-button"
+                        >
+                            🚚 Track This Order
+                        </a>
+
+                    `;
+
+
+                    container.appendChild(
+                        orderCard
+                    );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // START
+        // ==========================================
+
+        loadMyOrders();
+
+    </script>
+
 
 </body>
 

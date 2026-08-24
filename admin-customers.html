@@ -113,7 +113,7 @@
 
 
         /* =========================
-           SEARCH / FILTER
+           CONTROL BOX
         ========================= */
 
         .control-box {
@@ -126,7 +126,7 @@
 
             box-shadow:
                 0 4px 15px
-                rgba(0,0,0,0.08);
+                rgba(0, 0, 0, 0.08);
 
             margin-bottom: 25px;
 
@@ -161,15 +161,28 @@
         }
 
 
-        .filter-select {
+        .refresh-button {
 
-            padding: 12px;
+            padding: 12px 18px;
 
-            border: 1px solid #ddd;
+            border: none;
 
             border-radius: 6px;
 
-            min-width: 180px;
+            background: #3e2723;
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+        }
+
+
+        .refresh-button:hover {
+
+            opacity: 0.9;
 
         }
 
@@ -188,7 +201,7 @@
 
             box-shadow:
                 0 4px 15px
-                rgba(0,0,0,0.08);
+                rgba(0, 0, 0, 0.08);
 
         }
 
@@ -225,7 +238,7 @@
 
             justify-content: space-between;
 
-            align-items: center;
+            align-items: flex-start;
 
             gap: 15px;
 
@@ -249,50 +262,15 @@
 
             color: #777;
 
-            margin-top: 4px;
+            margin-top: 5px;
+
+            word-break: break-all;
 
         }
 
 
         /* =========================
-           VERIFICATION BADGE
-        ========================= */
-
-        .verification-badge {
-
-            display: inline-block;
-
-            padding: 6px 10px;
-
-            border-radius: 20px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-
-        }
-
-
-        .verified {
-
-            background: #d9f5df;
-
-            color: #27653a;
-
-        }
-
-
-        .unverified {
-
-            background: #fff0b3;
-
-            color: #6b5600;
-
-        }
-
-
-        /* =========================
-           CUSTOMER DETAILS
+           DETAILS
         ========================= */
 
         .customer-details {
@@ -310,7 +288,32 @@
 
         .customer-details p {
 
-            margin: 8px 0;
+            margin: 9px 0;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status-badge {
+
+            display: inline-block;
+
+            padding: 6px 10px;
+
+            border-radius: 20px;
+
+            font-size: 12px;
+
+            font-weight: bold;
+
+            background: #d9f5df;
+
+            color: #27653a;
 
         }
 
@@ -354,15 +357,6 @@
         }
 
 
-        .brown-button {
-
-            background: #3e2723;
-
-            color: white;
-
-        }
-
-
         .gray-button {
 
             background: #eee;
@@ -372,11 +366,17 @@
         }
 
 
-        .red-button {
+        /* =========================
+           LOADING
+        ========================= */
 
-            background: #b83b3b;
+        .loading {
 
-            color: white;
+            text-align: center;
+
+            padding: 40px;
+
+            color: #6d5550;
 
         }
 
@@ -392,6 +392,27 @@
             padding: 40px;
 
             color: #6d5550;
+
+        }
+
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+
+            background: #ffe1e1;
+
+            border: 1px solid #d88;
+
+            color: #8b2222;
+
+            padding: 15px;
+
+            border-radius: 8px;
+
+            line-height: 1.5;
 
         }
 
@@ -458,7 +479,7 @@
 
 
             .search-input,
-            .filter-select {
+            .refresh-button {
 
                 width: 100%;
 
@@ -496,6 +517,7 @@
     </header>
 
 
+
     <!-- =========================
          CUSTOMERS PAGE
     ========================= -->
@@ -514,15 +536,16 @@
 
             <p>
 
-                View and manage your Hey Rosella customers.
+                View your real Hey Rosella customers.
 
             </p>
 
         </div>
 
 
+
         <!-- =========================
-             SEARCH / FILTER
+             SEARCH
         ========================= -->
 
         <section class="control-box">
@@ -535,43 +558,27 @@
                     type="text"
                     id="customer-search"
                     class="search-input"
-                    placeholder="🔍 Search by name, email or phone..."
+                    placeholder="🔍 Search by name, phone or address..."
                     oninput="filterCustomers()"
                 >
 
 
-                <select
-                    id="verification-filter"
-                    class="filter-select"
-                    onchange="filterCustomers()"
+                <button
+                    type="button"
+                    class="refresh-button"
+                    onclick="loadCustomers()"
                 >
 
-                    <option value="all">
+                    🔄 Refresh Customers
 
-                        All Customers
-
-                    </option>
-
-
-                    <option value="verified">
-
-                        ✅ Verified
-
-                    </option>
-
-
-                    <option value="unverified">
-
-                        ⚠️ Unverified
-
-                    </option>
-
-                </select>
+                </button>
 
 
             </div>
 
+
         </section>
+
 
 
         <!-- =========================
@@ -590,12 +597,17 @@
 
             <div id="customers-list">
 
-                <!-- Customers appear here -->
+                <div class="loading">
+
+                    ⏳ Loading customers...
+
+                </div>
 
             </div>
 
 
         </section>
+
 
 
         <!-- =========================
@@ -615,78 +627,255 @@
     </main>
 
 
+
     <!-- =========================
-         JAVASCRIPT
+         SUPABASE
     ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
     <script>
 
 
         // =====================================================
-        // SAMPLE CUSTOMERS
+        // SUPABASE CONFIGURATION
         // =====================================================
 
-        let adminCustomers = [
-
-            {
-
-                id: "CUS1001",
-
-                name: "Hafsa",
-
-                email: "hafsa@example.com",
-
-                phone: "01700000000",
-
-                joined: "18 August 2026",
-
-                verified: true
-
-            },
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
 
 
-            {
-
-                id: "CUS1002",
-
-                name: "Rosella Customer",
-
-                email: "customer@example.com",
-
-                phone: "01800000000",
-
-                joined: "17 August 2026",
-
-                verified: false
-
-            },
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
 
 
-            {
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
 
-                id: "CUS1003",
 
-                name: "Nusrat",
 
-                email: "nusrat@example.com",
+        // =====================================================
+        // CUSTOMER DATA
+        // =====================================================
 
-                phone: "01900000000",
+        let adminCustomers = [];
 
-                joined: "15 August 2026",
 
-                verified: true
+
+       
+       // =====================================================
+// CHECK ADMIN LOGIN
+// =====================================================
+
+async function checkAdminAccess() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+
+    // SESSION ERROR
+
+    if (error) {
+
+        console.error(
+            "Session error:",
+            error
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // NO LOGIN
+
+    const session =
+        data.session;
+
+    if (!session) {
+
+        alert(
+            "Please login as admin first."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // =================================================
+    // ADMIN EMAIL CHECK
+    // =================================================
+
+    const user =
+        session.user;
+
+    const adminEmail =
+        "heyrosella26@gmail.com";
+
+
+    if (
+        !user.email ||
+        user.email.toLowerCase() !==
+        adminEmail.toLowerCase()
+    ) {
+
+        alert(
+            "Access denied. Admin only."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // ADMIN VERIFIED
+
+    return true;
+}
+
+        // =====================================================
+        // LOAD REAL CUSTOMERS
+        // =====================================================
+
+        async function loadCustomers() {
+
+
+            const container =
+                document.getElementById(
+                    "customers-list"
+                );
+
+
+            container.innerHTML = `
+
+                <div class="loading">
+
+                    ⏳ Loading customers...
+
+                </div>
+
+            `;
+
+
+            try {
+
+
+                const allowed =
+                    await checkAdminAccess();
+
+
+                if (!allowed) {
+
+                    return;
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .select(
+                            "id, full_name, phone, address, created_at"
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Customer fetch error:",
+                        error
+                    );
+
+
+                    container.innerHTML = `
+
+                        <div class="error-box">
+
+                            ❌ Could not load customers.
+
+                            <br><br>
+
+                            ${error.message}
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                adminCustomers =
+                    data || [];
+
+
+                renderCustomers(
+                    adminCustomers
+                );
+
 
             }
 
-        ];
+            catch (error) {
+
+
+                console.error(
+                    "Unexpected error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <div class="error-box">
+
+                        ❌ Something went wrong while loading customers.
+
+                        <br><br>
+
+                        ${error.message}
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
 
 
         // =====================================================
-        // DISPLAY CUSTOMERS
+        // RENDER CUSTOMERS
         // =====================================================
 
         function renderCustomers(
-            customers = adminCustomers
+            customers
         ) {
 
 
@@ -699,9 +888,11 @@
             container.innerHTML = "";
 
 
-            // NO CUSTOMERS
+            if (
+                !customers ||
+                customers.length === 0
+            ) {
 
-            if (customers.length === 0) {
 
                 container.innerHTML = `
 
@@ -713,12 +904,12 @@
 
                 `;
 
+
                 return;
 
             }
 
 
-            // CREATE CUSTOMER CARDS
 
             customers.forEach(
                 function(customer) {
@@ -734,59 +925,69 @@
                         "customer-card";
 
 
-                    const verificationClass =
-                        customer.verified
-                            ? "verified"
-                            : "unverified";
+                    const customerName =
+                        customer.full_name ||
+                        "Customer";
 
 
-                    const verificationText =
-                        customer.verified
-                            ? "✅ Verified"
-                            : "⚠️ Unverified";
+                    const phone =
+                        customer.phone ||
+                        "Not added";
+
+
+                    const address =
+                        customer.address ||
+                        "Not added";
+
+
+                    const joinedDate =
+                        customer.created_at
+                            ? new Date(
+                                customer.created_at
+                              ).toLocaleDateString(
+                                "en-GB",
+                                {
+                                    day: "2-digit",
+                                    month: "long",
+                                    year: "numeric"
+                                }
+                              )
+                            : "Not available";
 
 
                     card.innerHTML = `
 
-
                         <div class="customer-header">
-
 
                             <div>
 
-
                                 <div class="customer-name">
 
-                                    ${customer.name}
+                                    ${escapeHTML(
+                                        customerName
+                                    )}
 
                                 </div>
-
 
                                 <div class="customer-id">
 
-                                    Customer ID:
-                                    ${customer.id}
+                                    User ID:
+                                    ${escapeHTML(
+                                        customer.id
+                                    )}
 
                                 </div>
-
 
                             </div>
 
 
-                            <span
-                                class="
-                                    verification-badge
-                                    ${verificationClass}
-                                "
-                            >
+                            <span class="status-badge">
 
-                                ${verificationText}
+                                ✅ Active Profile
 
                             </span>
 
-
                         </div>
-
 
 
                         <div class="customer-details">
@@ -795,10 +996,12 @@
                             <p>
 
                                 <strong>
-                                    📧 Email:
+                                    📞 Phone:
                                 </strong>
 
-                                ${customer.email}
+                                ${escapeHTML(
+                                    phone
+                                )}
 
                             </p>
 
@@ -806,10 +1009,12 @@
                             <p>
 
                                 <strong>
-                                    📞 Phone:
+                                    📍 Address:
                                 </strong>
 
-                                ${customer.phone}
+                                ${escapeHTML(
+                                    address
+                                )}
 
                             </p>
 
@@ -820,13 +1025,12 @@
                                     📅 Joined:
                                 </strong>
 
-                                ${customer.joined}
+                                ${joinedDate}
 
                             </p>
 
 
                         </div>
-
 
 
                         <div class="customer-actions">
@@ -837,46 +1041,14 @@
                                 class="button gold-button"
                                 onclick="
                                     viewCustomer(
-                                        '${customer.id}'
+                                        '${escapeJS(
+                                            customer.id
+                                        )}'
                                     )
                                 "
                             >
 
                                 👁️ View Details
-
-                            </button>
-
-
-                            <button
-                                type="button"
-                                class="button brown-button"
-                                onclick="
-                                    toggleCustomerVerification(
-                                        '${customer.id}'
-                                    )
-                                "
-                            >
-
-                                ${
-                                    customer.verified
-                                        ? "⚠️ Mark Unverified"
-                                        : "✅ Mark Verified"
-                                }
-
-                            </button>
-
-
-                            <button
-                                type="button"
-                                class="button red-button"
-                                onclick="
-                                    deleteCustomer(
-                                        '${customer.id}'
-                                    )
-                                "
-                            >
-
-                                🗑️ Delete
 
                             </button>
 
@@ -896,8 +1068,9 @@
         }
 
 
+
         // =====================================================
-        // SEARCH + FILTER
+        // SEARCH CUSTOMERS
         // =====================================================
 
         function filterCustomers() {
@@ -906,15 +1079,21 @@
             const search =
                 document.getElementById(
                     "customer-search"
-                ).value
+                )
+                .value
                 .toLowerCase()
                 .trim();
 
 
-            const verificationFilter =
-                document.getElementById(
-                    "verification-filter"
-                ).value;
+            if (!search) {
+
+                renderCustomers(
+                    adminCustomers
+                );
+
+                return;
+
+            }
 
 
             const filteredCustomers =
@@ -922,52 +1101,54 @@
                     function(customer) {
 
 
-                        const matchesSearch =
-
-                            customer.name
-                                .toLowerCase()
-                                .includes(search)
-
-                            ||
-
-                            customer.email
-                                .toLowerCase()
-                                .includes(search)
-
-                            ||
-
-                            customer.phone
-                                .includes(search);
-
-
-                        const matchesVerification =
-
-                            verificationFilter ===
-                            "all"
-
-                            ||
-
+                        const name =
                             (
-                                verificationFilter ===
-                                "verified"
-                                &&
-                                customer.verified
+                                customer.full_name ||
+                                ""
                             )
+                            .toLowerCase();
 
-                            ||
 
+                        const phone =
                             (
-                                verificationFilter ===
-                                "unverified"
-                                &&
-                                !customer.verified
-                            );
+                                customer.phone ||
+                                ""
+                            )
+                            .toLowerCase();
+
+
+                        const address =
+                            (
+                                customer.address ||
+                                ""
+                            )
+                            .toLowerCase();
+
+
+                        const id =
+                            (
+                                customer.id ||
+                                ""
+                            )
+                            .toLowerCase();
 
 
                         return (
-                            matchesSearch
-                            &&
-                            matchesVerification
+
+                            name.includes(search)
+
+                            ||
+
+                            phone.includes(search)
+
+                            ||
+
+                            address.includes(search)
+
+                            ||
+
+                            id.includes(search)
+
                         );
 
                     }
@@ -979,6 +1160,7 @@
             );
 
         }
+
 
 
         // =====================================================
@@ -994,8 +1176,10 @@
                 adminCustomers.find(
                     function(item) {
 
-                        return item.id ===
-                            customerId;
+                        return (
+                            item.id ===
+                            customerId
+                        );
 
                     }
                 );
@@ -1003,9 +1187,23 @@
 
             if (!customer) {
 
+                alert(
+                    "Customer not found."
+                );
+
                 return;
 
             }
+
+
+            const joinedDate =
+                customer.created_at
+                    ? new Date(
+                        customer.created_at
+                      ).toLocaleString(
+                        "en-GB"
+                      )
+                    : "Not available";
 
 
             alert(
@@ -1013,148 +1211,102 @@
                 "👤 Customer Details\n\n" +
 
                 "Name: " +
-                customer.name +
-
-                "\nEmail: " +
-                customer.email +
-
-                "\nPhone: " +
-                customer.phone +
-
-                "\nJoined: " +
-                customer.joined +
-
-                "\nVerified: " +
                 (
-                    customer.verified
-                        ? "Yes"
-                        : "No"
+                    customer.full_name ||
+                    "Customer"
+                ) +
+
+                "\n\nPhone: " +
+                (
+                    customer.phone ||
+                    "Not added"
+                ) +
+
+                "\n\nAddress: " +
+                (
+                    customer.address ||
+                    "Not added"
+                ) +
+
+                "\n\nJoined: " +
+                joinedDate +
+
+                "\n\nUser ID: " +
+                customer.id
+
+            );
+
+        }
+
+
+
+        // =====================================================
+        // HTML ESCAPE
+        // =====================================================
+
+        function escapeHTML(
+            value
+        ) {
+
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
                 )
-
-            );
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
 
         }
 
 
+
         // =====================================================
-        // VERIFY / UNVERIFY
+        // JAVASCRIPT STRING ESCAPE
         // =====================================================
 
-        function toggleCustomerVerification(
-            customerId
+        function escapeJS(
+            value
         ) {
 
 
-            const customer =
-                adminCustomers.find(
-                    function(item) {
-
-                        return item.id ===
-                            customerId;
-
-                    }
+            return String(value)
+                .replace(
+                    /\\/g,
+                    "\\\\"
+                )
+                .replace(
+                    /'/g,
+                    "\\'"
                 );
-
-
-            if (!customer) {
-
-                return;
-
-            }
-
-
-            customer.verified =
-                !customer.verified;
-
-
-            alert(
-
-                customer.verified
-
-                    ? "✅ Customer marked as verified."
-
-                    : "⚠️ Customer marked as unverified."
-
-            );
-
-
-            renderCustomers();
 
         }
 
 
-        // =====================================================
-        // DELETE CUSTOMER
-        // =====================================================
-
-        function deleteCustomer(
-            customerId
-        ) {
-
-
-            const customer =
-                adminCustomers.find(
-                    function(item) {
-
-                        return item.id ===
-                            customerId;
-
-                    }
-                );
-
-
-            if (!customer) {
-
-                return;
-
-            }
-
-
-            const confirmed =
-                confirm(
-
-                    `Are you sure you want to delete "${customer.name}"?`
-
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            adminCustomers =
-                adminCustomers.filter(
-                    function(item) {
-
-                        return item.id !==
-                            customerId;
-
-                    }
-                );
-
-
-            alert(
-                "🗑️ Customer deleted successfully."
-            );
-
-
-            filterCustomers();
-
-        }
-
 
         // =====================================================
-        // LOAD CUSTOMERS
+        // INITIALIZE
         // =====================================================
 
         window.addEventListener(
             "DOMContentLoaded",
             function() {
 
-                renderCustomers();
+                loadCustomers();
 
             }
         );

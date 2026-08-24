@@ -147,26 +147,41 @@
 
             <!-- CUSTOMER INFORMATION -->
 
-            <div class="profile-info">
+<div class="profile-info">
 
-                <p>
-                    <strong>Name:</strong>
+    <p>
+        <strong>Name:</strong>
 
-                    <span id="profile-name">
-                        Loading...
-                    </span>
-                </p>
+        <span id="profile-name">
+            Loading...
+        </span>
+    </p>
 
+    <p>
+        <strong>Email:</strong>
 
-                <p>
-                    <strong>Email:</strong>
+        <span id="profile-email">
+            Loading...
+        </span>
+    </p>
 
-                    <span id="profile-email">
-                        Loading...
-                    </span>
-                </p>
+    <p>
+        <strong>Phone:</strong>
 
-            </div>
+        <span id="profile-phone">
+            Loading...
+        </span>
+    </p>
+
+    <p>
+        <strong>Address:</strong>
+
+        <span id="profile-address">
+            Loading...
+        </span>
+    </p>
+
+</div>
 
 <!-- EMAIL VERIFICATION -->
 
@@ -299,72 +314,195 @@ Wishlist
 
         async function loadCustomerAccount() {
 
-            const {
-                data,
-                error
-            } =
-                await supabaseClient.auth.getSession();
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.getSession();
 
 
-            if (error) {
+    if (error) {
 
-                console.error(error);
+        console.error(
+            "Session error:",
+            error
+        );
 
-                return;
-            }
-
-
-            const session = data.session;
-
-
-            if (!session) {
-
-                alert(
-                    "Please login to view your account."
-                );
-
-                window.location.href =
-                    "index.html";
-
-                return;
-            }
+        return;
+    }
 
 
-            const user = session.user;
+    const session = data.session;
 
 
-document.getElementById(
-    "profile-name"
-).textContent =
-    user.user_metadata?.full_name ||
-    "Customer";
+    if (!session) {
+
+        alert(
+            "Please login to view your account."
+        );
+
+        window.location.href =
+            "index.html";
+
+        return;
+    }
 
 
-document.getElementById(
-    "profile-email"
-).textContent =
-    user.email || "";
+    const user = session.user;
 
 
-// CHECK EMAIL VERIFICATION
+    // EMAIL
 
-const verificationSection =
     document.getElementById(
-        "email-verification-section"
-    );
+        "profile-email"
+    ).textContent =
+        user.email || "Not available";
 
 
-if (
-    verificationSection &&
-    !user.email_confirmed_at
-) {
+    // GET PROFILE FROM SUPABASE
 
-    verificationSection.style.display =
-        "block";
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .select(
+                "id, full_name, phone, address"
+            )
+            .eq(
+                "id",
+                user.id
+            )
+            .maybeSingle();
+
+
+    if (profileError) {
+
+        console.error(
+            "Profile fetch error:",
+            profileError
+        );
+
+        alert(
+            "Could not load profile.\n\n" +
+            profileError.message
+        );
+
+        return;
+    }
+
+
+    // PROFILE EXISTS
+
+    if (profile) {
+
+        document.getElementById(
+            "profile-name"
+        ).textContent =
+            profile.full_name ||
+            "Customer";
+
+
+        document.getElementById(
+            "profile-phone"
+        ).textContent =
+            profile.phone ||
+            "Not added";
+
+
+        document.getElementById(
+            "profile-address"
+        ).textContent =
+            profile.address ||
+            "Not added";
+
+    }
+
+
+    // PROFILE DOES NOT EXIST
+
+    else {
+
+        const {
+            data: newProfile,
+            error: insertError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .insert({
+
+                    id: user.id,
+
+                    full_name:
+                        user.user_metadata?.full_name ||
+                        "Customer",
+
+                    phone: "",
+
+                    address: ""
+
+                })
+                .select()
+                .single();
+
+
+        if (insertError) {
+
+            console.error(
+                "Profile creation error:",
+                insertError
+            );
+
+            alert(
+                "Could not create your profile.\n\n" +
+                insertError.message
+            );
+
+            return;
+        }
+
+
+        document.getElementById(
+            "profile-name"
+        ).textContent =
+            newProfile.full_name ||
+            "Customer";
+
+
+        document.getElementById(
+            "profile-phone"
+        ).textContent =
+            "Not added";
+
+
+        document.getElementById(
+            "profile-address"
+        ).textContent =
+            "Not added";
+
+    }
+
+
+    // EMAIL VERIFICATION
+
+    const verificationSection =
+        document.getElementById(
+            "email-verification-section"
+        );
+
+
+    if (
+        verificationSection &&
+        !user.email_confirmed_at
+    ) {
+
+        verificationSection.style.display =
+            "block";
+
+    }
 
 }
-
-        }
 
 
         async function logoutCustomer() {

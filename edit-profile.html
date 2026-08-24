@@ -54,7 +54,7 @@
             margin-top: 15px;
             margin-bottom: 8px;
             font-weight: bold;
-             font-size: 16px;
+            font-size: 16px;
         }
 
         .profile-box input {
@@ -80,18 +80,19 @@
         }
 
         .back-button {
-    width: 150px;
-    display: block;
-    text-align: center;
-    margin: 30px 0 0 0;
-    padding: 2px;
-    background: #38221e;
-    color: white;
-    text-decoration: none;
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 13px;
-}
+
+            width: 150px;
+            display: block;
+            text-align: center;
+            margin: 30px 0 0 0;
+            padding: 2px;
+            background: #38221e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
 
     </style>
 
@@ -117,6 +118,8 @@
 
         <div class="profile-box">
 
+            <!-- FULL NAME -->
+
             <label for="profile-name">
                 Full Name
             </label>
@@ -128,6 +131,8 @@
             >
 
 
+            <!-- PHONE -->
+
             <label for="profile-phone">
                 Phone Number
             </label>
@@ -138,6 +143,21 @@
                 placeholder="Enter your phone number"
             >
 
+
+            <!-- ADDRESS -->
+
+            <label for="profile-address">
+                Address
+            </label>
+
+            <input
+                type="text"
+                id="profile-address"
+                placeholder="Enter your address"
+            >
+
+
+            <!-- EMAIL -->
 
             <label for="profile-email">
                 Email
@@ -151,6 +171,8 @@
             >
 
 
+            <!-- SAVE -->
+
             <button
                 type="button"
                 class="save-button"
@@ -160,28 +182,72 @@
             </button>
 
 
+            <!-- BACK -->
+
             <a
-               href="my-account.html"
-               class="back-button"
+                href="my-account.html"
+                class="back-button"
             >
                 ← Back to My Account
             </a>
-            
+
         </div>
 
     </div>
 
 
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
     <script>
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // LOAD CUSTOMER PROFILE
+        // ==========================================
 
         async function loadCustomerProfilePage() {
 
-            const result =
+
+            const {
+                data,
+                error
+            } =
                 await supabaseClient.auth.getSession();
 
-            const session =
-                result.data.session;
 
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                return;
+            }
+
+
+            const session =
+                data.session;
+
+
+            // USER NOT LOGGED IN
 
             if (!session) {
 
@@ -200,27 +266,80 @@
                 session.user;
 
 
-            document.getElementById(
-                "profile-name"
-            ).value =
-                user.user_metadata?.full_name || "";
-
-
-            document.getElementById(
-                "profile-phone"
-            ).value =
-                user.user_metadata?.phone || "";
-
+            // EMAIL FROM AUTH
 
             document.getElementById(
                 "profile-email"
             ).value =
                 user.email || "";
 
+
+            // GET PROFILE FROM SUPABASE
+
+            const {
+                data: profile,
+                error: profileError
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id, full_name, phone, address"
+                    )
+                    .eq(
+                        "id",
+                        user.id
+                    )
+                    .maybeSingle();
+
+
+            if (profileError) {
+
+                console.error(
+                    "Profile fetch error:",
+                    profileError
+                );
+
+                alert(
+                    "Could not load your profile.\n\n" +
+                    profileError.message
+                );
+
+                return;
+            }
+
+
+            // PROFILE FOUND
+
+            if (profile) {
+
+                document.getElementById(
+                    "profile-name"
+                ).value =
+                    profile.full_name || "";
+
+
+                document.getElementById(
+                    "profile-phone"
+                ).value =
+                    profile.phone || "";
+
+
+                document.getElementById(
+                    "profile-address"
+                ).value =
+                    profile.address || "";
+
+            }
+
         }
 
 
+        // ==========================================
+        // SAVE CUSTOMER PROFILE
+        // ==========================================
+
         async function saveCustomerProfilePage() {
+
 
             const name =
                 document.getElementById(
@@ -234,6 +353,14 @@
                 ).value.trim();
 
 
+            const address =
+                document.getElementById(
+                    "profile-address"
+                ).value.trim();
+
+
+            // NAME REQUIRED
+
             if (!name) {
 
                 alert(
@@ -244,17 +371,52 @@
             }
 
 
+            // CHECK LOGIN
+
+            const {
+                data: sessionData,
+                error: sessionError
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (
+                sessionError ||
+                !sessionData.session
+            ) {
+
+                alert(
+                    "Please login first."
+                );
+
+                return;
+            }
+
+
+            const user =
+                sessionData.session.user;
+
+
+            // UPDATE PROFILES TABLE
+
             const {
                 error
             } =
-                await supabaseClient.auth.updateUser({
+                await supabaseClient
+                    .from("profiles")
+                    .update({
 
-                    data: {
                         full_name: name,
-                        phone: phone
-                    }
 
-                });
+                        phone: phone,
+
+                        address: address
+
+                    })
+                    .eq(
+                        "id",
+                        user.id
+                    );
 
 
             if (error) {
@@ -273,143 +435,52 @@
             }
 
 
+            // UPDATE AUTH NAME TOO
+
+            const {
+                error: authError
+            } =
+                await supabaseClient.auth.updateUser({
+
+                    data: {
+
+                        full_name: name
+
+                    }
+
+                });
+
+
+            if (authError) {
+
+                console.error(
+                    "Auth profile update error:",
+                    authError
+                );
+
+            }
+
+
             alert(
                 "✨ Profile updated successfully!"
             );
 
+
+            // GO BACK TO ACCOUNT
+
+            window.location.href =
+                "my-account.html";
+
         }
 
+
+        // ==========================================
+        // START
+        // ==========================================
 
         loadCustomerProfilePage();
 
     </script>
-     
-     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-    const SUPABASE_URL =
-        "https://aktxgvbzmuuatwpimcyz.supabase.co";
-
-    const SUPABASE_KEY =
-        "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
-
-    const supabaseClient =
-        supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-
-    async function loadCustomerProfilePage() {
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.getSession();
-
-        if (error) {
-
-            console.error(error);
-
-            return;
-        }
-
-        const session = data.session;
-
-        if (!session) {
-
-            alert(
-                "Please login to edit your profile."
-            );
-
-            window.location.href =
-                "index.html";
-
-            return;
-        }
-
-        const user = session.user;
-
-        document.getElementById(
-            "profile-name"
-        ).value =
-            user.user_metadata?.full_name || "";
-
-        document.getElementById(
-            "profile-phone"
-        ).value =
-            user.user_metadata?.phone || "";
-
-        document.getElementById(
-            "profile-email"
-        ).value =
-            user.email || "";
-    }
-
-
-    async function saveCustomerProfilePage() {
-
-        const name =
-            document.getElementById(
-                "profile-name"
-            ).value.trim();
-
-        const phone =
-            document.getElementById(
-                "profile-phone"
-            ).value.trim();
-
-
-        if (!name) {
-
-            alert(
-                "Please enter your name."
-            );
-
-            return;
-        }
-
-
-        const {
-            error
-        } =
-        await supabaseClient.auth.updateUser({
-
-            data: {
-                full_name: name,
-                phone: phone
-            }
-
-        });
-
-
-        if (error) {
-
-            console.error(
-                "Profile update error:",
-                error
-            );
-
-            alert(
-                "Could not update your profile.\n\n" +
-                error.message
-            );
-
-            return;
-        }
-
-
-        alert(
-            "✨ Profile updated successfully!"
-        );
-    }
-
-
-    loadCustomerProfilePage();
-
-</script>
-
-
 
 </body>
 

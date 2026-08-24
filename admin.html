@@ -226,6 +226,120 @@
         }
 
 
+             /* =========================
+   ADMIN HEADER SETTINGS
+========================= */
+
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.admin-settings {
+    position: relative;
+}
+
+
+.admin-settings-button {
+    padding: 7px 14px;
+    background: white;
+    color: #3e2723;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+
+.admin-settings-button:hover {
+    opacity: 0.9;
+}
+
+
+/* DROPDOWN */
+
+.admin-settings-menu {
+
+    display: none;
+
+    position: absolute;
+
+    right: 0;
+
+    top: calc(100% + 8px);
+
+    width: 190px;
+
+    background: white;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 20px
+        rgba(0, 0, 0, 0.15);
+
+    padding: 8px;
+
+    z-index: 9999;
+}
+
+
+/* SHOW DROPDOWN */
+
+.admin-settings-menu.show {
+    display: block;
+}
+
+
+/* DROPDOWN LINKS */
+
+.admin-settings-menu a,
+.admin-settings-menu button {
+
+    display: block;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    margin: 2px 0;
+
+    background: transparent;
+
+    color: #3e2723;
+
+    border: none;
+
+    border-radius: 7px;
+
+    text-decoration: none;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    font-size: 13px;
+}
+
+
+.admin-settings-menu a:hover,
+.admin-settings-menu button:hover {
+
+    background: #facbdb;
+
+}
+
+
+
+
+
+
+
+
         /* =========================
            MOBILE
         ========================= */
@@ -272,22 +386,75 @@
 <body>
 
 
-    <!-- =========================
-         ADMIN HEADER
-    ========================= -->
+  <!-- =========================
+     ADMIN HEADER
+========================= -->
 
-    <header class="admin-header">
+<header class="admin-header">
 
-        <div class="admin-logo">
-            Hey Rosella 💎
+    <div class="admin-logo">
+        Hey Rosella 💎
+    </div>
+
+    <div class="admin-header-right">
+
+        <!-- ADMIN BADGE -->
+
+        <span class="admin-badge">
+            Admin
+        </span>
+
+
+        <!-- ADMIN SETTINGS -->
+
+        <div class="admin-settings">
+
+            <button
+                type="button"
+                class="admin-settings-button"
+                onclick="toggleAdminSettings()"
+            >
+                Settings
+            </button>
+
+
+            <!-- SETTINGS DROPDOWN -->
+
+            <div
+                id="admin-settings-menu"
+                class="admin-settings-menu"
+            >
+
+                <a
+                    href="admin.html#"
+                    onclick="closeAdminSettings()"
+                >
+                    Account Settings
+                </a>
+
+
+                <a
+                    href="admin-change-password.html"
+                    onclick="closeAdminSettings()"
+                >
+                    Change Password
+                </a>
+
+
+                <button
+                    type="button"
+                    onclick="adminLogout()"
+                >
+                 Logout
+                </button>
+
+            </div>
+
         </div>
 
-        <div class="admin-badge">
-            ADMIN
-        </div>
+    </div>
 
-    </header>
-
+</header>
 
     <!-- =========================
          ADMIN PAGE
@@ -310,81 +477,91 @@
 
 
         <!-- =========================
-             STATISTICS
-        ========================= -->
+     STATISTICS
+========================= -->
 
-        <section class="stats">
+<section class="stats">
 
+    <div class="stat-card">
 
-            <div class="stat-card">
+        <div class="stat-icon">
+            📦
+        </div>
 
-                <div class="stat-icon">
-                    📦
-                </div>
+        <h3>
+            Total Orders
+        </h3>
 
-                <h3>
-                    Total Orders
-                </h3>
+        <div
+            class="stat-number"
+            id="total-orders-count"
+        >
+            0
+        </div>
 
-                <div class="stat-number">
-                    0
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    👥
-                </div>
-
-                <h3>
-                    Customers
-                </h3>
-
-                <div class="stat-number">
-                    0
-                </div>
-
-            </div>
+    </div>
 
 
-            <div class="stat-card">
+    <div class="stat-card">
 
-                <div class="stat-icon">
-                    🛍️
-                </div>
+        <div class="stat-icon">
+            👥
+        </div>
 
-                <h3>
-                    Products
-                </h3>
+        <h3>
+            Customers
+        </h3>
 
-                <div class="stat-number">
-                    3
-                </div>
+        <div
+            class="stat-number"
+            id="total-customers-count"
+        >
+            0
+        </div>
 
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon">
-                    💰
-                </div>
-
-                <h3>
-                    Total Sales
-                </h3>
-
-                <div class="stat-number">
-                    0 BDT
-                </div>
-
-            </div>
+    </div>
 
 
-        </section>
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            🛍️
+        </div>
+
+        <h3>
+            Products
+        </h3>
+
+        <div
+            class="stat-number"
+            id="total-products-count"
+        >
+            3
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-icon">
+            💰
+        </div>
+
+        <h3>
+            Total Sales
+        </h3>
+
+        <div
+            class="stat-number"
+            id="total-sales-amount"
+        >
+            0 BDT
+        </div>
+
+    </div>
+
+</section>
 
 
         <!-- =========================
@@ -490,62 +667,48 @@
 
 
         <!-- =========================
-             RECENT ORDERS
-        ========================= -->
+     RECENT ORDERS
+========================= -->
 
-        <section
-            class="admin-card recent-orders"
-        >
+<section
+    class="admin-card recent-orders"
+>
 
-            <h2>
-                🕐 Recent Orders
-            </h2>
+    <h2>
+        🕐 Recent Orders
+    </h2>
 
-            <div class="order-row">
+    <div id="recent-orders-list">
 
-                <strong>
-                    No orders yet
-                </strong>
+        <div class="order-row">
 
-                <br>
+            <strong>
+                Loading orders...
+            </strong>
 
-                <span>
-                    Customer orders will appear here.
-                </span>
+        </div>
 
-            </div>
+    </div>
 
-        </section>
-
+</section>
 
         <!-- =========================
              ADMIN SETTINGS
         ========================= -->
 
         <section
-            class="admin-card"
-            style="margin-top: 20px;"
-        >
+    class="admin-card"
+    style="margin-top: 20px;"
+>
 
-            <h2>
-                ⚙️ Admin Settings
-            </h2>
+    <a
+        href="index.html"
+        class="admin-button light-button"
+    >
+        🏠 View Website
+    </a>
 
-            <a
-                href="#"
-                class="admin-button brown-button"
-            >
-                Account Settings
-            </a>
-
-            <a
-                href="index.html"
-                class="admin-button light-button"
-            >
-                🏠 View Website
-            </a>
-
-        </section>
+</section>
 
 
         <!-- BACK HOME -->
@@ -559,6 +722,609 @@
 
 
     </main>
+   
+     
+       <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+    const SUPABASE_URL =
+        "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+          // =====================================================
+// LOAD ADMIN DASHBOARD STATISTICS
+// =====================================================
+
+async function loadDashboardStatistics() {
+
+    try {
+
+        // =========================
+        // TOTAL ORDERS
+        // =========================
+
+        const {
+            count: totalOrders,
+            error: ordersError
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select("*", {
+                count: "exact",
+                head: true
+            });
+
+
+        if (ordersError) {
+
+            console.error(
+                "Orders count error:",
+                ordersError
+            );
+
+        } else {
+
+            document.getElementById(
+                "total-orders-count"
+            ).textContent =
+                totalOrders || 0;
+
+        }
+
+
+        // =========================
+        // TOTAL CUSTOMERS
+        // =========================
+
+        const {
+            count: totalCustomers,
+            error: customersError
+        } = await supabaseClient
+            .from("profiles")
+            .select("*", {
+                count: "exact",
+                head: true
+            });
+
+
+        if (customersError) {
+
+            console.error(
+                "Customers count error:",
+                customersError
+            );
+
+        } else {
+
+            document.getElementById(
+                "total-customers-count"
+            ).textContent =
+                totalCustomers || 0;
+
+        }
+
+
+        // =========================
+        // TOTAL SALES
+        // =========================
+
+        const {
+            data: orders,
+            error: salesError
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select("total_amount");
+
+
+        if (salesError) {
+
+            console.error(
+                "Sales fetch error:",
+                salesError
+            );
+
+        } else {
+
+            let totalSales = 0;
+
+
+            orders.forEach(
+                function(order) {
+
+                    const amount =
+                        Number(
+                            order.total_amount
+                        ) || 0;
+
+                    totalSales += amount;
+
+                }
+            );
+
+
+            document.getElementById(
+                "total-sales-amount"
+            ).textContent =
+                totalSales.toLocaleString(
+                    "en-BD"
+                ) + " BDT";
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Dashboard statistics error:",
+            error
+        );
+
+    }
+
+}
+
+// START STATISTICS
+
+loadDashboardStatistics();
+
+</script>
+
+
+    <!-- =========================================
+     ADMIN AUTH CODE
+========================================= -->
+
+<script>
+
+    // =========================
+    // CHECK ADMIN LOGIN
+    // =========================
+
+    async function checkAdminAccess() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Admin session error:",
+                error
+            );
+
+            window.location.href =
+                "admin-login.html";
+
+            return;
+        }
+
+
+        const session =
+    data.session;
+
+
+// NOT LOGGED IN
+
+if (!session) {
+
+    alert(
+        "Please login as admin first."
+    );
+
+    window.location.href =
+        "admin-login.html";
+
+    return;
+}
+
+
+// =========================
+// CHECK ADMIN EMAIL
+// =========================
+
+const adminEmail =
+    "heyrosella26@gmail.com";
+
+const loggedInEmail =
+    session.user.email;
+
+
+// NOT ADMIN
+
+if (
+    loggedInEmail.toLowerCase() !==
+    adminEmail.toLowerCase()
+) {
+
+    alert(
+        "Access denied. Admin only."
+    );
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "admin-login.html";
+
+    return;
+}
+    }
+
+
+    // =========================
+    // ADMIN LOGOUT
+    // =========================
+
+    async function adminLogout() {
+
+        const {
+            error
+        } = await supabaseClient.auth.signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+            alert(
+                "Could not logout.\n\n" +
+                error.message
+            );
+
+            return;
+        }
+
+
+        alert(
+            "You have been logged out."
+        );
+
+
+        window.location.href =
+            "admin-login.html";
+
+    }
+
+
+    // =========================
+    // START ADMIN CHECK
+    // =========================
+
+    checkAdminAccess();
+
+
+
+
+    // =========================
+// ADMIN SETTINGS DROPDOWN
+// =========================
+
+function toggleAdminSettings() {
+
+    const menu =
+        document.getElementById(
+            "admin-settings-menu"
+        );
+
+    menu.classList.toggle("show");
+
+}
+
+
+// CLOSE SETTINGS
+
+function closeAdminSettings() {
+
+    const menu =
+        document.getElementById(
+            "admin-settings-menu"
+        );
+
+    menu.classList.remove("show");
+
+}
+
+// =====================================================
+// HTML ESCAPE
+// =====================================================
+
+function escapeHTML(value) {
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+// =====================================================
+// LOAD RECENT ORDERS
+// =====================================================
+
+async function loadRecentOrders() {
+
+    const container =
+        document.getElementById(
+            "recent-orders-list"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data: orders,
+            error
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select(
+                "id, created_at, customer_name, total_amount, order_status, order_number"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            )
+            .limit(5);
+
+
+        if (error) {
+
+            console.error(
+                "Recent orders error:",
+                error
+            );
+
+            container.innerHTML = `
+
+                <div class="order-row">
+
+                    <strong>
+                        ❌ Could not load orders
+                    </strong>
+
+                    <br>
+
+                    <span>
+                        ${error.message}
+                    </span>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        // NO ORDERS
+
+        if (
+            !orders ||
+            orders.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="order-row">
+
+                    <strong>
+                        No orders yet
+                    </strong>
+
+                    <br>
+
+                    <span>
+                        Customer orders will appear here.
+                    </span>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        // DISPLAY ORDERS
+
+        container.innerHTML = "";
+
+
+        orders.forEach(
+            function(order) {
+
+                const row =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                row.className =
+                    "order-row";
+
+
+                const orderNumber =
+                    order.order_number ||
+                    order.id;
+
+
+                const customerName =
+                    order.customer_name ||
+                    "Customer";
+
+
+                const amount =
+                    Number(
+                        order.total_amount
+                    ) || 0;
+
+
+                const status =
+                    order.order_status ||
+                    "Pending";
+
+
+                const date =
+                    order.created_at
+                        ? new Date(
+                            order.created_at
+                        ).toLocaleDateString(
+                            "en-GB",
+                            {
+                                day: "2-digit",
+                                month: "short",
+                                year: "numeric"
+                            }
+                        )
+                        : "Date unavailable";
+
+
+                row.innerHTML = `
+
+                    <div>
+
+                        <strong>
+                            Order #${escapeHTML(
+                                orderNumber
+                            )}
+                        </strong>
+
+                        <br>
+
+                        <span>
+                            👤 ${escapeHTML(
+                                customerName
+                            )}
+                        </span>
+
+                        <br>
+
+                        <span>
+                            📅 ${date}
+                        </span>
+
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            ${amount.toLocaleString(
+                                "en-BD"
+                            )} BDT
+                        </strong>
+
+                        <br>
+
+                        <span>
+                            ${escapeHTML(
+                                status
+                            )}
+                        </span>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+   catch (error) {
+
+    console.error(
+        "Unexpected recent orders error:",
+        error
+    );
+
+    const container =
+        document.getElementById(
+            "recent-orders-list"
+        );
+
+    if (container) {
+
+        container.innerHTML = `
+
+            <div class="order-row">
+
+                <strong>
+                    ❌ Error loading recent orders
+                </strong>
+
+                <br><br>
+
+                <span>
+                    ${error.message}
+                </span>
+
+            </div>
+
+        `;
+
+    }
+
+}
+
+}
+
+          
+
+// =====================================================
+// START RECENT ORDERS
+// =====================================================
+
+loadRecentOrders();
+
+</script>
+
 
 
 </body>

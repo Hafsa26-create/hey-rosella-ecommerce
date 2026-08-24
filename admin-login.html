@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Login - Hey Rosella</title>
+
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #facbdb;
+            color: #38221e;
+        }
+
+        .login-page {
+            max-width: 450px;
+            margin: 80px auto;
+            padding: 20px;
+        }
+
+        .login-box {
+            background: rgb(255, 231, 231);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            text-align: center;
+            color: #38221e;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 11px;
+            margin-top: 25px;
+            background: #d4af37;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .login-button:hover {
+            opacity: 0.9;
+        }
+
+        .message {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .back-button {
+            display: block;
+            width: 150px;
+            text-align: center;
+            margin: 30px 0 0 0;
+            padding: 5px;
+            background: #38221e;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <div class="login-page">
+
+        <div class="login-box">
+
+            <h1>
+                👑 Hey Rosella Admin
+            </h1>
+
+            <p class="subtitle">
+                Login to your admin dashboard
+            </p>
+
+
+            <label for="admin-email">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="admin-email"
+                placeholder="Enter admin email"
+            >
+
+
+            <label for="admin-password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="admin-password"
+                placeholder="Enter admin password"
+            >
+
+
+            <button
+                type="button"
+                class="login-button"
+                onclick="adminLogin()"
+            >
+                Login to Admin Panel
+            </button>
+
+
+            <p
+                id="login-message"
+                class="message"
+            ></p>
+
+
+            <a
+                href="index.html"
+                class="back-button"
+            >
+                ← Back to Website
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+       async function adminLogin() {
+
+    const email =
+        document.getElementById(
+            "admin-email"
+        ).value.trim();
+
+    const password =
+        document.getElementById(
+            "admin-password"
+        ).value;
+
+    const message =
+        document.getElementById(
+            "login-message"
+        );
+
+
+    if (!email || !password) {
+
+        message.textContent =
+            "Please enter email and password.";
+
+        return;
+    }
+
+
+    // =========================
+    // CHECK ADMIN EMAIL
+    // =========================
+
+    const adminEmail =
+        "heyrosella26@gmail.com";
+
+
+    if (
+        email.toLowerCase() !==
+        adminEmail.toLowerCase()
+    ) {
+
+        message.textContent =
+            "Access denied. Admin email only.";
+
+        return;
+    }
+
+
+    message.textContent =
+        "Logging in...";
+
+
+    // =========================
+    // SUPABASE LOGIN
+    // =========================
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+    // LOGIN ERROR
+
+    if (error) {
+
+        console.error(
+            "Admin login error:",
+            error
+        );
+
+        message.textContent =
+            "Invalid admin email or password.";
+
+        return;
+    }
+
+
+    // NO SESSION
+
+    if (!data.session) {
+
+        message.textContent =
+            "Login failed. Please try again.";
+
+        return;
+    }
+
+
+    // SUCCESS
+
+    message.textContent =
+        "Login successful!";
+
+
+    window.location.href =
+        "admin.html";
+
+}
+
+    </script>
+
+
+</body>
+
+</html>

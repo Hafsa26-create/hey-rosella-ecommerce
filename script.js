@@ -408,24 +408,41 @@ function createAuthPopup() {
                 </button>
 
                 <button
-                    type="button"
-                    class="resend-button"
+                   type="button"
+                   class="resend-button"
                     onclick="resendVerificationEmail()"
                 >
-                    Resend Verification Email
-                </button>
+            Resend Verification Email
+            </button>
 
-                <p>
-                    Don't have an account?
+            <p>
 
-                    <button
-                        type="button"
-                        class="auth-switch"
-                        onclick="showSignupForm()"
-                    >
-                        Sign Up
-                    </button>
-                </p>
+         <button
+            type="button"
+               class="auth-switch"
+                    onclick="window.location.href='forgot-password.html'"
+        >
+
+
+             Forgot Password?
+        </button>
+        </p>
+
+        <p>
+            Don't have an account?
+
+        <button
+
+        type="button"
+
+        class="auth-switch"
+
+        onclick="showSignupForm()"
+        >
+        
+        Sign Up
+    </button>
+</p>
 
             </div>
 
@@ -1362,21 +1379,30 @@ function setupCheckoutForm() {
 
             // SAVE ORDER TO SUPABASE
 
-            const orderResult =
-                await supabaseClient
-                    .from("Hey Rosella")
-                    .insert([
-                        {
-                            customer_name: name,
-                            customer_phone: phone,
-                            customer_address: address,
-                            payment_method: payment,
-                            products: cart,
-                            total_amount: total,
-                            order_status: "pending",
-                            order_number: orderNumber
-                        }
-                    ])
+           const orderResult =
+    await supabaseClient
+        .from("Hey Rosella")
+        .insert([
+            {
+                user_id: session.user.id,
+
+                customer_name: name,
+
+                customer_phone: phone,
+
+                customer_address: address,
+
+                payment_method: payment,
+
+                products: cart,
+
+                total_amount: total,
+
+                order_status: "pending",
+
+                order_number: orderNumber
+            }
+        ]);
                     
 
             // CHECK ERROR
