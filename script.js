@@ -51,11 +51,6 @@ function saveCart() {
     );
 }
 
-
-// =====================================================
-// ADD TO CART
-// =====================================================
-
 function addToCart(productName, productPrice, button) {
 
     const existingProduct = cart.find(function (product) {
@@ -63,11 +58,8 @@ function addToCart(productName, productPrice, button) {
     });
 
     if (existingProduct) {
-
         existingProduct.quantity += 1;
-
     } else {
-
         cart.push({
             name: productName,
             price: Number(productPrice),
@@ -80,19 +72,33 @@ function addToCart(productName, productPrice, button) {
     updateCartCount();
     showCartItems();
 
-    // Change button to Added
+    // Change button temporarily
     if (button) {
+
+        const originalText = button.textContent;
+
         button.textContent = "✓ Added";
         button.disabled = true;
         button.style.opacity = "0.7";
         button.style.cursor = "default";
+
+        setTimeout(function () {
+
+            button.textContent = originalText;
+            button.disabled = false;
+            button.style.opacity = "1";
+            button.style.cursor = "pointer";
+
+        }, 4000);
     }
+
+    // Show success message
+    showAddToCartMessage(productName);
 
     console.log("Cart:", cart);
 }
 
-
-// =====================================================
+       // =====================================================
 // ADD TO CART SUCCESS MESSAGE
 // =====================================================
 
@@ -123,7 +129,7 @@ function showAddToCartMessage(productName) {
 }
 
 
-// =====================================================
+       // =====================================================
 // UPDATE CART COUNT
 // =====================================================
 
@@ -152,6 +158,7 @@ function updateCartCount() {
         }
     }
 }
+
 
 // =====================================================
 // SHOW CART
@@ -1714,6 +1721,7 @@ document.addEventListener(
         showCartItems();
 
         setupCheckoutForm();
+        loadProductsFromSupabase();
 
         console.log(
             "Hey Rosella website loaded successfully."
@@ -1980,6 +1988,8 @@ function resetProductSort() {
     applyProductSorting();
 }
 
+
+
 // =====================================================
 // WISHLIST
 // =====================================================
@@ -2013,14 +2023,20 @@ function addToWishlist(productName, productPrice, productImage = "") {
     });
 
     saveWishlist();
+
     alert("Added to wishlist!");
-}
 
-function removeFromWishlist(productName) {
-    wishlist = wishlist.filter(p => p.name !== productName);
-    saveWishlist();
-}
+    // Update wishlist button
+    const wishlistButtons =
+        document.querySelectorAll(".wishlist-button");
 
+    wishlistButtons.forEach(button => {
+        if (button.dataset.productName === productName) {
+            button.textContent = "❤️ Added to Wishlist";
+            button.classList.add("added");
+        }
+    });
+}
 // =====================================================
 // RECENTLY VIEWED
 // =====================================================
@@ -2530,23 +2546,17 @@ async function openAccountPage() {
 }
 
 
-// =====================================================
-// WISHLIST
-// =====================================================
-
-function toggleWishlist(productName, productPrice) {
+function toggleWishlist(productName, productPrice, button) {
 
     let wishlist =
         JSON.parse(
             localStorage.getItem("heyRosellaWishlist")
         ) || [];
 
-
     const existingProduct =
         wishlist.find(
             item => item.name === productName
         );
-
 
     if (existingProduct) {
 
@@ -2562,36 +2572,37 @@ function toggleWishlist(productName, productPrice) {
             JSON.stringify(wishlist)
         );
 
-        alert(
-            "💔 Removed from Wishlist"
-        );
+        // Change button back to normal
+        if (button) {
+            button.textContent = "♡ Add to Wishlist";
+            button.classList.remove("added");
+        }
+
+        alert("💔 Removed from Wishlist");
 
     } else {
 
         // ADD TO WISHLIST
 
         wishlist.push({
-
             name: productName,
-
             price: productPrice
-
         });
-
 
         localStorage.setItem(
             "heyRosellaWishlist",
             JSON.stringify(wishlist)
         );
 
-        alert(
-            "❤️ Added to Wishlist"
-        );
+        // Change button to dark/added state
+        if (button) {
+            button.textContent = "❤️ Added to Wishlist";
+            button.classList.add("added");
+        }
 
+        alert("❤️ Added to Wishlist");
     }
-
 }
-
 
 // =====================================================
 // LOAD WISHLIST
@@ -2674,9 +2685,16 @@ cartButton.addEventListener(
     "click",
     function() {
 
+        // Add product to cart
         addToCart(
             product.name,
-            product.price
+            product.price,
+            product.image || ""
+        );
+
+        // Remove product from wishlist
+        removeFromWishlist(
+            product.name
         );
 
     }
@@ -2938,4 +2956,124 @@ function searchProducts() {
         noResult.style.display =
             "none";
     }
+}
+
+
+
+
+// =====================================================
+// LOAD PRODUCTS FROM SUPABASE
+// =====================================================
+
+async function loadProductsFromSupabase() {
+
+    const productContainer =
+        document.getElementById("products-container");
+
+    if (!productContainer) {
+        console.log("Products container not found.");
+        return;
+    }
+
+    console.log("Loading products from Supabase...");
+
+    const { data, error } =
+        await supabaseClient
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .order("created_at", {
+                ascending: false
+            });
+
+    if (error) {
+
+        console.error(
+            "Product loading error:",
+            error
+        );
+
+        productContainer.innerHTML = `
+            <p style="text-align:center;">
+                Unable to load products.
+            </p>
+        `;
+
+        return;
+    }
+
+    console.log(
+        "Products loaded:",
+        data
+    );
+
+    if (!data || data.length === 0) {
+
+        productContainer.innerHTML = `
+            <p style="text-align:center;">
+                No products available.
+            </p>
+        `;
+
+        return;
+    }
+
+    productContainer.innerHTML = "";
+
+    data.forEach(function(product) {
+
+        const card =
+            document.createElement("div");
+
+        card.className = "product-card";
+
+        const imageHTML =
+            product.image_url
+                ? `
+                    <img
+                        src="${product.image_url}"
+                        alt="${product.name}"
+                        loading="lazy"
+                    >
+                  `
+                : `
+                    <div class="product-image">
+                        Jewellery Image
+                    </div>
+                  `;
+
+        card.innerHTML = `
+
+            <div class="product-image">
+
+                ${imageHTML}
+
+            </div>
+
+            <h3>
+                ${product.name}
+            </h3>
+
+            <p>
+                ${Number(product.price).toLocaleString("en-BD")} BDT
+            </p>
+
+            <button
+    onclick="addToCart('${product.name.replace(/'/g, "\\'")}', ${Number(product.price)}, this)"
+>
+    Add to Cart
+</button>
+<button
+    onclick="toggleWishlist('${product.name.replace(/'/g, "\\'")}', ${Number(product.price)}, this)"
+    class="wishlist-button"
+>
+    ♡ Add to Wishlist
+</button>
+
+        `;
+
+        productContainer.appendChild(card);
+
+    });
+
 }

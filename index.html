@@ -186,15 +186,27 @@
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .product-image {
-            height: 250px;
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #999;
-        }
+       .product-image {
+    width: 100%;
+    height: 250px;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    color: #999;
+}
+
+.product-image img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+}
 
         .product-card h3 {
             color: #38221e;
@@ -221,7 +233,7 @@
             background-color: #38221e;
         }
 
-        .wishlist-button {
+       .wishlist-button {
     margin-top: 8px;
     width: 100%;
     background-color: white !important;
@@ -232,6 +244,13 @@
 .wishlist-button:hover {
     background-color: #d4af37 !important;
     color: white !important;
+}
+
+/* Added to Wishlist */
+.wishlist-button.added {
+    background-color: #38221e !important;
+    color: white !important;
+    border: 1px solid #38221e !important;
 }
 
         /* =========================
@@ -997,7 +1016,7 @@
 
     </section>
 
-    <!-- =========================
+   <!-- =========================
      FEATURED COLLECTION
 ========================= -->
 
@@ -1009,94 +1028,21 @@
         Discover beautiful pieces made just for you.
     </p>
 
-    <div class="products">
+    <!-- SUPABASE PRODUCTS WILL LOAD HERE -->
 
-        <!-- ELEGANT NECKLACE -->
+    <div class="products" id="products-container">
 
-        <div class="product-card">
-
-            <div class="product-image">
-                Jewellery Image
-            </div>
-
-            <h3>Elegant Necklace</h3>
-
-            <p>850 BDT</p>
-
-            <button
-                onclick="addToCart('Elegant Necklace', 850, this)"
-            >
-                Add to Cart
-            </button>
-
-            <button
-                onclick="toggleWishlist('Elegant Necklace', 850)"
-                class="wishlist-button"
-            >
-                ♡ Wishlist
-            </button>
-
-        </div>
-
-
-        <!-- CLASSIC EARRINGS -->
-
-        <div class="product-card">
-
-            <div class="product-image">
-                Jewellery Image
-            </div>
-
-            <h3>Classic Earrings</h3>
-
-            <p>650 BDT</p>
-
-            <button
-                onclick="addToCart('Classic Earrings', 650, this)"
-            >
-                Add to Cart
-            </button>
-
-            <button
-                onclick="toggleWishlist('Classic Earrings', 650)"
-                class="wishlist-button"
-            >
-                ♡ Wishlist
-            </button>
-
-        </div>
-
-
-        <!-- BEAUTIFUL BRACELET -->
-
-        <div class="product-card">
-
-            <div class="product-image">
-                Jewellery Image
-            </div>
-
-            <h3>Beautiful Bracelet</h3>
-
-            <p>750 BDT</p>
-
-            <button
-                onclick="addToCart('Beautiful Bracelet', 750, this)"
-            >
-                Add to Cart
-            </button>
-
-            <button
-                onclick="toggleWishlist('Beautiful Bracelet', 750)"
-                class="wishlist-button"
-            >
-                ♡ Wishlist
-            </button>
-
-        </div>
+        <p style="text-align:center;">
+            Loading products...
+        </p>
 
     </div>
 
 </section>
+
+
+
+
     <!-- =========================
          OFFER SECTION
     ========================= -->
