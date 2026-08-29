@@ -1,852 +1,584 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta charset="UTF-8">
 
-    <title>Manage Customers - Hey Rosella</title>
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
+<title>Manage Customers - Hey Rosella</title>
 
-    <style>
+<style>
 
-        * {
-            box-sizing: border-box;
-        }
+    * {
+        box-sizing: border-box;
+    }
 
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #fff0f5;
+        color: #3e2723;
+    }
 
-        body {
+    /* =========================
+       HEADER
+    ========================= */
 
-            margin: 0;
+    .admin-header {
+        background: #3e2723;
+        color: white;
+        padding: 18px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-            font-family: Arial, sans-serif;
+    .admin-logo {
+        font-size: 24px;
+        font-weight: bold;
+    }
 
-            background: #fff0f5;
+    .admin-badge {
+        background: #d4af37;
+        padding: 7px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+    }
 
-            color: #3e2723;
+    /* =========================
+       PAGE
+    ========================= */
 
-        }
+    .customers-page {
+        max-width: 1150px;
+        margin: 40px auto;
+        padding: 0 25px;
+    }
 
+    .page-header {
+        margin-bottom: 25px;
+    }
 
-        /* =========================
-           HEADER
-        ========================= */
+    .page-header h1 {
+        margin-bottom: 8px;
+    }
 
-        .admin-header {
+    .page-header p {
+        color: #6d5550;
+    }
 
-            background: #3e2723;
+    /* =========================
+       CONTROL BOX
+    ========================= */
 
-            color: white;
+    .control-box {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow:
+            0 4px 15px
+            rgba(0, 0, 0, 0.08);
+        margin-bottom: 25px;
+    }
 
-            padding: 18px 30px;
+    .search-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
 
-            display: flex;
+    .search-input {
+        flex: 1;
+        min-width: 220px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 15px;
+    }
 
-            justify-content: space-between;
+    .refresh-button {
+        padding: 12px 18px;
+        border: none;
+        border-radius: 6px;
+        background: #3e2723;
+        color: white;
+        cursor: pointer;
+        font-size: 15px;
+    }
 
-            align-items: center;
+    .refresh-button:hover {
+        opacity: 0.9;
+    }
 
-        }
+    /* =========================
+       CUSTOMER CONTAINER
+    ========================= */
 
+    .customers-container {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow:
+            0 4px 15px
+            rgba(0, 0, 0, 0.08);
+    }
 
-        .admin-logo {
+    .customers-container h2 {
+        margin-top: 0;
+    }
 
-            font-size: 24px;
+    /* =========================
+       CUSTOMER CARD
+    ========================= */
 
-            font-weight: bold;
+    .customer-card {
+        background: #fff8fa;
+        border: 1px solid #f0dfe5;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 15px;
+    }
 
-        }
+    .customer-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
 
+    .customer-name {
+        font-size: 18px;
+        font-weight: bold;
+    }
 
-        .admin-badge {
+    .customer-id {
+        font-size: 12px;
+        color: #777;
+        margin-top: 5px;
+        word-break: break-all;
+    }
 
-            background: #d4af37;
+    /* =========================
+       DETAILS
+    ========================= */
 
-            padding: 7px 12px;
+    .customer-details {
+        margin-top: 18px;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+    }
 
-            border-radius: 20px;
+    .customer-details p {
+        margin: 9px 0;
+        line-height: 1.5;
+    }
 
-            font-size: 13px;
+    /* =========================
+       STATUS
+    ========================= */
 
-        }
+    .status-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        background: #d9f5df;
+        color: #27653a;
+    }
 
+    /* =========================
+       ACTIONS
+    ========================= */
 
-        /* =========================
-           PAGE
-        ========================= */
+    .customer-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+        flex-wrap: wrap;
+    }
+
+    .button {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .gold-button {
+        background: #d4af37;
+        color: white;
+    }
+
+    /* =========================
+       LOADING
+    ========================= */
+
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #6d5550;
+    }
+
+    /* =========================
+       NO CUSTOMERS
+    ========================= */
+
+    .no-customers {
+        text-align: center;
+        padding: 40px;
+        color: #6d5550;
+    }
+
+    /* =========================
+       ERROR
+    ========================= */
+
+    .error-box {
+        background: #ffe1e1;
+        border: 1px solid #d88;
+        color: #8b2222;
+        padding: 15px;
+        border-radius: 8px;
+        line-height: 1.5;
+    }
+
+    /* =========================
+       BACK BUTTON
+    ========================= */
+
+    .back-button {
+        display: block;
+        width: 250px;
+        margin: 30px auto;
+        padding: 12px;
+        background: #3e2723;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 6px;
+    }
+
+    /* =========================
+       MOBILE
+    ========================= */
+
+    @media (max-width: 600px) {
 
         .customers-page {
-
-            max-width: 1150px;
-
-            margin: 40px auto;
-
-            padding: 0 25px;
-
+            padding: 0 15px;
         }
 
-
-        .page-header {
-
-            margin-bottom: 25px;
-
+        .admin-header {
+            padding: 15px;
         }
 
-
-        .page-header h1 {
-
-            margin-bottom: 8px;
-
+        .admin-logo {
+            font-size: 19px;
         }
-
-
-        .page-header p {
-
-            color: #6d5550;
-
-        }
-
-
-        /* =========================
-           CONTROL BOX
-        ========================= */
-
-        .control-box {
-
-            background: white;
-
-            padding: 20px;
-
-            border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.08);
-
-            margin-bottom: 25px;
-
-        }
-
 
         .search-row {
-
-            display: flex;
-
-            gap: 10px;
-
-            flex-wrap: wrap;
-
+            flex-direction: column;
         }
 
-
-        .search-input {
-
-            flex: 1;
-
-            min-width: 220px;
-
-            padding: 12px;
-
-            border: 1px solid #ddd;
-
-            border-radius: 6px;
-
-            font-size: 15px;
-
-        }
-
-
+        .search-input,
         .refresh-button {
-
-            padding: 12px 18px;
-
-            border: none;
-
-            border-radius: 6px;
-
-            background: #3e2723;
-
-            color: white;
-
-            cursor: pointer;
-
-            font-size: 15px;
-
+            width: 100%;
         }
 
+    }
 
-        .refresh-button:hover {
+</style>
 
-            opacity: 0.9;
-
-        }
-
-
-        /* =========================
-           CUSTOMER CONTAINER
-        ========================= */
-
-        .customers-container {
-
-            background: white;
-
-            padding: 25px;
-
-            border-radius: 12px;
-
-            box-shadow:
-                0 4px 15px
-                rgba(0, 0, 0, 0.08);
-
-        }
-
-
-        .customers-container h2 {
-
-            margin-top: 0;
-
-        }
-
-
-        /* =========================
-           CUSTOMER CARD
-        ========================= */
-
-        .customer-card {
-
-            background: #fff8fa;
-
-            border: 1px solid #f0dfe5;
-
-            border-radius: 10px;
-
-            padding: 20px;
-
-            margin-top: 15px;
-
-        }
-
-
-        .customer-header {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: flex-start;
-
-            gap: 15px;
-
-            flex-wrap: wrap;
-
-        }
-
-
-        .customer-name {
-
-            font-size: 18px;
-
-            font-weight: bold;
-
-        }
-
-
-        .customer-id {
-
-            font-size: 12px;
-
-            color: #777;
-
-            margin-top: 5px;
-
-            word-break: break-all;
-
-        }
-
-
-        /* =========================
-           DETAILS
-        ========================= */
-
-        .customer-details {
-
-            margin-top: 18px;
-
-            padding: 15px;
-
-            background: white;
-
-            border-radius: 8px;
-
-        }
-
-
-        .customer-details p {
-
-            margin: 9px 0;
-
-            line-height: 1.5;
-
-        }
-
-
-        /* =========================
-           STATUS
-        ========================= */
-
-        .status-badge {
-
-            display: inline-block;
-
-            padding: 6px 10px;
-
-            border-radius: 20px;
-
-            font-size: 12px;
-
-            font-weight: bold;
-
-            background: #d9f5df;
-
-            color: #27653a;
-
-        }
-
-
-        /* =========================
-           ACTIONS
-        ========================= */
-
-        .customer-actions {
-
-            display: flex;
-
-            gap: 10px;
-
-            margin-top: 18px;
-
-            flex-wrap: wrap;
-
-        }
-
-
-        .button {
-
-            padding: 10px 16px;
-
-            border: none;
-
-            border-radius: 6px;
-
-            cursor: pointer;
-
-        }
-
-
-        .gold-button {
-
-            background: #d4af37;
-
-            color: white;
-
-        }
-
-
-        .gray-button {
-
-            background: #eee;
-
-            color: #3e2723;
-
-        }
-
-
-        /* =========================
-           LOADING
-        ========================= */
-
-        .loading {
-
-            text-align: center;
-
-            padding: 40px;
-
-            color: #6d5550;
-
-        }
-
-
-        /* =========================
-           NO CUSTOMERS
-        ========================= */
-
-        .no-customers {
-
-            text-align: center;
-
-            padding: 40px;
-
-            color: #6d5550;
-
-        }
-
-
-        /* =========================
-           ERROR
-        ========================= */
-
-        .error-box {
-
-            background: #ffe1e1;
-
-            border: 1px solid #d88;
-
-            color: #8b2222;
-
-            padding: 15px;
-
-            border-radius: 8px;
-
-            line-height: 1.5;
-
-        }
-
-
-        /* =========================
-           BACK BUTTON
-        ========================= */
-
-        .back-button {
-
-            display: block;
-
-            width: 250px;
-
-            margin: 30px auto;
-
-            padding: 12px;
-
-            background: #3e2723;
-
-            color: white;
-
-            text-align: center;
-
-            text-decoration: none;
-
-            border-radius: 6px;
-
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
-
-        @media (max-width: 600px) {
-
-            .customers-page {
-
-                padding: 0 15px;
-
-            }
-
-
-            .admin-header {
-
-                padding: 15px;
-
-            }
-
-
-            .admin-logo {
-
-                font-size: 19px;
-
-            }
-
-
-            .search-row {
-
-                flex-direction: column;
-
-            }
-
-
-            .search-input,
-            .refresh-button {
-
-                width: 100%;
-
-            }
-
-        }
-
-    </style>
 
 </head>
-
 
 <body>
 
 
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="admin-header">
+
+    <div class="admin-logo">
+        Hey Rosella 💎
+    </div>
+
+    <div class="admin-badge">
+        ADMIN
+    </div>
+
+</header>
+
+
+<!-- =========================
+     CUSTOMERS PAGE
+========================= -->
+
+<main class="customers-page">
+
+    <div class="page-header">
+
+        <h1>
+            👥 Customer Management
+        </h1>
+
+        <p>
+            View your real Hey Rosella customers.
+        </p>
+
+    </div>
+
+
     <!-- =========================
-         HEADER
+         SEARCH
     ========================= -->
 
-    <header class="admin-header">
+    <section class="control-box">
 
-        <div class="admin-logo">
+        <div class="search-row">
 
-            Hey Rosella 💎
+            <input
+                type="text"
+                id="customer-search"
+                class="search-input"
+                placeholder="🔍 Search by name, phone or address..."
+                oninput="filterCustomers()"
+            >
+
+            <button
+                type="button"
+                class="refresh-button"
+                onclick="loadCustomers()"
+            >
+                🔄 Refresh Customers
+            </button>
 
         </div>
 
-
-        <div class="admin-badge">
-
-            ADMIN
-
-        </div>
-
-    </header>
-
+    </section>
 
 
     <!-- =========================
-         CUSTOMERS PAGE
+         CUSTOMER LIST
     ========================= -->
 
-    <main class="customers-page">
+    <section class="customers-container">
 
+        <h2>
+            📋 Customer List
+        </h2>
 
-        <div class="page-header">
+        <div id="customers-list">
 
-            <h1>
-
-                👥 Customer Management
-
-            </h1>
-
-
-            <p>
-
-                View your real Hey Rosella customers.
-
-            </p>
-
-        </div>
-
-
-
-        <!-- =========================
-             SEARCH
-        ========================= -->
-
-        <section class="control-box">
-
-
-            <div class="search-row">
-
-
-                <input
-                    type="text"
-                    id="customer-search"
-                    class="search-input"
-                    placeholder="🔍 Search by name, phone or address..."
-                    oninput="filterCustomers()"
-                >
-
-
-                <button
-                    type="button"
-                    class="refresh-button"
-                    onclick="loadCustomers()"
-                >
-
-                    🔄 Refresh Customers
-
-                </button>
-
-
+            <div class="loading">
+                ⏳ Loading customers...
             </div>
 
+        </div>
 
-        </section>
-
-
-
-        <!-- =========================
-             CUSTOMER LIST
-        ========================= -->
-
-        <section class="customers-container">
-
-
-            <h2>
-
-                📋 Customer List
-
-            </h2>
-
-
-            <div id="customers-list">
-
-                <div class="loading">
-
-                    ⏳ Loading customers...
-
-                </div>
-
-            </div>
-
-
-        </section>
-
-
-
-        <!-- =========================
-             BACK
-        ========================= -->
-
-        <a
-            href="admin.html"
-            class="back-button"
-        >
-
-            ← Back to Admin Dashboard
-
-        </a>
-
-
-    </main>
-
+    </section>
 
 
     <!-- =========================
-         SUPABASE
+         BACK
     ========================= -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <a
+        href="admin.html"
+        class="back-button"
+    >
+        ← Back to Admin Dashboard
+    </a>
+
+</main>
 
 
-    <script>
+<!-- =========================
+     SUPABASE
+========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-        // =====================================================
-        // SUPABASE CONFIGURATION
-        // =====================================================
+<script>
 
-        const SUPABASE_URL =
-            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+    // =====================================================
+    // SUPABASE CONFIGURATION
+    // =====================================================
+
+    const SUPABASE_URL =
+        "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
 
-        const SUPABASE_KEY =
-            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+    // =====================================================
+    // CUSTOMER DATA
+    // =====================================================
+
+    let adminCustomers = [];
 
 
-        const supabaseClient =
-            supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
+    // =====================================================
+    // CHECK ADMIN LOGIN
+    // =====================================================
+
+    async function checkAdminAccess() {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Session error:",
+                error
+            );
+
+            window.location.href =
+                "admin-login.html";
+
+            return false;
+        }
+
+
+        const session =
+            data.session;
+
+
+        if (!session) {
+
+            alert(
+                "Please login as admin first."
+            );
+
+            window.location.href =
+                "admin-login.html";
+
+            return false;
+        }
+
+
+        const user =
+            session.user;
+
+
+        const adminEmail =
+            "heyrosella26@gmail.com";
+
+
+        if (
+            !user.email ||
+            user.email.toLowerCase() !==
+            adminEmail.toLowerCase()
+        ) {
+
+            alert(
+                "Access denied. Admin only."
+            );
+
+            await supabaseClient.auth.signOut();
+
+            window.location.href =
+                "admin-login.html";
+
+            return false;
+        }
+
+
+        return true;
+
+    }
+
+
+    // =====================================================
+    // LOAD REAL CUSTOMERS
+    // =====================================================
+
+    async function loadCustomers() {
+
+        const container =
+            document.getElementById(
+                "customers-list"
             );
 
 
+        container.innerHTML = `
 
-        // =====================================================
-        // CUSTOMER DATA
-        // =====================================================
+            <div class="loading">
 
-        let adminCustomers = [];
+                ⏳ Loading customers...
 
+            </div>
 
+        `;
 
-       
-       // =====================================================
-// CHECK ADMIN LOGIN
-// =====================================================
 
-async function checkAdminAccess() {
+        try {
 
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getSession();
+            // -------------------------------------------------
+            // CHECK ADMIN
+            // -------------------------------------------------
 
+            const allowed =
+                await checkAdminAccess();
 
-    // SESSION ERROR
 
-    if (error) {
+            if (!allowed) {
 
-        console.error(
-            "Session error:",
-            error
-        );
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-
-    // NO LOGIN
-
-    const session =
-        data.session;
-
-    if (!session) {
-
-        alert(
-            "Please login as admin first."
-        );
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-
-    // =================================================
-    // ADMIN EMAIL CHECK
-    // =================================================
-
-    const user =
-        session.user;
-
-    const adminEmail =
-        "heyrosella26@gmail.com";
-
-
-    if (
-        !user.email ||
-        user.email.toLowerCase() !==
-        adminEmail.toLowerCase()
-    ) {
-
-        alert(
-            "Access denied. Admin only."
-        );
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-
-    // ADMIN VERIFIED
-
-    return true;
-}
-
-        // =====================================================
-        // LOAD REAL CUSTOMERS
-        // =====================================================
-
-        async function loadCustomers() {
-
-
-            const container =
-                document.getElementById(
-                    "customers-list"
-                );
-
-
-            container.innerHTML = `
-
-                <div class="loading">
-
-                    ⏳ Loading customers...
-
-                </div>
-
-            `;
-
-
-            try {
-
-
-                const allowed =
-                    await checkAdminAccess();
-
-
-                if (!allowed) {
-
-                    return;
-
-                }
-
-
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient
-                        .from("profiles")
-                        .select(
-                            "id, full_name, phone, address, created_at"
-                        )
-                        .order(
-                            "created_at",
-                            {
-                                ascending: false
-                            }
-                        );
-
-
-                if (error) {
-
-                    console.error(
-                        "Customer fetch error:",
-                        error
-                    );
-
-
-                    container.innerHTML = `
-
-                        <div class="error-box">
-
-                            ❌ Could not load customers.
-
-                            <br><br>
-
-                            ${error.message}
-
-                        </div>
-
-                    `;
-
-                    return;
-
-                }
-
-
-                adminCustomers =
-                    data || [];
-
-
-                renderCustomers(
-                    adminCustomers
-                );
-
+                return;
 
             }
 
-            catch (error) {
 
+            // -------------------------------------------------
+            // LOAD REGISTERED PROFILES
+            // -------------------------------------------------
+
+            const {
+                data: profileData,
+                error: profileError
+            } =
+                await supabaseClient
+                    .from("profiles")
+                    .select(
+                        "id, full_name, phone, address, created_at, role"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (profileError) {
 
                 console.error(
-                    "Unexpected error:",
-                    error
+                    "Profile fetch error:",
+                    profileError
                 );
 
 
@@ -854,465 +586,687 @@ async function checkAdminAccess() {
 
                     <div class="error-box">
 
-                        ❌ Something went wrong while loading customers.
+                        ❌ Could not load customer profiles.
 
                         <br><br>
 
-                        ${error.message}
+                        ${escapeHTML(
+                            profileError.message
+                        )}
 
                     </div>
 
                 `;
-
-            }
-
-        }
-
-
-
-        // =====================================================
-        // RENDER CUSTOMERS
-        // =====================================================
-
-        function renderCustomers(
-            customers
-        ) {
-
-
-            const container =
-                document.getElementById(
-                    "customers-list"
-                );
-
-
-            container.innerHTML = "";
-
-
-            if (
-                !customers ||
-                customers.length === 0
-            ) {
-
-
-                container.innerHTML = `
-
-                    <div class="no-customers">
-
-                        👥 No customers found.
-
-                    </div>
-
-                `;
-
 
                 return;
 
             }
 
 
+            // -------------------------------------------------
+            // LOAD CUSTOMERS FROM ORDERS
+            // -------------------------------------------------
 
-            customers.forEach(
-                function(customer) {
+            const {
+                data: orderData,
+                error: orderError
+            } =
+                await supabaseClient
+                    .from("Hey Rosella")
+                    .select(
+                        "id, created_at, customer_name, customer_phone, customer_address, user_id"
+                    )
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
 
 
-                    const card =
-                        document.createElement(
-                            "div"
+            if (orderError) {
+
+                console.error(
+                    "Order customer fetch error:",
+                    orderError
+                );
+
+
+                container.innerHTML = `
+
+                    <div class="error-box">
+
+                        ❌ Could not load order customers.
+
+                        <br><br>
+
+                        ${escapeHTML(
+                            orderError.message
+                        )}
+
+                    </div>
+
+                `;
+
+                return;
+
+            }
+
+
+            // -------------------------------------------------
+            // COMBINE PROFILES + ORDER CUSTOMERS
+            // -------------------------------------------------
+
+            const combinedCustomers = [];
+
+
+            // =================================================
+            // REGISTERED PROFILES
+            // =================================================
+
+            (profileData || []).forEach(
+                function(profile) {
+
+                    combinedCustomers.push({
+
+                        id:
+                            profile.id,
+
+                        full_name:
+                            profile.full_name ||
+                            "Customer",
+
+                        phone:
+                            profile.phone ||
+                            "Not added",
+
+                        address:
+                            profile.address ||
+                            "Not added",
+
+                        created_at:
+                            profile.created_at,
+
+                        role:
+                            profile.role ||
+                            "customer",
+
+                        source:
+                            "profile"
+
+                    });
+
+                }
+            );
+
+
+            // =================================================
+            // ORDER-ONLY CUSTOMERS
+            // =================================================
+
+            (orderData || []).forEach(
+                function(order) {
+
+
+                    // Check by User ID
+
+                    const existsByUserId =
+                        order.user_id &&
+                        combinedCustomers.some(
+                            function(customer) {
+
+                                return (
+                                    customer.id ===
+                                    order.user_id
+                                );
+
+                            }
                         );
 
 
-                    card.className =
-                        "customer-card";
+                    if (existsByUserId) {
+
+                        return;
+
+                    }
 
 
-                    const customerName =
-                        customer.full_name ||
-                        "Customer";
+                    // Check by phone
+
+                    const existsByPhone =
+                        order.customer_phone &&
+                        combinedCustomers.some(
+                            function(customer) {
+
+                                return (
+                                    customer.phone &&
+                                    customer.phone !==
+                                        "Not added" &&
+                                    customer.phone ===
+                                        order.customer_phone
+                                );
+
+                            }
+                        );
 
 
-                    const phone =
-                        customer.phone ||
-                        "Not added";
+                    if (existsByPhone) {
+
+                        return;
+
+                    }
 
 
-                    const address =
-                        customer.address ||
-                        "Not added";
+                    // Add order-only customer
+
+                    combinedCustomers.push({
+
+                        id:
+                            order.user_id ||
+                            "order-customer-" +
+                            order.id,
+
+                        full_name:
+                            order.customer_name ||
+                            "Customer",
+
+                        phone:
+                            order.customer_phone ||
+                            "Not added",
+
+                        address:
+                            order.customer_address ||
+                            "Not added",
+
+                        created_at:
+                            order.created_at,
+
+                        role:
+                            "order-customer",
+
+                        source:
+                            "order"
+
+                    });
+
+                }
+            );
 
 
-                    const joinedDate =
-                        customer.created_at
-                            ? new Date(
-                                customer.created_at
-                              ).toLocaleDateString(
-                                "en-GB",
-                                {
-                                    day: "2-digit",
-                                    month: "long",
-                                    year: "numeric"
-                                }
-                              )
-                            : "Not available";
+            // -------------------------------------------------
+            // SAVE DATA
+            // -------------------------------------------------
+
+            adminCustomers =
+                combinedCustomers;
 
 
-                    card.innerHTML = `
+            // -------------------------------------------------
+            // RENDER
+            // -------------------------------------------------
 
-                        <div class="customer-header">
+            renderCustomers(
+                adminCustomers
+            );
 
-                            <div>
+        }
 
-                                <div class="customer-name">
 
-                                    ${escapeHTML(
-                                        customerName
-                                    )}
+        catch (error) {
 
-                                </div>
+            console.error(
+                "Unexpected error:",
+                error
+            );
 
-                                <div class="customer-id">
 
-                                    User ID:
-                                    ${escapeHTML(
-                                        customer.id
-                                    )}
+            container.innerHTML = `
 
-                                </div>
+                <div class="error-box">
+
+                    ❌ Something went wrong while loading customers.
+
+                    <br><br>
+
+                    ${escapeHTML(
+                        error.message ||
+                        "Unknown error"
+                    )}
+
+                </div>
+
+            `;
+
+        }
+
+    }
+
+
+    // =====================================================
+    // RENDER CUSTOMERS
+    // =====================================================
+
+    function renderCustomers(
+        customers
+    ) {
+
+        const container =
+            document.getElementById(
+                "customers-list"
+            );
+
+
+        container.innerHTML = "";
+
+
+        if (
+            !customers ||
+            customers.length === 0
+        ) {
+
+            container.innerHTML = `
+
+                <div class="no-customers">
+
+                    👥 No customers found.
+
+                </div>
+
+            `;
+
+            return;
+
+        }
+
+
+        customers.forEach(
+            function(customer) {
+
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                card.className =
+                    "customer-card";
+
+
+                const customerName =
+                    customer.full_name ||
+                    "Customer";
+
+
+                const phone =
+                    customer.phone ||
+                    "Not added";
+
+
+                const address =
+                    customer.address ||
+                    "Not added";
+
+
+                const joinedDate =
+                    customer.created_at
+                        ? new Date(
+                            customer.created_at
+                          ).toLocaleDateString(
+                            "en-GB",
+                            {
+                                day: "2-digit",
+                                month: "long",
+                                year: "numeric"
+                            }
+                          )
+                        : "Not available";
+
+
+                const statusText =
+                    customer.source === "order"
+                        ? "🛍️ Order Customer"
+                        : "✅ Active Profile";
+
+
+                card.innerHTML = `
+
+                    <div class="customer-header">
+
+                        <div>
+
+                            <div class="customer-name">
+
+                                ${escapeHTML(
+                                    customerName
+                                )}
 
                             </div>
 
 
-                            <span class="status-badge">
+                            <div class="customer-id">
 
-                                ✅ Active Profile
-
-                            </span>
-
-                        </div>
-
-
-                        <div class="customer-details">
-
-
-                            <p>
-
-                                <strong>
-                                    📞 Phone:
-                                </strong>
-
+                                User ID:
                                 ${escapeHTML(
-                                    phone
+                                    customer.id
                                 )}
 
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    📍 Address:
-                                </strong>
-
-                                ${escapeHTML(
-                                    address
-                                )}
-
-                            </p>
-
-
-                            <p>
-
-                                <strong>
-                                    📅 Joined:
-                                </strong>
-
-                                ${joinedDate}
-
-                            </p>
-
+                            </div>
 
                         </div>
 
 
-                        <div class="customer-actions">
+                        <span class="status-badge">
+
+                            ${statusText}
+
+                        </span>
+
+                    </div>
 
 
-                            <button
-                                type="button"
-                                class="button gold-button"
-                                onclick="
-                                    viewCustomer(
-                                        '${escapeJS(
-                                            customer.id
-                                        )}'
-                                    )
-                                "
-                            >
+                    <div class="customer-details">
 
-                                👁️ View Details
+                        <p>
 
-                            </button>
+                            <strong>
+                                📞 Phone:
+                            </strong>
+
+                            ${escapeHTML(
+                                phone
+                            )}
+
+                        </p>
 
 
-                        </div>
+                        <p>
 
-                    `;
+                            <strong>
+                                📍 Address:
+                            </strong>
+
+                            ${escapeHTML(
+                                address
+                            )}
+
+                        </p>
 
 
-                    container.appendChild(
-                        card
+                        <p>
+
+                            <strong>
+                                📅 Joined:
+                            </strong>
+
+                            ${joinedDate}
+
+                        </p>
+
+                    </div>
+
+
+                    <div class="customer-actions">
+
+                        <button
+                            type="button"
+                            class="button gold-button"
+                            onclick="viewCustomer('${escapeJS(customer.id)}')"
+                        >
+
+                            👁️ View Details
+
+                        </button>
+
+                    </div>
+
+                `;
+
+
+                container.appendChild(
+                    card
+                );
+
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // SEARCH CUSTOMERS
+    // =====================================================
+
+    function filterCustomers() {
+
+        const input =
+            document.getElementById(
+                "customer-search"
+            );
+
+
+        const search =
+            input.value
+                .toLowerCase()
+                .trim();
+
+
+        if (!search) {
+
+            renderCustomers(
+                adminCustomers
+            );
+
+            return;
+
+        }
+
+
+        const filteredCustomers =
+            adminCustomers.filter(
+                function(customer) {
+
+
+                    const name =
+                        (
+                            customer.full_name ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const phone =
+                        (
+                            customer.phone ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const address =
+                        (
+                            customer.address ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    const id =
+                        (
+                            customer.id ||
+                            ""
+                        )
+                        .toLowerCase();
+
+
+                    return (
+                        name.includes(search) ||
+                        phone.includes(search) ||
+                        address.includes(search) ||
+                        id.includes(search)
                     );
 
                 }
             );
 
-        }
 
-
-
-        // =====================================================
-        // SEARCH CUSTOMERS
-        // =====================================================
-
-        function filterCustomers() {
-
-
-            const search =
-                document.getElementById(
-                    "customer-search"
-                )
-                .value
-                .toLowerCase()
-                .trim();
-
-
-            if (!search) {
-
-                renderCustomers(
-                    adminCustomers
-                );
-
-                return;
-
-            }
-
-
-            const filteredCustomers =
-                adminCustomers.filter(
-                    function(customer) {
-
-
-                        const name =
-                            (
-                                customer.full_name ||
-                                ""
-                            )
-                            .toLowerCase();
-
-
-                        const phone =
-                            (
-                                customer.phone ||
-                                ""
-                            )
-                            .toLowerCase();
-
-
-                        const address =
-                            (
-                                customer.address ||
-                                ""
-                            )
-                            .toLowerCase();
-
-
-                        const id =
-                            (
-                                customer.id ||
-                                ""
-                            )
-                            .toLowerCase();
-
-
-                        return (
-
-                            name.includes(search)
-
-                            ||
-
-                            phone.includes(search)
-
-                            ||
-
-                            address.includes(search)
-
-                            ||
-
-                            id.includes(search)
-
-                        );
-
-                    }
-                );
-
-
-            renderCustomers(
-                filteredCustomers
-            );
-
-        }
-
-
-
-        // =====================================================
-        // VIEW CUSTOMER
-        // =====================================================
-
-        function viewCustomer(
-            customerId
-        ) {
-
-
-            const customer =
-                adminCustomers.find(
-                    function(item) {
-
-                        return (
-                            item.id ===
-                            customerId
-                        );
-
-                    }
-                );
-
-
-            if (!customer) {
-
-                alert(
-                    "Customer not found."
-                );
-
-                return;
-
-            }
-
-
-            const joinedDate =
-                customer.created_at
-                    ? new Date(
-                        customer.created_at
-                      ).toLocaleString(
-                        "en-GB"
-                      )
-                    : "Not available";
-
-
-            alert(
-
-                "👤 Customer Details\n\n" +
-
-                "Name: " +
-                (
-                    customer.full_name ||
-                    "Customer"
-                ) +
-
-                "\n\nPhone: " +
-                (
-                    customer.phone ||
-                    "Not added"
-                ) +
-
-                "\n\nAddress: " +
-                (
-                    customer.address ||
-                    "Not added"
-                ) +
-
-                "\n\nJoined: " +
-                joinedDate +
-
-                "\n\nUser ID: " +
-                customer.id
-
-            );
-
-        }
-
-
-
-        // =====================================================
-        // HTML ESCAPE
-        // =====================================================
-
-        function escapeHTML(
-            value
-        ) {
-
-
-            return String(value)
-                .replace(
-                    /&/g,
-                    "&amp;"
-                )
-                .replace(
-                    /</g,
-                    "&lt;"
-                )
-                .replace(
-                    />/g,
-                    "&gt;"
-                )
-                .replace(
-                    /"/g,
-                    "&quot;"
-                )
-                .replace(
-                    /'/g,
-                    "&#039;"
-                );
-
-        }
-
-
-
-        // =====================================================
-        // JAVASCRIPT STRING ESCAPE
-        // =====================================================
-
-        function escapeJS(
-            value
-        ) {
-
-
-            return String(value)
-                .replace(
-                    /\\/g,
-                    "\\\\"
-                )
-                .replace(
-                    /'/g,
-                    "\\'"
-                );
-
-        }
-
-
-
-        // =====================================================
-        // INITIALIZE
-        // =====================================================
-
-        window.addEventListener(
-            "DOMContentLoaded",
-            function() {
-
-                loadCustomers();
-
-            }
+        renderCustomers(
+            filteredCustomers
         );
 
+    }
 
-    </script>
+
+    // =====================================================
+    // VIEW CUSTOMER
+    // =====================================================
+
+    function viewCustomer(
+        customerId
+    ) {
+
+        const customer =
+            adminCustomers.find(
+                function(item) {
+
+                    return (
+                        item.id ===
+                        customerId
+                    );
+
+                }
+            );
+
+
+        if (!customer) {
+
+            alert(
+                "Customer not found."
+            );
+
+            return;
+
+        }
+
+
+        const joinedDate =
+            customer.created_at
+                ? new Date(
+                    customer.created_at
+                  ).toLocaleString(
+                    "en-GB"
+                  )
+                : "Not available";
+
+
+        alert(
+
+            "👤 Customer Details\n\n" +
+
+            "Name: " +
+            (
+                customer.full_name ||
+                "Customer"
+            ) +
+
+            "\n\nPhone: " +
+            (
+                customer.phone ||
+                "Not added"
+            ) +
+
+            "\n\nAddress: " +
+            (
+                customer.address ||
+                "Not added"
+            ) +
+
+            "\n\nJoined: " +
+            joinedDate +
+
+            "\n\nUser ID: " +
+            customer.id
+
+        );
+
+    }
+
+
+    // =====================================================
+    // HTML ESCAPE
+    // =====================================================
+
+    function escapeHTML(
+        value
+    ) {
+
+        return String(value)
+
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+
+            .replace(
+                /</g,
+                "&lt;"
+            )
+
+            .replace(
+                />/g,
+                "&gt;"
+            )
+
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+
+    }
+
+
+    // =====================================================
+    // JAVASCRIPT STRING ESCAPE
+    // =====================================================
+
+    function escapeJS(
+        value
+    ) {
+
+        return String(value)
+
+            .replace(
+                /\\/g,
+                "\\\\"
+            )
+
+            .replace(
+                /'/g,
+                "\\'"
+            );
+
+    }
+
+
+    // =====================================================
+    // INITIALIZE
+    // =====================================================
+
+    window.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadCustomers();
+
+        }
+    );
+
+</script>
 
 
 </body>

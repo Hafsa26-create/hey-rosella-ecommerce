@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Delivered Sales - Hey Rosella</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #fff0f5;
+            color: #3e2723;
+        }
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .admin-header {
+            background: #3e2723;
+            color: white;
+            padding: 18px 30px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .admin-badge {
+            background: #d4af37;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .sales-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        .page-header {
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            margin: 0 0 8px;
+        }
+
+        .page-header p {
+            margin: 0;
+            color: #6d5550;
+        }
+
+        /* =========================
+           SUMMARY
+        ========================= */
+
+        .summary-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 25px;
+        }
+
+        .summary-title {
+            font-size: 15px;
+            color: #6d5550;
+        }
+
+        .summary-amount {
+            margin-top: 8px;
+            font-size: 30px;
+            font-weight: bold;
+            color: #d4af37;
+        }
+
+        /* =========================
+           SALES CONTAINER
+        ========================= */
+
+        .sales-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+        }
+
+        .sales-container h2 {
+            margin-top: 0;
+        }
+
+        /* =========================
+           ORDER CARD
+        ========================= */
+
+        .sales-order {
+            background: #fff8fa;
+            border: 1px solid #f0dfe5;
+            border-radius: 10px;
+
+            padding: 20px;
+            margin-top: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+
+            gap: 15px;
+            flex-wrap: wrap;
+
+            margin-bottom: 15px;
+        }
+
+        .order-number {
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .customer-name {
+            margin-top: 6px;
+            color: #6d5550;
+            line-height: 1.6;
+        }
+
+        .delivered-badge {
+            background: #d9f5df;
+            color: #27653a;
+
+            padding: 6px 10px;
+            border-radius: 20px;
+
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        /* =========================
+           PRODUCT ROW
+        ========================= */
+
+        .product-row {
+            background: white;
+            border-radius: 8px;
+
+            padding: 15px;
+            margin-top: 10px;
+
+            border: 1px solid #eee;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .product-info {
+            margin-top: 8px;
+            color: #6d5550;
+            line-height: 1.7;
+        }
+
+        .product-info strong {
+            color: #3e2723;
+        }
+
+        /* =========================
+           ORDER TOTAL
+        ========================= */
+
+        .order-total {
+            margin-top: 15px;
+            padding-top: 15px;
+
+            border-top: 1px solid #eadde1;
+
+            display: flex;
+            justify-content: space-between;
+
+            gap: 10px;
+
+            font-weight: bold;
+        }
+
+        .amount {
+            color: #d4af37;
+        }
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6d5550;
+        }
+
+        /* =========================
+           NO SALES
+        ========================= */
+
+        .no-sales {
+            text-align: center;
+            padding: 40px;
+            color: #6d5550;
+        }
+
+        /* =========================
+           ERROR
+        ========================= */
+
+        .error-box {
+            background: #ffe1e1;
+            border: 1px solid #d88;
+
+            color: #8b2222;
+
+            padding: 15px;
+            border-radius: 8px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-button {
+            display: block;
+
+            width: 250px;
+            margin: 30px auto;
+
+            padding: 12px;
+
+            background: #3e2723;
+            color: white;
+
+            text-align: center;
+            text-decoration: none;
+
+            border-radius: 7px;
+        }
+
+        .back-button:hover {
+            opacity: 0.9;
+        }
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .sales-page {
+                padding: 0 15px;
+                margin-top: 25px;
+            }
+
+            .admin-header {
+                padding: 15px;
+            }
+
+            .admin-logo {
+                font-size: 19px;
+            }
+
+            .order-total {
+                flex-direction: column;
+            }
+
+            .summary-amount {
+                font-size: 26px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- =========================
+         HEADER
+    ========================= -->
+
+    <header class="admin-header">
+
+        <div class="admin-logo">
+            Hey Rosella 💎
+        </div>
+
+        <div class="admin-badge">
+            ADMIN
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         MAIN PAGE
+    ========================= -->
+
+    <main class="sales-page">
+
+        <div class="page-header">
+
+            <h1>
+                💰 Delivered Sales
+            </h1>
+
+            <p>
+                View products and sales from delivered orders only.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             TOTAL SALES
+        ========================= -->
+
+        <section class="summary-card">
+
+            <div class="summary-title">
+                Total Delivered Sales
+            </div>
+
+            <div
+                class="summary-amount"
+                id="delivered-sales-total"
+            >
+                0 BDT
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             SALES LIST
+        ========================= -->
+
+        <section class="sales-container">
+
+            <h2>
+                🛍️ Delivered Orders
+            </h2>
+
+            <div id="sales-list">
+
+                <div class="loading">
+                    ⏳ Loading delivered sales...
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             BACK
+        ========================= -->
+
+        <a
+            href="admin.html"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </main>
+
+
+    <!-- =========================
+         SUPABASE
+    ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        /* =====================================================
+           SUPABASE CONFIGURATION
+        ===================================================== */
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        /* =====================================================
+           ADMIN EMAIL
+        ===================================================== */
+
+        const ADMIN_EMAIL =
+            "heyrosella26@gmail.com";
+
+
+        /* =====================================================
+           CHECK ADMIN ACCESS
+        ===================================================== */
+
+        async function checkAdminAccess() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+            }
+
+
+            const session =
+                data.session;
+
+
+            if (!session) {
+
+                alert(
+                    "Please login as admin first."
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+            }
+
+
+            const email =
+                session.user.email;
+
+
+            if (
+                !email ||
+                email.toLowerCase() !==
+                ADMIN_EMAIL.toLowerCase()
+            ) {
+
+                alert(
+                    "Access denied. Admin only."
+                );
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+            }
+
+
+            return true;
+        }
+
+
+        /* =====================================================
+           HTML ESCAPE
+        ===================================================== */
+
+        function escapeHTML(value) {
+
+            return String(value)
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+
+        /* =====================================================
+           GET PRODUCTS FROM ORDER
+        ===================================================== */
+
+        function getProducts(order) {
+
+            const products =
+                order.products;
+
+
+            if (!products) {
+
+                return [];
+            }
+
+
+            /* ARRAY */
+
+            if (
+                Array.isArray(products)
+            ) {
+
+                return products;
+            }
+
+
+            /* JSON STRING */
+
+            if (
+                typeof products === "string"
+            ) {
+
+                try {
+
+                    const parsed =
+                        JSON.parse(products);
+
+
+                    if (
+                        Array.isArray(parsed)
+                    ) {
+
+                        return parsed;
+                    }
+
+
+                    if (
+                        parsed &&
+                        typeof parsed === "object"
+                    ) {
+
+                        return [parsed];
+                    }
+
+                }
+                catch (error) {
+
+                    console.error(
+                        "Product JSON parse error:",
+                        error
+                    );
+
+                    return [];
+                }
+            }
+
+
+            /* OBJECT */
+
+            if (
+                typeof products === "object"
+            ) {
+
+                return [products];
+            }
+
+
+            return [];
+        }
+
+
+        /* =====================================================
+           GET PRODUCT NAME
+        ===================================================== */
+
+        function getProductName(product) {
+
+            return (
+                product.name ||
+                product.product_name ||
+                product.title ||
+                product.productName ||
+                "Product"
+            );
+        }
+
+
+        /* =====================================================
+           GET PRODUCT QUANTITY
+        ===================================================== */
+
+        function getProductQuantity(product) {
+
+            const quantity =
+                product.quantity ??
+                product.qty ??
+                product.count ??
+                1;
+
+
+            const number =
+                Number(quantity);
+
+
+            return number > 0
+                ? number
+                : 1;
+        }
+
+
+        /* =====================================================
+           GET PRODUCT PRICE
+        ===================================================== */
+
+        function getProductPrice(product) {
+
+            const price =
+                product.price ??
+                product.unit_price ??
+                product.product_price ??
+                0;
+
+
+            const number =
+                Number(price);
+
+
+            return Number.isFinite(number)
+                ? number
+                : 0;
+        }
+
+
+        /* =====================================================
+           LOAD DELIVERED SALES
+        ===================================================== */
+
+        async function loadDeliveredSales() {
+
+            const container =
+                document.getElementById(
+                    "sales-list"
+                );
+
+
+            const totalElement =
+                document.getElementById(
+                    "delivered-sales-total"
+                );
+
+
+            container.innerHTML = `
+
+                <div class="loading">
+
+                    ⏳ Loading delivered sales...
+
+                </div>
+
+            `;
+
+
+            try {
+
+                /* =========================
+                   ADMIN CHECK
+                ========================= */
+
+                const allowed =
+                    await checkAdminAccess();
+
+
+                if (!allowed) {
+
+                    return;
+                }
+
+
+                /* =========================
+                   LOAD ORDERS
+                ========================= */
+
+                const {
+                    data: orders,
+                    error
+                } =
+                    await supabaseClient
+                        .from("Hey Rosella")
+                        .select(
+                            "id, created_at, customer_name, total_amount, order_status, order_number, products"
+                        )
+                        .order(
+                            "created_at",
+                            {
+                                ascending: false
+                            }
+                        );
+
+
+                if (error) {
+
+                    console.error(
+                        "Delivered sales error:",
+                        error
+                    );
+
+
+                    container.innerHTML = `
+
+                        <div class="error-box">
+
+                            ❌ Could not load delivered sales.
+
+                            <br><br>
+
+                            ${escapeHTML(
+                                error.message
+                            )}
+
+                        </div>
+
+                    `;
+
+                    return;
+                }
+
+
+                /* =========================
+                   FILTER DELIVERED ORDERS
+                ========================= */
+
+                const deliveredOrders =
+                    (orders || []).filter(
+                        function(order) {
+
+                            const status =
+                                String(
+                                    order.order_status || ""
+                                )
+                                .trim()
+                                .toLowerCase();
+
+
+                            return (
+                                status ===
+                                "delivered"
+                            );
+                        }
+                    );
+
+
+                /* =========================
+                   NO DELIVERED ORDERS
+                ========================= */
+
+                if (
+                    deliveredOrders.length === 0
+                ) {
+
+                    totalElement.textContent =
+                        "0 BDT";
+
+
+                    container.innerHTML = `
+
+                        <div class="no-sales">
+
+                            📦 No delivered orders yet.
+
+                            <br><br>
+
+                            Sales will appear here
+                            after an order is marked
+                            <strong>Delivered</strong>.
+
+                        </div>
+
+                    `;
+
+                    return;
+                }
+
+
+                /* =========================
+                   CALCULATE TOTAL SALES
+                ========================= */
+
+                let totalSales = 0;
+
+
+                deliveredOrders.forEach(
+                    function(order) {
+
+                        totalSales +=
+                            Number(
+                                order.total_amount
+                            ) || 0;
+                    }
+                );
+
+
+                totalElement.textContent =
+                    totalSales.toLocaleString(
+                        "en-BD"
+                    ) + " BDT";
+
+
+                /* =========================
+                   CLEAR LIST
+                ========================= */
+
+                container.innerHTML = "";
+
+
+                /* =========================
+                   DISPLAY ORDERS
+                ========================= */
+
+                deliveredOrders.forEach(
+                    function(order) {
+
+                        const orderCard =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        orderCard.className =
+                            "sales-order";
+
+
+                        const orderNumber =
+                            order.order_number ||
+                            order.id;
+
+
+                        const customerName =
+                            order.customer_name ||
+                            "Customer";
+
+
+                        const orderTotal =
+                            Number(
+                                order.total_amount
+                            ) || 0;
+
+
+                        const date =
+                            order.created_at
+                                ? new Date(
+                                    order.created_at
+                                ).toLocaleDateString(
+                                    "en-GB",
+                                    {
+                                        day: "2-digit",
+                                        month: "short",
+                                        year: "numeric"
+                                    }
+                                )
+                                : "Date unavailable";
+
+
+                        const products =
+                            getProducts(order);
+
+
+                        let productsHTML =
+                            "";
+
+
+                        /* =========================
+                           PRODUCT INFORMATION
+                        ========================= */
+
+                        if (
+                            products.length === 0
+                        ) {
+
+                            productsHTML = `
+
+                                <div class="product-row">
+
+                                    <div class="product-name">
+
+                                        🛍️ Product information unavailable
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                        }
+                        else {
+
+                            products.forEach(
+                                function(product) {
+
+                                    const name =
+                                        getProductName(
+                                            product
+                                        );
+
+
+                                    const quantity =
+                                        getProductQuantity(
+                                            product
+                                        );
+
+
+                                    const price =
+                                        getProductPrice(
+                                            product
+                                        );
+
+
+                                    const amount =
+                                        price *
+                                        quantity;
+
+
+                                    productsHTML += `
+
+                                        <div class="product-row">
+
+                                            <div class="product-name">
+
+                                                🛍️
+                                                ${escapeHTML(
+                                                    name
+                                                )}
+
+                                            </div>
+
+
+                                            <div class="product-info">
+
+                                                Quantity:
+                                                <strong>
+                                                    ${quantity}
+                                                </strong>
+
+                                                <br>
+
+                                                Unit Price:
+                                                <strong>
+                                                    ${price.toLocaleString(
+                                                        "en-BD"
+                                                    )}
+                                                    BDT
+                                                </strong>
+
+                                                <br>
+
+                                                Product Amount:
+                                                <strong>
+                                                    ${amount.toLocaleString(
+                                                        "en-BD"
+                                                    )}
+                                                    BDT
+                                                </strong>
+
+                                            </div>
+
+                                        </div>
+
+                                    `;
+                                }
+                            );
+                        }
+
+
+                        /* =========================
+                           ORDER CARD HTML
+                        ========================= */
+
+                        orderCard.innerHTML = `
+
+                            <div class="order-header">
+
+                                <div>
+
+                                    <div class="order-number">
+
+                                        Order #
+                                        ${escapeHTML(
+                                            orderNumber
+                                        )}
+
+                                    </div>
+
+
+                                    <div class="customer-name">
+
+                                        👤
+                                        ${escapeHTML(
+                                            customerName
+                                        )}
+
+                                        <br>
+
+                                        📅
+                                        ${date}
+
+                                    </div>
+
+                                </div>
+
+
+                                <span class="delivered-badge">
+
+                                    ✅ Delivered
+
+                                </span>
+
+                            </div>
+
+
+                            <div>
+
+                                ${productsHTML}
+
+                            </div>
+
+
+                            <div class="order-total">
+
+                                <span>
+                                    Order Total
+                                </span>
+
+                                <span class="amount">
+
+                                    ${orderTotal.toLocaleString(
+                                        "en-BD"
+                                    )}
+                                    BDT
+
+                                </span>
+
+                            </div>
+
+                        `;
+
+
+                        container.appendChild(
+                            orderCard
+                        );
+
+                    }
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Unexpected delivered sales error:",
+                    error
+                );
+
+
+                container.innerHTML = `
+
+                    <div class="error-box">
+
+                        ❌ Something went wrong.
+
+                        <br><br>
+
+                        ${escapeHTML(
+                            error.message
+                        )}
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        /* =====================================================
+           START PAGE
+        ===================================================== */
+
+        window.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadDeliveredSales();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

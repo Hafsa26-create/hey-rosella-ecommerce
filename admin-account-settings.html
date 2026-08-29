@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Account Settings - Hey Rosella</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+
+        body {
+            margin: 0;
+
+            font-family:
+                Arial,
+                sans-serif;
+
+            background: #fff0f5;
+
+            color: #3e2723;
+        }
+
+
+        /* =========================
+           HEADER
+        ========================= */
+
+        .admin-header {
+
+            background: #3e2723;
+
+            color: white;
+
+            padding: 18px 30px;
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+        }
+
+
+        .admin-logo {
+
+            font-size: 24px;
+
+            font-weight: bold;
+        }
+
+
+        .admin-header-right {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+        }
+
+
+        .admin-badge {
+
+            background: #d4af37;
+
+            padding:
+                7px 12px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: bold;
+        }
+
+
+        /* =========================
+           PAGE
+        ========================= */
+
+        .settings-page {
+
+            max-width: 900px;
+
+            margin: 40px auto;
+
+            padding:
+                0 25px;
+        }
+
+
+        .page-title {
+
+            margin-bottom: 25px;
+        }
+
+
+        .page-title h1 {
+
+            margin:
+                0 0 8px;
+        }
+
+
+        .page-title p {
+
+            margin: 0;
+
+            color: #6d5550;
+
+            line-height: 1.5;
+        }
+
+
+        /* =========================
+           SETTINGS CARD
+        ========================= */
+
+        .settings-card {
+
+            background: white;
+
+            padding: 25px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 4px 15px
+                rgba(0, 0, 0, 0.08);
+
+            margin-bottom: 20px;
+        }
+
+
+        .settings-card h2 {
+
+            margin-top: 0;
+
+            margin-bottom: 20px;
+        }
+
+
+        /* =========================
+           INFORMATION ROW
+        ========================= */
+
+        .info-row {
+
+            display: flex;
+
+            justify-content:
+                space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            padding:
+                15px 0;
+
+            border-bottom:
+                1px solid #f0dfe5;
+        }
+
+
+        .info-row:last-child {
+
+            border-bottom: none;
+        }
+
+
+        .info-label {
+
+            font-weight: bold;
+        }
+
+
+        .info-value {
+
+            color: #6d5550;
+
+            text-align: right;
+
+            word-break: break-word;
+        }
+
+
+        /* =========================
+           STORE INFO
+        ========================= */
+
+        .store-box {
+
+            background: #fff8fa;
+
+            border:
+                1px solid #f0dfe5;
+
+            border-radius: 10px;
+
+            padding: 20px;
+        }
+
+
+        .store-name {
+
+            font-size: 22px;
+
+            font-weight: bold;
+
+            color: #3e2723;
+
+            margin-bottom: 8px;
+        }
+
+
+        .store-description {
+
+            color: #6d5550;
+
+            line-height: 1.6;
+
+            margin: 0;
+        }
+
+
+        /* =========================
+           BUTTONS
+        ========================= */
+
+        .button-group {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap: 15px;
+
+            margin-top: 20px;
+        }
+
+
+        .settings-button {
+
+            display: block;
+
+            width: 100%;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 8px;
+
+            text-align: center;
+
+            text-decoration: none;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            transition:
+                0.2s ease;
+        }
+
+
+        .gold-button {
+
+            background: #d4af37;
+
+            color: white;
+        }
+
+
+        .gold-button:hover {
+
+            opacity: 0.9;
+        }
+
+
+        .brown-button {
+
+            background: #3e2723;
+
+            color: white;
+        }
+
+
+        .brown-button:hover {
+
+            opacity: 0.9;
+        }
+
+
+        .logout-button {
+
+            background: #f5dddd;
+
+            color: #8b2222;
+
+            margin-top: 15px;
+        }
+
+
+        .logout-button:hover {
+
+            background: #f0caca;
+        }
+
+
+        /* =========================
+           BACK BUTTON
+        ========================= */
+
+        .back-button {
+
+            display: block;
+
+            width: 250px;
+
+            margin:
+                30px auto;
+
+            padding: 12px;
+
+            background: #3e2723;
+
+            color: white;
+
+            text-decoration: none;
+
+            text-align: center;
+
+            border-radius: 7px;
+        }
+
+
+        .back-button:hover {
+
+            opacity: 0.9;
+        }
+
+
+        /* =========================
+           LOADING
+        ========================= */
+
+        .loading {
+
+            text-align: center;
+
+            padding: 30px;
+
+            color: #6d5550;
+        }
+
+
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 600px) {
+
+            .admin-header {
+
+                padding: 15px;
+            }
+
+
+            .admin-logo {
+
+                font-size: 19px;
+            }
+
+
+            .settings-page {
+
+                padding:
+                    0 15px;
+            }
+
+
+            .info-row {
+
+                flex-direction:
+                    column;
+
+                align-items:
+                    flex-start;
+
+                gap: 5px;
+            }
+
+
+            .info-value {
+
+                text-align: left;
+            }
+
+
+            .button-group {
+
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         ADMIN HEADER
+    ========================= -->
+
+    <header class="admin-header">
+
+        <div class="admin-logo">
+
+            Hey Rosella 💎
+
+        </div>
+
+
+        <div class="admin-header-right">
+
+            <span class="admin-badge">
+
+                ADMIN
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         PAGE
+    ========================= -->
+
+    <main class="settings-page">
+
+
+        <div class="page-title">
+
+            <h1>
+                ⚙️ Account Settings
+            </h1>
+
+            <p>
+                Manage your Hey Rosella administrator account.
+            </p>
+
+        </div>
+
+
+
+        <!-- =========================
+             ADMIN ACCOUNT
+        ========================= -->
+
+        <section class="settings-card">
+
+            <h2>
+                👤 Admin Account
+            </h2>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Account Type
+                </div>
+
+                <div class="info-value">
+                    Administrator
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Admin Email
+                </div>
+
+                <div
+                    class="info-value"
+                    id="admin-email"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+
+            <div class="info-row">
+
+                <div class="info-label">
+                    Account Status
+                </div>
+
+                <div
+                    class="info-value"
+                    id="account-status"
+                >
+                    Checking...
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             STORE INFORMATION
+        ========================= -->
+
+        <section class="settings-card">
+
+            <h2>
+                🏪 Store Information
+            </h2>
+
+
+            <div class="store-box">
+
+                <div class="store-name">
+                    Hey Rosella 💎
+                </div>
+
+
+                <p class="store-description">
+
+                    Jewellery e-commerce store
+                    management system.
+
+                    <br><br>
+
+                    Use the admin dashboard to
+                    manage products, customers,
+                    orders and delivered sales.
+
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             ACCOUNT ACTIONS
+        ========================= -->
+
+        <section class="settings-card">
+
+            <h2>
+                🔐 Account Actions
+            </h2>
+
+
+            <div class="button-group">
+
+                <a
+                    href="admin-change-password.html"
+                    class="settings-button gold-button"
+                >
+                    🔑 Change Password
+                </a>
+
+
+                <a
+                    href="admin.html"
+                    class="settings-button brown-button"
+                >
+                    📊 Back to Dashboard
+                </a>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="settings-button logout-button"
+                onclick="adminLogout()"
+            >
+                🚪 Logout
+            </button>
+
+
+        </section>
+
+
+
+        <!-- =========================
+             BACK
+        ========================= -->
+
+        <a
+            href="admin.html"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         SUPABASE
+    ========================= -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        // =====================================================
+        // SUPABASE CONFIGURATION
+        // =====================================================
+
+        const SUPABASE_URL =
+            "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+
+        // =====================================================
+        // ADMIN EMAIL
+        // =====================================================
+
+        const ADMIN_EMAIL =
+            "heyrosella26@gmail.com";
+
+
+
+        // =====================================================
+        // CHECK ADMIN ACCESS
+        // =====================================================
+
+        async function checkAdminAccess() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient.auth.getSession();
+
+
+            if (error) {
+
+                console.error(
+                    "Session error:",
+                    error
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+
+            }
+
+
+            const session =
+                data.session;
+
+
+            // NOT LOGGED IN
+
+            if (!session) {
+
+                alert(
+                    "Please login as admin first."
+                );
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+
+            }
+
+
+            const email =
+                session.user.email;
+
+
+            // NOT ADMIN
+
+            if (
+                !email ||
+                email.toLowerCase() !==
+                ADMIN_EMAIL.toLowerCase()
+            ) {
+
+                alert(
+                    "Access denied. Admin only."
+                );
+
+                await supabaseClient.auth.signOut();
+
+                window.location.href =
+                    "admin-login.html";
+
+                return false;
+
+            }
+
+
+            // SHOW EMAIL
+
+            document.getElementById(
+                "admin-email"
+            ).textContent =
+                email;
+
+
+            // SHOW STATUS
+
+            document.getElementById(
+                "account-status"
+            ).textContent =
+                "✅ Active";
+
+
+            return true;
+
+        }
+
+
+
+        // =====================================================
+        // LOGOUT
+        // =====================================================
+
+        async function adminLogout() {
+
+            const confirmed =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (!confirmed) {
+
+                return;
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient.auth.signOut();
+
+
+            if (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+                alert(
+                    "Could not logout.\n\n" +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            window.location.href =
+                "admin-login.html";
+
+        }
+
+
+
+        // =====================================================
+        // START
+        // =====================================================
+
+        window.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                checkAdminAccess();
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>

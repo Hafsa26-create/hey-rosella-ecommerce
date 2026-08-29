@@ -76,43 +76,109 @@
             color: #6d5550;
         }
 
+/* =========================
+   STAT CARDS
+========================= */
 
-        /* =========================
-           STAT CARDS
-        ========================= */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
 
-        .stats {
-            display: grid;
-            grid-template-columns:
-                repeat(4, 1fr);
 
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+/* =========================
+   STAT CARD
+========================= */
 
-        .stat-card {
-            background: white;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow:
-                0 4px 15px
-                rgba(0,0,0,0.08);
-        }
+.stat-card {
+    background: white;
+    padding: 22px;
+    border-radius: 12px;
 
-        .stat-icon {
-            font-size: 28px;
-        }
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.08);
 
-        .stat-card h3 {
-            margin: 12px 0 5px;
-        }
+    cursor: pointer;
 
-        .stat-number {
-            font-size: 26px;
-            font-weight: bold;
-            color: #d4af37;
-        }
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
 
+    border: 2px solid transparent;
+
+    text-decoration: none;
+    color: inherit;
+
+    display: block;
+}
+
+
+/* =========================
+   HOVER EFFECT
+========================= */
+
+.stat-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 8px 25px
+        rgba(0, 0, 0, 0.12);
+
+    border-color: #d4af37;
+}
+
+
+/* =========================
+   ICON
+========================= */
+
+.stat-icon {
+    font-size: 28px;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
+.stat-card h3 {
+    margin: 12px 0 5px;
+}
+
+
+/* =========================
+   NUMBER
+========================= */
+
+.stat-number {
+    font-size: 26px;
+    font-weight: bold;
+    color: #d4af37;
+}
+
+
+/* =========================
+   VIEW TEXT
+========================= */
+
+.stat-view {
+    margin-top: 12px;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    color: #d4af37;
+}
+
+
+.stat-card:hover .stat-view {
+    text-decoration: underline;
+}
 
         /* =========================
            ADMIN SECTIONS
@@ -426,11 +492,11 @@
             >
 
                 <a
-                    href="admin.html#"
-                    onclick="closeAdminSettings()"
-                >
-                    Account Settings
-                </a>
+    href="admin-account-settings.html"
+    onclick="closeAdminSettings()"
+>
+    Account Settings
+</a>
 
 
                 <a
@@ -477,12 +543,17 @@
 
 
         <!-- =========================
-     STATISTICS
+     CLICKABLE STATISTICS
 ========================= -->
 
 <section class="stats">
 
-    <div class="stat-card">
+    <!-- TOTAL ORDERS -->
+
+    <a
+        href="admin-orders.html"
+        class="stat-card stat-card-link"
+    >
 
         <div class="stat-icon">
             📦
@@ -499,10 +570,19 @@
             0
         </div>
 
-    </div>
+        <div class="stat-view">
+            View all orders →
+        </div>
+
+    </a>
 
 
-    <div class="stat-card">
+    <!-- CUSTOMERS -->
+
+    <a
+        href="admin-customers.html"
+        class="stat-card stat-card-link"
+    >
 
         <div class="stat-icon">
             👥
@@ -519,10 +599,19 @@
             0
         </div>
 
-    </div>
+        <div class="stat-view">
+            View all customers →
+        </div>
+
+    </a>
 
 
-    <div class="stat-card">
+    <!-- PRODUCTS -->
+
+    <a
+        href="admin-products.html"
+        class="stat-card stat-card-link"
+    >
 
         <div class="stat-icon">
             🛍️
@@ -536,30 +625,41 @@
             class="stat-number"
             id="total-products-count"
         >
-            3
+            0
         </div>
 
+        <div class="stat-view">
+            Manage products →
+        </div>
+
+    </a>
+
+
+    <!-- TOTAL SALES -->
+
+   <a
+    href="admin-sales.html"
+    class="stat-card stat-card-link"
+>
+    <div class="stat-icon">
+        💰
     </div>
 
+    <h3>
+        Total Sales
+    </h3>
 
-    <div class="stat-card">
-
-        <div class="stat-icon">
-            💰
-        </div>
-
-        <h3>
-            Total Sales
-        </h3>
-
-        <div
-            class="stat-number"
-            id="total-sales-amount"
-        >
-            0 BDT
-        </div>
-
+    <div
+        class="stat-number"
+        id="total-sales-amount"
+    >
+        0 BDT
     </div>
+
+    <div class="stat-view">
+        View delivered sales →
+    </div>
+</a>
 
 </section>
 
@@ -812,53 +912,84 @@ async function loadDashboardStatistics() {
 
         }
 
-
-        // =========================
-        // TOTAL SALES
+            
+                 // =========================
+        // TOTAL PRODUCTS
         // =========================
 
         const {
-            data: orders,
-            error: salesError
+            data: productData,
+            error: productsError
         } = await supabaseClient
-            .from("Hey Rosella")
-            .select("total_amount");
+            .from("products")
+            .select("id");
 
 
-        if (salesError) {
+        if (productsError) {
 
             console.error(
-                "Sales fetch error:",
-                salesError
+                "Products fetch error:",
+                productsError
             );
 
         } else {
 
-            let totalSales = 0;
-
-
-            orders.forEach(
-                function(order) {
-
-                    const amount =
-                        Number(
-                            order.total_amount
-                        ) || 0;
-
-                    totalSales += amount;
-
-                }
-            );
-
-
             document.getElementById(
-                "total-sales-amount"
+                "total-products-count"
             ).textContent =
-                totalSales.toLocaleString(
-                    "en-BD"
-                ) + " BDT";
+                productData
+                    ? productData.length
+                    : 0;
 
         }
+
+
+
+      // =========================
+// TOTAL DELIVERED SALES ONLY
+// =========================
+
+const {
+    data: deliveredOrders,
+    error: salesError
+} = await supabaseClient
+    .from("Hey Rosella")
+    .select("total_amount, order_status")
+    .eq("order_status", "delivered");
+
+
+if (salesError) {
+
+    console.error(
+        "Delivered sales fetch error:",
+        salesError
+    );
+
+    document.getElementById(
+        "total-sales-amount"
+    ).textContent = "0 BDT";
+
+} else {
+
+    let totalSales = 0;
+
+    (deliveredOrders || []).forEach(
+        function(order) {
+
+            totalSales +=
+                Number(order.total_amount) || 0;
+
+        }
+    );
+
+    document.getElementById(
+        "total-sales-amount"
+    ).textContent =
+        totalSales.toLocaleString("en-BD") +
+        " BDT";
+}
+
+        
 
 
     } catch (error) {

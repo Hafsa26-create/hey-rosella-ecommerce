@@ -970,7 +970,7 @@ async function resendVerificationEmail() {
 }
 
 
-// =====================================================
+/// =====================================================
 // CUSTOMER SIGN UP
 // =====================================================
 
@@ -988,6 +988,7 @@ async function signupCustomer() {
     const confirmPasswordElement =
         document.getElementById("signup-confirm-password");
 
+
     if (
         !nameElement ||
         !emailElement ||
@@ -995,10 +996,13 @@ async function signupCustomer() {
         !confirmPasswordElement
     ) {
 
-        console.error("Signup form elements not found.");
+        console.error(
+            "Signup form elements not found."
+        );
 
         return;
     }
+
 
     const name =
         nameElement.value.trim();
@@ -1011,6 +1015,7 @@ async function signupCustomer() {
 
     const confirmPassword =
         confirmPasswordElement.value;
+
 
     if (
         !name ||
@@ -1026,6 +1031,7 @@ async function signupCustomer() {
         return;
     }
 
+
     if (password !== confirmPassword) {
 
         alert(
@@ -1034,6 +1040,7 @@ async function signupCustomer() {
 
         return;
     }
+
 
     if (password.length < 6) {
 
@@ -1044,39 +1051,118 @@ async function signupCustomer() {
         return;
     }
 
-    const result =
+
+    // ================================================
+    // CREATE AUTH USER
+    // ================================================
+
+    const {
+        data,
+        error
+    } =
         await supabaseClient.auth.signUp({
+
             email: email,
+
             password: password,
 
             options: {
+
                 data: {
                     full_name: name
                 }
+
             }
+
         });
 
-    if (result.error) {
+
+    if (error) {
 
         console.error(
             "Signup error:",
-            result.error
+            error
         );
 
         alert(
             "Sign Up failed:\n\n" +
-            result.error.message
+            error.message
         );
 
         return;
     }
 
+
     console.log(
-        "Signup successful:",
-        result.data
+        "Auth signup successful:",
+        data
     );
 
+
+    // ================================================
+    // SAVE CUSTOMER TO PROFILES TABLE
+    // ================================================
+
+    if (!data.user) {
+
+        console.error(
+            "User was not returned after signup."
+        );
+
+        alert(
+            "Account created, but user information could not be saved."
+        );
+
+        return;
+    }
+
+
+    const userId =
+        data.user.id;
+
+
+    const {
+        error: profileError
+    } =
+        await supabaseClient
+            .from("profiles")
+            .insert({
+
+                id: userId,
+
+                full_name: name
+
+            });
+
+
+    if (profileError) {
+
+        console.error(
+            "Profile insert error:",
+            profileError
+        );
+
+        alert(
+            "Account created, but customer profile could not be saved.\n\n" +
+            profileError.message
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "Customer profile saved successfully."
+    );
+
+
+    alert(
+        "Account created successfully! Please verify your email."
+    );
+
+
     showVerificationSection(email);
+
 }
 
 
@@ -2939,3 +3025,554 @@ function searchProducts() {
             "none";
     }
 }
+
+
+
+
+// =====================================================
+// DYNAMIC SHOP PRODUCTS
+// =====================================================
+
+async function loadProducts() {
+
+    const container =
+        document.getElementById("shop-products");
+
+    if (!container) {
+        console.log("Shop products container not found.");
+        return;
+    }
+
+    try {
+
+        const {
+            data: products,
+            error
+        } = await supabaseClient
+            .from("products")
+            .select("*")
+            .eq("is_active", true)
+            .order("created_at", {
+                ascending: false
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Product loading error:",
+                error
+            );
+
+            container.innerHTML =
+                "<p>Unable to load products.</p>";
+
+            return;
+        }
+
+
+        if (!products || products.length === 0) {
+
+            container.innerHTML =
+                "<p>No products available.</p>";
+
+            return;
+        }
+
+
+        container.innerHTML = "";
+
+
+        products.forEach(function(product) {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "shop-card";
+
+
+            const productId =
+                String(product.id);
+
+            const productName =
+                String(
+                    product.name || "Product"
+                );
+
+            const productPrice =
+                Number(product.price) || 0;
+
+            const productImage =
+                product.image_url || "";
+
+
+            card.innerHTML = `
+
+                <div class="shop-image">
+
+                    ${
+                        productImage
+
+                        ?
+
+                        `
+                        <img
+                            src="${productImage}"
+                            alt="${escapeHTML(productName)}"
+                            style="
+                                width:100%;
+                                height:100%;
+                                object-fit:cover;
+                                border-radius:10px;
+                            "
+                            onerror="
+                                this.style.display='none';
+                                this.parentElement.innerHTML='<span>No Image</span>';
+                            "
+                        >
+                        `
+
+                        :
+
+                        `
+                        <span>No Image</span>
+                        `
+                    }
+
+                </div>
+
+
+                <h3>
+                    ${escapeHTML(productName)}
+                </h3>
+
+
+                <p>
+                    ৳${productPrice.toLocaleString("en-BD")}
+                </p>
+
+
+                <div
+                    style="
+                        display:flex;
+                        justify-content:center;
+                        align-items:center;
+                        gap:8px;
+                        margin-top:10px;
+                    "
+                >
+
+                    <!-- WISHLIST -->
+
+                    <button
+                        type="button"
+                        class="dynamic-wishlist-btn"
+                        data-product-id="${productId}"
+                        onclick="
+                            handleWishlistClick(
+                                ${JSON.stringify(productId)},
+                                ${JSON.stringify(productName)},
+                                ${productPrice},
+                                this
+                            )
+                        "
+                        style="
+                            width:45px;
+                            height:42px;
+                            padding:0;
+                            background:white;
+                            color:#3e2723;
+                            border:1px solid #d4af37;
+                            border-radius:6px;
+                            cursor:pointer;
+                            font-size:22px;
+                        "
+                        title="Add to Wishlist"
+                    >
+                        ♡
+                    </button>
+
+
+                    <!-- ADD TO CART -->
+
+                    <button
+                        type="button"
+                        class="dynamic-cart-btn"
+                        data-product-id="${productId}"
+                        onclick="
+                            handleShopAddToCart(
+                                ${JSON.stringify(productName)},
+                                ${productPrice},
+                                this
+                            )
+                        "
+                        style="
+                            flex:1;
+                            background:#d4af37;
+                            color:white;
+                            padding:10px 15px;
+                            border:none;
+                            border-radius:6px;
+                            cursor:pointer;
+                            font-size:14px;
+                        "
+                    >
+                        Add to Cart
+                    </button>
+
+                </div>
+
+            `;
+
+
+            container.appendChild(card);
+
+        });
+
+
+        updateWishlistButtons();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected product loading error:",
+            error
+        );
+
+        container.innerHTML =
+            "<p>Unable to load products.</p>";
+
+    }
+
+}
+
+
+// =====================================================
+// SHOP ADD TO CART
+// =====================================================
+
+function handleShopAddToCart(
+    productName,
+    productPrice,
+    button
+) {
+
+    if (
+        typeof addToCart === "function"
+    ) {
+
+        addToCart(
+            productName,
+            productPrice,
+            button
+        );
+
+    } else {
+
+        console.error(
+            "addToCart function not found."
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// WISHLIST STORAGE
+// =====================================================
+
+function getWishlist() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "heyRosellaWishlist"
+            );
+
+        if (!saved) {
+            return [];
+        }
+
+        const wishlist =
+            JSON.parse(saved);
+
+        return Array.isArray(wishlist)
+            ? wishlist
+            : [];
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Wishlist loading error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+// =====================================================
+// SAVE WISHLIST
+// =====================================================
+
+function saveWishlist(wishlist) {
+
+    localStorage.setItem(
+        "heyRosellaWishlist",
+        JSON.stringify(wishlist)
+    );
+
+}
+
+
+// =====================================================
+// WISHLIST CLICK
+// =====================================================
+
+function handleWishlistClick(
+    productId,
+    productName,
+    productPrice,
+    button
+) {
+
+    let wishlist =
+        getWishlist();
+
+
+    const existingIndex =
+        wishlist.findIndex(
+            function(product) {
+
+                return String(product.id) ===
+                    String(productId);
+
+            }
+        );
+
+
+    // REMOVE FROM WISHLIST
+
+    if (existingIndex !== -1) {
+
+        wishlist.splice(
+            existingIndex,
+            1
+        );
+
+        saveWishlist(wishlist);
+
+
+        if (button) {
+
+            button.textContent = "♡";
+
+            button.style.background =
+                "white";
+
+            button.style.color =
+                "#3e2723";
+
+        }
+
+
+        showWishlistMessage(
+            productName +
+            " removed from wishlist."
+        );
+
+
+        return;
+
+    }
+
+
+    // ADD TO WISHLIST
+
+    wishlist.push({
+
+        id: String(productId),
+
+        name: productName,
+
+        price: Number(productPrice) || 0
+
+    });
+
+
+    saveWishlist(wishlist);
+
+
+    if (button) {
+
+        button.textContent = "♥";
+
+        button.style.background =
+            "#d4af37";
+
+        button.style.color =
+            "white";
+
+    }
+
+
+    showWishlistMessage(
+        productName +
+        " added to wishlist!"
+    );
+
+}
+
+
+// =====================================================
+// UPDATE WISHLIST BUTTONS
+// =====================================================
+
+function updateWishlistButtons() {
+
+    const wishlist =
+        getWishlist();
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".dynamic-wishlist-btn"
+        );
+
+
+    buttons.forEach(
+        function(button) {
+
+            const productId =
+                String(
+                    button.dataset.productId
+                );
+
+
+            const exists =
+                wishlist.some(
+                    function(product) {
+
+                        return String(product.id) ===
+                            productId;
+
+                    }
+                );
+
+
+            if (exists) {
+
+                button.textContent = "♥";
+
+                button.style.background =
+                    "#d4af37";
+
+                button.style.color =
+                    "white";
+
+            }
+
+            else {
+
+                button.textContent = "♡";
+
+                button.style.background =
+                    "white";
+
+                button.style.color =
+                    "#3e2723";
+
+            }
+
+        }
+    );
+
+}
+
+
+// =====================================================
+// WISHLIST MESSAGE
+// =====================================================
+
+function showWishlistMessage(messageText) {
+
+    const message =
+        document.createElement("div");
+
+
+    message.textContent =
+        "✓ " + messageText;
+
+
+    message.style.position =
+        "fixed";
+
+    message.style.top =
+        "90px";
+
+    message.style.right =
+        "25px";
+
+    message.style.background =
+        "#3e2723";
+
+    message.style.color =
+        "white";
+
+    message.style.padding =
+        "14px 22px";
+
+    message.style.borderRadius =
+        "8px";
+
+    message.style.fontSize =
+        "14px";
+
+    message.style.zIndex =
+        "99999";
+
+    message.style.boxShadow =
+        "0 4px 12px rgba(0,0,0,0.2)";
+
+
+    document.body.appendChild(
+        message
+    );
+
+
+    setTimeout(
+        function() {
+
+            message.remove();
+
+        },
+        2000
+    );
+
+}
+
+
+// =====================================================
+// START SHOP PRODUCTS
+// =====================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadProducts();
+
+        updateCartCount();
+
+    }
+);
