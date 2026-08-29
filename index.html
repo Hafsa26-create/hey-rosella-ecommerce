@@ -940,50 +940,302 @@
                 justify-content: center;
             }
         }
+
+         
+
+   /* =========================
+CATEGORY MENU
+========================= */
+
+nav .category-menu {
+position: relative;
+display: inline-block;
+}
+
+nav .category-btn {
+background: transparent;
+border: none;
+
+
+color: #38221e;
+
+font-family: inherit;
+ font-size: 15px;
+font-weight: inherit;
+
+line-height: inherit;
+
+cursor: pointer;
+
+padding: 0;
+margin: 0;
+
+white-space: nowrap;
+
+
+}
+
+nav .category-btn:hover {
+color: #d4af37;
+}
+
+/* =========================
+CATEGORY DROPDOWN
+========================= */
+
+nav .category-dropdown {
+display: none;
+
+
+position: absolute;
+
+top: calc(100% + 8px);
+left: 50%;
+
+transform: translateX(-50%);
+
+width: 200px;
+
+background: #ffffff;
+
+border: 1px solid #eee;
+
+border-radius: 10px;
+
+padding: 8px 0;
+
+box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+
+z-index: 10000;
+
+
+}
+
+/* SHOW DROPDOWN */
+
+nav .category-menu:hover .category-dropdown {
+display: block;
+}
+
+/* =========================
+DROPDOWN ITEMS
+========================= */
+
+nav .category-dropdown a {
+display: block !important;
+
+width: 100% !important;
+
+box-sizing: border-box;
+
+padding: 9px 16px !important;
+
+margin: 0 !important;
+
+color: #38221e !important;
+
+background: #ffffff !important;
+
+text-decoration: none !important;
+
+font-family: inherit !important;
+
+font-size: 14px !important;
+
+font-weight: normal !important;
+
+line-height: 1.4 !important;
+
+white-space: nowrap;
+
+
+}
+
+nav .category-dropdown a:hover {
+background: #fff2c7 !important;
+
+
+color: #3e2723 !important;
+
+
+}
+
+
+</style>
+           
+
+
+
     </style>
 </head>
 
 <body>
 
-    <!-- ========================= 
-     NAVBAR 
+   <!-- =========================
+     NAVBAR
 ========================= -->
 
 <nav>
-    <div class="logo">
-        Hey Rosella
-    </div>
 
-    <div class="menu">
-        <a href="#home">Home</a>
-        <a href="#shop">Shop</a>
-        <a href="#offers">Offer</a>
-        <a href="#">About</a>
-        <a href="#customer-care">Customer Care</a>
 
-        <!-- SEARCH BAR -->
-        <div class="search-box">
-            <input 
-                type="text" 
-                id="search-input" 
-                placeholder="Search jewellery..."
-                onkeyup="searchProducts()"
+<div class="logo">
+    Hey Rosella
+</div>
+
+
+<div class="menu">
+
+    <!-- HOME -->
+    <a href="#home">
+        Home
+    </a>
+
+
+    <!-- CATEGORY DROPDOWN -->
+    <div class="category-menu">
+
+        <button
+            type="button"
+            class="category-btn"
+        >
+            Category ▾
+        </button>
+
+        <div class="category-dropdown">
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('all')"
             >
-            <button onclick="searchProducts()">🔍</button>
+                All Categories
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Earrings')"
+            >
+                Earrings
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Jhumka')"
+            >
+                Jhumka
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Chhoto Jhumka')"
+            >
+                Chhoto Jhumka
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Kashmeri Jhumka')"
+            >
+                Kashmeri Jhumka
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Pendant')"
+            >
+                Pendant
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Rings')"
+            >
+                Rings
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Necklace')"
+            >
+                Necklace
+            </a>
+
+            <a
+                href="#shop"
+                onclick="filterProductsByCategory('Bracelet')"
+            >
+                Bracelet
+            </a>
+
         </div>
 
-        <a href="#" onclick="openCart(); return false;">
-    🛒 Cart <span id="cart-count"></span>
-        </a>
+    </div>
 
-        <a 
-            href="#" 
-            onclick="openAccountPage(); return false;"
+
+    <!-- SHOP -->
+    <a href="#shop">
+        Shop
+    </a>
+
+
+    <!-- OFFER -->
+    <a href="#offers">
+        Offer
+    </a>
+
+
+    <!-- ABOUT -->
+    <a href="#">
+        About
+    </a>
+
+
+    <!-- CUSTOMER CARE -->
+    <a href="#customer-care">
+        Customer Care
+    </a>
+
+
+    <!-- SEARCH BAR -->
+    <div class="search-box">
+
+        <input
+            type="text"
+            id="search-input"
+            placeholder="Search jewellery..."
+            onkeyup="searchProducts()"
         >
-             Account
-        </a>
+
+        <button
+            type="button"
+            onclick="searchProducts()"
+        >
+            🔍
+        </button>
 
     </div>
+
+
+    <!-- CART -->
+    <a
+        href="#"
+        onclick="openCart(); return false;"
+    >
+        🛒 Cart
+        <span id="cart-count"></span>
+    </a>
+
+
+    <!-- ACCOUNT -->
+    <a
+        href="#"
+        onclick="openAccountPage(); return false;"
+    >
+        Account
+    </a>
+
+</div>
+```
+
 </nav>
 
 
@@ -1114,6 +1366,7 @@
 
         </div>
     </section>
+    
 
     <!-- =========================
          SHOP SECTION
