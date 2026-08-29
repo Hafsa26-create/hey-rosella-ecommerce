@@ -1229,6 +1229,174 @@
             );
 
     </script>
+    <!-- =========================
+     SUPABASE ORDER STATUS UPDATE
+========================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://aktxgvbzmuuatwpimcyz.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================
+   UPDATE ORDER STATUS
+========================= */
+
+async function updateOrderStatus(orderNumber) {
+
+    const select =
+        document.getElementById(
+            "select-" + orderNumber
+        );
+
+    if (!select) {
+
+        alert("Status selector not found.");
+
+        return;
+
+    }
+
+    const newStatus =
+        select.value;
+
+
+    if (!newStatus) {
+
+        alert("Please select a status.");
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+
+            .from("Hey Rosella")
+
+            .update({
+                order_status: newStatus
+            })
+
+            .eq(
+                "order_number",
+                orderNumber
+            )
+
+            .select();
+
+
+        if (error) {
+
+            console.error(
+                "Order status update error:",
+                error
+            );
+
+            alert(
+                "Status update failed: " +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        if (!data || data.length === 0) {
+
+            alert(
+                "Order was not updated. " +
+                "Please check the Order ID and RLS policy."
+            );
+
+            return;
+
+        }
+
+
+        /* =========================
+           UPDATE STATUS BADGE
+        ========================= */
+
+        const statusBadge =
+            document.getElementById(
+                "status-" + orderNumber
+            );
+
+
+        if (statusBadge) {
+
+            statusBadge.textContent =
+                newStatus;
+
+            statusBadge.className =
+                "status-badge " +
+                newStatus.toLowerCase();
+
+        }
+
+
+        /* =========================
+           UPDATE CARD DATA STATUS
+        ========================= */
+
+        const card =
+            select.closest(
+                ".tracking-card"
+            );
+
+
+        if (card) {
+
+            card.dataset.status =
+                newStatus;
+
+        }
+
+
+        alert(
+            "Order #" +
+            orderNumber +
+            " status updated to " +
+            newStatus +
+            " successfully!"
+        );
+
+
+    } catch (err) {
+
+        console.error(
+            "Unexpected error:",
+            err
+        );
+
+        alert(
+            "Something went wrong while updating the order."
+        );
+
+    }
+
+}
+
+</script>
 
 
 </body>
