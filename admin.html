@@ -443,6 +443,130 @@
             }
 
         }
+       
+
+          /* =========================================
+   PROFESSIONAL DASHBOARD STATISTICS
+========================================= */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+
+.stat-card {
+    background: #ffffff;
+
+    border-radius: 14px;
+
+    padding: 22px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    box-shadow:
+        0 4px 15px
+        rgba(0, 0, 0, 0.08);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.stat-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 7px 20px
+        rgba(0, 0, 0, 0.12);
+}
+
+
+.stat-icon {
+    width: 55px;
+
+    height: 55px;
+
+    border-radius: 12px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #fff2c7;
+
+    font-size: 27px;
+
+    flex-shrink: 0;
+}
+
+
+.stat-info h3 {
+    margin: 0 0 6px;
+
+    font-size: 14px;
+
+    color: #6d5550;
+
+    font-weight: 600;
+}
+
+
+.stat-info p {
+    margin: 0;
+
+    font-size: 25px;
+
+    font-weight: bold;
+
+    color: #3e2723;
+}
+
+
+/* MOBILE */
+
+@media screen and (max-width: 900px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media screen and (max-width: 600px) {
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+
+        gap: 14px;
+    }
+
+
+    .stat-card {
+        padding: 18px;
+    }
+
+
+    .stat-info p {
+        font-size: 22px;
+    }
+
+}
+
+
+
+
 
     </style>
 
@@ -542,127 +666,112 @@
         </div>
 
 
-        <!-- =========================
-     CLICKABLE STATISTICS
-========================= -->
+       <section class="stats-grid">
 
-<section class="stats">
+    <!-- TOTAL REVENUE -->
+    <div class="stat-card">
+        <div class="stat-icon">💰</div>
+
+        <div class="stat-info">
+            <h3>Total Revenue</h3>
+
+            <p id="total-sales-amount">
+                0 BDT
+            </p>
+        </div>
+    </div>
+
 
     <!-- TOTAL ORDERS -->
+    <div class="stat-card">
+        <div class="stat-icon">🛒</div>
 
-    <a
-        href="admin-orders.html"
-        class="stat-card stat-card-link"
-    >
+        <div class="stat-info">
+            <h3>Total Orders</h3>
 
-        <div class="stat-icon">
-            📦
+            <p id="total-orders-count">
+                0
+            </p>
         </div>
+    </div>
 
-        <h3>
-            Total Orders
-        </h3>
 
-        <div
-            class="stat-number"
-            id="total-orders-count"
-        >
-            0
+    <!-- TOTAL CUSTOMERS -->
+    <div class="stat-card">
+        <div class="stat-icon">👥</div>
+
+        <div class="stat-info">
+            <h3>Registered Customers</h3>
+
+            <p id="total-customers-count">
+                0
+            </p>
         </div>
+    </div>
+   
 
-        <div class="stat-view">
-            View all orders →
-        </div>
+    <!-- ORDER CUSTOMERS -->
 
-    </a>
+<div class="stat-card">
 
-
-    <!-- CUSTOMERS -->
-
-    <a
-        href="admin-customers.html"
-        class="stat-card stat-card-link"
-    >
-
-        <div class="stat-icon">
-            👥
-        </div>
-
-        <h3>
-            Customers
-        </h3>
-
-        <div
-            class="stat-number"
-            id="total-customers-count"
-        >
-            0
-        </div>
-
-        <div class="stat-view">
-            View all customers →
-        </div>
-
-    </a>
-
-
-    <!-- PRODUCTS -->
-
-    <a
-        href="admin-products.html"
-        class="stat-card stat-card-link"
-    >
-
-        <div class="stat-icon">
-            🛍️
-        </div>
-
-        <h3>
-            Products
-        </h3>
-
-        <div
-            class="stat-number"
-            id="total-products-count"
-        >
-            0
-        </div>
-
-        <div class="stat-view">
-            Manage products →
-        </div>
-
-    </a>
-
-
-    <!-- TOTAL SALES -->
-
-   <a
-    href="admin-sales.html"
-    class="stat-card stat-card-link"
->
     <div class="stat-icon">
-        💰
+        🛍️
     </div>
 
-    <h3>
-        Total Sales
-    </h3>
+    <div class="stat-info">
 
-    <div
-        class="stat-number"
-        id="total-sales-amount"
-    >
-        0 BDT
+        <h3>Order Customers</h3>
+
+        <p id="order-customers-count">
+            0
+        </p>
+
     </div>
 
-    <div class="stat-view">
-        View delivered sales →
+</div>
+
+    <!-- TOTAL PRODUCTS -->
+    <div class="stat-card">
+        <div class="stat-icon">📦</div>
+
+        <div class="stat-info">
+            <h3>Total Products</h3>
+
+            <p id="total-products-count">
+                0
+            </p>
+        </div>
     </div>
-</a>
+
+
+    <!-- PENDING ORDERS -->
+    <div class="stat-card">
+        <div class="stat-icon">⏳</div>
+
+        <div class="stat-info">
+            <h3>Pending Orders</h3>
+
+            <p id="pending-orders-count">
+                0
+            </p>
+        </div>
+    </div>
+
+
+    <!-- DELIVERED ORDERS -->
+    <div class="stat-card">
+        <div class="stat-icon">🚚</div>
+
+        <div class="stat-info">
+            <h3>Delivered Orders</h3>
+
+            <p id="delivered-orders-count">
+                0
+            </p>
+        </div>
+    </div>
 
 </section>
-
 
         <!-- =========================
              ADMIN MANAGEMENT
@@ -863,7 +972,6 @@ async function loadDashboardStatistics() {
                 head: true
             });
 
-
         if (ordersError) {
 
             console.error(
@@ -885,16 +993,15 @@ async function loadDashboardStatistics() {
         // TOTAL CUSTOMERS
         // =========================
 
-        const {
-            count: totalCustomers,
-            error: customersError
-        } = await supabaseClient
-            .from("profiles")
-            .select("*", {
-                count: "exact",
-                head: true
-            });
+       const {
+    data: customerData,
+    error: customersError
+} = await supabaseClient
+    .from("profiles")
+    .select("id");
 
+const totalCustomers =
+    customerData ? customerData.length : 0;
 
         if (customersError) {
 
@@ -911,24 +1018,82 @@ async function loadDashboardStatistics() {
                 totalCustomers || 0;
 
         }
-
             
-                 // =========================
+
+
+        // =========================
+// ORDER CUSTOMERS
+// =========================
+
+const {
+    data: orderCustomerData,
+    error: orderCustomerError
+} = await supabaseClient
+    .from("Hey Rosella")
+    .select("customer_phone, customer_name");
+
+if (orderCustomerError) {
+
+    console.error(
+        "Order customers error:",
+        orderCustomerError
+    );
+
+} else {
+
+    const uniqueCustomers = new Set();
+
+    (orderCustomerData || []).forEach(
+        function(customer) {
+
+            const phone =
+                String(
+                    customer.customer_phone || ""
+                ).trim();
+
+            const name =
+                String(
+                    customer.customer_name || ""
+                ).trim();
+
+            const identifier =
+                phone || name;
+
+            if (identifier) {
+                uniqueCustomers.add(
+                    identifier.toLowerCase()
+                );
+            }
+
+        }
+    );
+
+
+    document.getElementById(
+        "order-customers-count"
+    ).textContent =
+        uniqueCustomers.size;
+
+}
+
+        // =========================
         // TOTAL PRODUCTS
         // =========================
 
         const {
-            data: productData,
+            count: totalProducts,
             error: productsError
         } = await supabaseClient
             .from("products")
-            .select("id");
-
+            .select("*", {
+                count: "exact",
+                head: true
+            });
 
         if (productsError) {
 
             console.error(
-                "Products fetch error:",
+                "Products count error:",
                 productsError
             );
 
@@ -937,62 +1102,137 @@ async function loadDashboardStatistics() {
             document.getElementById(
                 "total-products-count"
             ).textContent =
-                productData
-                    ? productData.length
-                    : 0;
+                totalProducts || 0;
 
         }
 
 
+        // =========================
+        // ORDER STATUS + REVENUE
+        // =========================
 
-      // =========================
-// TOTAL DELIVERED SALES ONLY
-// =========================
+        const {
+            data: orders,
+            error: ordersFetchError
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select(
+                "total_amount, order_status"
+            );
 
-const {
-    data: deliveredOrders,
-    error: salesError
-} = await supabaseClient
-    .from("Hey Rosella")
-    .select("total_amount, order_status")
-    .eq("order_status", "delivered");
+        if (ordersFetchError) {
 
+            console.error(
+                "Orders statistics error:",
+                ordersFetchError
+            );
 
-if (salesError) {
-
-    console.error(
-        "Delivered sales fetch error:",
-        salesError
-    );
-
-    document.getElementById(
-        "total-sales-amount"
-    ).textContent = "0 BDT";
-
-} else {
-
-    let totalSales = 0;
-
-    (deliveredOrders || []).forEach(
-        function(order) {
-
-            totalSales +=
-                Number(order.total_amount) || 0;
+            return;
 
         }
-    );
-
-    document.getElementById(
-        "total-sales-amount"
-    ).textContent =
-        totalSales.toLocaleString("en-BD") +
-        " BDT";
-}
-
-        
 
 
-    } catch (error) {
+        let pendingOrders = 0;
+        let deliveredOrders = 0;
+        let totalRevenue = 0;
+
+
+        (orders || []).forEach(
+            function(order) {
+
+                const status =
+                    String(
+                        order.order_status || ""
+                    )
+                    .trim()
+                    .toLowerCase();
+
+
+                // PENDING
+
+                if (
+                    status === "pending"
+                ) {
+
+                    pendingOrders++;
+
+                }
+
+
+                // DELIVERED
+
+                if (
+                    status === "delivered"
+                ) {
+
+                    deliveredOrders++;
+
+                    totalRevenue +=
+                        Number(
+                            order.total_amount
+                        ) || 0;
+
+                }
+
+            }
+        );
+
+
+        // =========================
+        // SHOW PENDING
+        // =========================
+
+        const pendingElement =
+            document.getElementById(
+                "pending-orders-count"
+            );
+
+        if (pendingElement) {
+
+            pendingElement.textContent =
+                pendingOrders;
+
+        }
+
+
+        // =========================
+        // SHOW DELIVERED
+        // =========================
+
+        const deliveredElement =
+            document.getElementById(
+                "delivered-orders-count"
+            );
+
+        if (deliveredElement) {
+
+            deliveredElement.textContent =
+                deliveredOrders;
+
+        }
+
+
+        // =========================
+        // SHOW REVENUE
+        // =========================
+
+        const revenueElement =
+            document.getElementById(
+                "total-sales-amount"
+            );
+
+        if (revenueElement) {
+
+            revenueElement.textContent =
+                totalRevenue.toLocaleString(
+                    "en-BD"
+                ) + " BDT";
+
+        }
+
+    }
+
+    catch (error) {
 
         console.error(
             "Dashboard statistics error:",
@@ -1002,10 +1242,6 @@ if (salesError) {
     }
 
 }
-
-// START STATISTICS
-
-loadDashboardStatistics();
 
 </script>
 
@@ -1130,13 +1366,21 @@ if (
 
     }
 
+// =========================
+// START ADMIN DASHBOARD
+// =========================
 
-    // =========================
-    // START ADMIN CHECK
-    // =========================
+async function startAdminDashboard() {
 
-    checkAdminAccess();
+    await checkAdminAccess();
 
+    await loadDashboardStatistics();
+
+    await loadRecentOrders();
+
+}
+
+startAdminDashboard();
 
 
 
