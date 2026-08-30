@@ -148,106 +148,101 @@
 }
 
         
+/* =========================================
+   FINAL MOBILE WISHLIST FIX
+========================================= */
 
-        /* ================================
-   MOBILE RESPONSIVE WISHLIST
-================================ */
+@media screen and (max-width: 600px) {
 
-@media (max-width: 600px) {
-
+    html,
     body {
-        margin: 0;
-        font-size: 15px;
-        overflow-x: hidden;
+        width: 100%;
+        max-width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow-x: hidden !important;
     }
 
     .wishlist-page {
-        width: 100%;
-        max-width: 100%;
-        margin: 20px auto 0;
-        padding: 10px;
-        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 12px !important;
+        box-sizing: border-box !important;
     }
 
     .wishlist-box {
-        padding: 18px 12px;
-        border-radius: 10px;
-        box-sizing: border-box;
-    }
-
-    .wishlist-header {
-        margin-bottom: 20px;
-    }
-
-    .wishlist-header h1 {
-        font-size: 24px;
-    }
-
-    .wishlist-header p {
-        font-size: 14px;
-        line-height: 1.5;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 15px 10px !important;
+        box-sizing: border-box !important;
+        border-radius: 10px !important;
     }
 
     .wishlist-items {
-        grid-template-columns: 1fr;
-        gap: 20px;
-        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 18px !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 
     .wishlist-item {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 15px 10px;
-        border-radius: 10px;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        padding: 12px !important;
+        margin: 0 !important;
+        text-align: center !important;
     }
 
+    /* PRODUCT IMAGE */
+    .wishlist-item img,
     .wishlist-image {
-        width: 100%;
-        max-width: 260px;
-        height: 260px;
-        object-fit: cover;
-        margin: 0 auto 15px;
-        border-radius: 8px;
+        display: block !important;
+        width: 220px !important;
+        max-width: 220px !important;
+        height: 220px !important;
+        max-height: 220px !important;
+        object-fit: cover !important;
+        margin: 0 auto 15px auto !important;
+        border-radius: 8px !important;
     }
 
     .wishlist-item h3 {
-        font-size: 21px;
-        margin: 10px 0;
-        word-break: break-word;
+        font-size: 20px !important;
+        margin: 8px 0 !important;
+        line-height: 1.3 !important;
     }
 
     .wishlist-price {
-        font-size: 17px;
-        margin-bottom: 15px;
+        font-size: 16px !important;
+        margin: 8px 0 12px !important;
     }
 
+    /* BUTTONS */
     .wishlist-cart-button,
     .remove-button {
-        width: auto;
-        min-width: 105px;
-        padding: 10px 14px;
-        font-size: 14px;
-        margin: 4px 2px;
-    }
-
-    .shop-button {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 11px;
-        font-size: 15px;
+        display: inline-block !important;
+        width: auto !important;
+        min-width: 100px !important;
+        max-width: 130px !important;
+        padding: 9px 12px !important;
+        margin: 3px !important;
+        font-size: 14px !important;
+        box-sizing: border-box !important;
     }
 
     .back-button {
-        width: 100%;
-        margin-top: 20px;
-        padding: 10px;
-        font-size: 14px;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin-top: 18px !important;
     }
 
-    .empty-wishlist {
-        padding: 30px 10px;
+    .shop-button {
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
-
 }
 
     </style>
