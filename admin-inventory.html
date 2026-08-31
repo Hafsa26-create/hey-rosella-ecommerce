@@ -438,9 +438,106 @@
             font-size:
                 16px;
         }
+               
 
 
-        /* =========================================
+          /* =========================================
+   QUICK STOCK CONTROL
+========================================= */
+
+.quick-stock-control {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+}
+
+
+.stock-btn {
+
+    width: 32px;
+    height: 32px;
+
+    border: 1px solid #eadfd9;
+
+    background: #fff2c7;
+
+    color: #38221e;
+
+    border-radius: 8px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    transition: all 0.2s ease;
+}
+
+
+.stock-btn:hover {
+
+    background: #f4df9d;
+
+    transform: translateY(-1px);
+}
+
+
+.stock-input {
+
+    width: 55px;
+    height: 32px;
+
+    border: 1px solid #ddd0ca;
+
+    border-radius: 8px;
+
+    text-align: center;
+
+    outline: none;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #38221e;
+
+    background: #ffffff;
+}
+
+
+.stock-input:focus {
+
+    border-color: #d4af37;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(212, 175, 55, 0.15);
+}
+
+
+/* Remove number arrows */
+
+.stock-input::-webkit-inner-spin-button,
+.stock-input::-webkit-outer-spin-button {
+
+    -webkit-appearance: none;
+
+    margin: 0;
+}
+
+
+
+          /* =========================================
            STATUS
         ========================================= */
 
@@ -782,7 +879,43 @@
 
 
         </section>
+                 
 
+          <!-- =========================================
+     LOW STOCK ALERT
+========================================= -->
+
+<section class="low-stock-alert" id="low-stock-alert">
+
+    <div class="alert-header">
+
+        <div>
+            <h2>⚠️ Low Stock Alert</h2>
+
+            <p>
+                Products that need restocking soon.
+            </p>
+        </div>
+
+        <span
+            id="low-stock-alert-count"
+            class="alert-count"
+        >
+            0
+        </span>
+
+    </div>
+
+
+    <div id="low-stock-list">
+
+        <div class="alert-loading">
+            ⏳ Checking stock levels...
+        </div>
+
+    </div>
+
+</section>
 
         <!-- =====================================
              PRODUCT INVENTORY
