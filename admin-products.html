@@ -628,6 +628,19 @@
                     placeholder="850"
                     min="0"
                 >
+                       
+                <label for="product-stock">
+    Stock Quantity
+</label>
+
+<input
+    type="number"
+    id="product-stock"
+    placeholder="10"
+    min="0"
+>
+
+
 
             </div>
 
@@ -1151,44 +1164,88 @@
 
 
             // =================================================
-            // UPDATE
-            // =================================================
+// UPDATE PRODUCT
+// =================================================
 
-            if (editingProductId) {
+if (editingProductId) {
 
-                result =
-                    await supabaseClient
+    const stockInput =
+        document.getElementById(
+            "product-stock"
+        );
 
-                        .from("products")
+    const stockValue =
+        Number(
+            stockInput.value
+        );
 
-                        .update({
 
-                            name:
-                                name,
+    console.log(
+        "Editing Product ID:",
+        editingProductId
+    );
 
-                            price:
-                                Number(price),
+    console.log(
+        "Stock being saved:",
+        stockValue
+    );
 
-                            category:
-                                category,
 
-                            description:
-                                description,
+    result =
+        await supabaseClient
 
-                            image_url:
-                                imageUrl || null,
+            .from("products")
 
-                            updated_at:
-                                new Date().toISOString()
+            .update({
 
-                        })
+                name:
+                    name,
 
-                        .eq(
-                            "id",
-                            editingProductId
-                        );
+                price:
+                    Number(price),
 
-            }
+                stock_quantity:
+                    stockValue,
+
+                category:
+                    category,
+
+                description:
+                    description,
+
+                image_url:
+                    imageUrl || null,
+
+                updated_at:
+                    new Date().toISOString()
+
+            })
+
+            .eq(
+                "id",
+                editingProductId
+            )
+
+            .select();
+
+
+    console.log(
+        "Supabase update result:",
+        result
+    );
+
+
+    console.log(
+    "Updated data:",
+    result.data
+);
+
+console.log(
+    "Update error:",
+    result.error
+);
+
+}
 
 
             // =================================================
@@ -1204,23 +1261,29 @@
 
                         .insert({
 
-                            name:
-                                name,
+    name:
+        name,
 
-                            price:
-                                Number(price),
+    price:
+        Number(price),
 
-                            category:
-                                category,
+    stock_quantity:
+        Number(
+            document.getElementById(
+                "product-stock"
+            ).value
+        ),
 
-                            description:
-                                description,
+    category:
+        category,
 
-                            image_url:
-                                imageUrl || null
+    description:
+        description,
 
-                        });
+    image_url:
+        imageUrl || null
 
+});
             }
 
 
@@ -1323,6 +1386,11 @@
                 "product-price"
             ).value =
                 data.price || "";
+
+                document.getElementById(
+    "product-stock"
+).value =
+    data.stock_quantity ?? 0;
 
 
             document.getElementById(

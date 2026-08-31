@@ -1108,6 +1108,34 @@
     </a>
 
 
+
+              <!-- INVENTORY -->
+<a
+    href="admin-products.html?inventory=true"
+    class="stat-card"
+>
+
+    <div class="stat-icon">
+        📦
+    </div>
+
+    <div class="stat-info">
+
+        <h3>Inventory</h3>
+
+        <p id="inventory-stock-count">
+            0
+        </p>
+
+        <span class="stat-view">
+            Manage Inventory →
+        </span>
+
+    </div>
+
+</a>
+
+
     <!-- PENDING ORDERS -->
     <a href="admin-orders.html?status=pending"
        class="stat-card">
@@ -1535,36 +1563,64 @@ if (orderCustomerError) {
         uniqueCustomers.size;
 
 }
+// =========================
+// TOTAL PRODUCTS + INVENTORY
+// =========================
 
-        // =========================
-        // TOTAL PRODUCTS
-        // =========================
-
-        const {
-            count: totalProducts,
-            error: productsError
-        } = await supabaseClient
-            .from("products")
-            .select("*", {
-                count: "exact",
-                head: true
-            });
-
-        if (productsError) {
-
-            console.error(
-                "Products count error:",
-                productsError
-            );
-
-        } else {
-
-            document.getElementById(
-                "total-products-count"
-            ).textContent =
-                totalProducts || 0;
-
+const {
+    data: productsData,
+    count: totalProducts,
+    error: productsError
+} = await supabaseClient
+    .from("products")
+    .select(
+        "stock_quantity",
+        {
+            count: "exact"
         }
+    );
+
+if (productsError) {
+
+    console.error(
+        "Products fetch error:",
+        productsError
+    );
+
+} else {
+
+    // TOTAL PRODUCTS
+
+    document.getElementById(
+        "total-products-count"
+    ).textContent =
+        totalProducts || 0;
+
+
+    // TOTAL INVENTORY
+
+    const totalInventory =
+        (productsData || []).reduce(
+            function(total, product) {
+
+                return (
+                    total +
+                    Number(
+                        product.stock_quantity || 0
+                    )
+                );
+
+            },
+            0
+        );
+
+
+    document.getElementById(
+        "inventory-stock-count"
+    ).textContent =
+        totalInventory;
+
+}
 
 
         // =========================
