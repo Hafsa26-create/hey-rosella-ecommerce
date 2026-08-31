@@ -526,6 +526,13 @@
 
     async function loadCustomers() {
 
+
+
+        const customerType =
+    new URLSearchParams(
+        window.location.search
+    ).get("type");
+
         const container =
             document.getElementById(
                 "customers-list"
@@ -671,49 +678,54 @@
             // REGISTERED PROFILES
             // =================================================
 
-            (profileData || []).forEach(
-                function(profile) {
+           if (customerType !== "orders") {
 
-                    combinedCustomers.push({
+    (profileData || []).forEach(
+        function(profile) {
 
-                        id:
-                            profile.id,
+            combinedCustomers.push({
 
-                        full_name:
-                            profile.full_name ||
-                            "Customer",
+                id:
+                    profile.id,
 
-                        phone:
-                            profile.phone ||
-                            "Not added",
+                full_name:
+                    profile.full_name ||
+                    "Customer",
 
-                        address:
-                            profile.address ||
-                            "Not added",
+                phone:
+                    profile.phone ||
+                    "Not added",
 
-                        created_at:
-                            profile.created_at,
+                address:
+                    profile.address ||
+                    "Not added",
 
-                        role:
-                            profile.role ||
-                            "customer",
+                created_at:
+                    profile.created_at,
 
-                        source:
-                            "profile"
+                role:
+                    profile.role ||
+                    "customer",
 
-                    });
+                source:
+                    "profile"
 
-                }
-            );
+            });
+
+        }
+    );
+
+}
 
 
             // =================================================
             // ORDER-ONLY CUSTOMERS
             // =================================================
 
-            (orderData || []).forEach(
-                function(order) {
+            if (customerType !== "registered") {
 
+    (orderData || []).forEach(
+        function(order) {
 
                     // Check by User ID
 
@@ -798,7 +810,7 @@
 
                 }
             );
-
+            }
 
             // -------------------------------------------------
             // SAVE DATA

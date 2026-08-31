@@ -926,36 +926,83 @@
 
 
 
-            // GET ORDERS
+            let ordersQuery =
+    supabaseClient
+        .from("Hey Rosella")
+        .select(`
+            id,
+            created_at,
+            customer_name,
+            customer_phone,
+            customer_address,
+            payment_method,
+            products,
+            total_amount,
+            order_status,
+            order_number,
+            user_id
+        `);
 
-            const {
-                data,
-                error
-            } =
-                await supabaseClient
 
-                    .from("Hey Rosella")
+// FILTER BY STATUS
 
-                    .select(`
-                        id,
-                        created_at,
-                        customer_name,
-                        customer_phone,
-                        customer_address,
-                        payment_method,
-                        products,
-                        total_amount,
-                        order_status,
-                        order_number,
-                        user_id
-                    `)
+if (
+    orderStatus === "pending" ||
+    orderStatus === "delivered"
+) {
 
-                    .order(
-                        "created_at",
-                        {
-                            ascending: false
-                        }
-                    );
+    ordersQuery =
+        ordersQuery.eq(
+            "order_status",
+            orderStatus
+        );
+
+}
+
+
+// GET ORDERS
+
+const {
+    data,
+    error
+} =
+    await ordersQuery
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+// FILTER ORDERS BY STATUS
+
+if (
+    orderStatus === "pending" ||
+    orderStatus === "delivered"
+) {
+
+    const filteredData =
+        (data || []).filter(
+            function(order) {
+
+                return (
+                    order.order_status ===
+                    orderStatus
+                );
+
+            }
+        );
+
+    adminOrders =
+        filteredData;
+
+} else {
+
+    adminOrders =
+        data || [];
+
+}
 
 
 

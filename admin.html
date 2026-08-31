@@ -850,6 +850,54 @@
     width: 100%;
 }
 
+
+
+/* =========================================
+   CLICKABLE STAT CARDS
+========================================= */
+
+.stats-grid .stat-card {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+
+.stats-grid .stat-card .stat-info {
+    flex: 1;
+}
+
+
+.stats-grid .stat-card .stat-view {
+    display: block;
+
+    margin-top: 8px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #d4af37;
+}
+
+
+.stats-grid .stat-card:hover .stat-view {
+    text-decoration: underline;
+}
+
+
+/* REVENUE CARD ANCHOR */
+
+#sales-overview {
+    scroll-margin-top: 20px;
+}
+
+
+
+
+
+
+
     </style>
 
     
@@ -955,11 +1003,11 @@
 
         </div>
 
-
-       <section class="stats-grid">
+<section class="stats-grid">
 
     <!-- TOTAL REVENUE -->
-    <div class="stat-card">
+    <a href="#sales-overview" class="stat-card">
+
         <div class="stat-icon">💰</div>
 
         <div class="stat-info">
@@ -968,12 +1016,18 @@
             <p id="total-sales-amount">
                 0 BDT
             </p>
+
+            <span class="stat-view">
+                View Sales →
+            </span>
         </div>
-    </div>
+
+    </a>
 
 
     <!-- TOTAL ORDERS -->
-    <div class="stat-card">
+    <a href="admin-orders.html" class="stat-card">
+
         <div class="stat-icon">🛒</div>
 
         <div class="stat-info">
@@ -982,12 +1036,19 @@
             <p id="total-orders-count">
                 0
             </p>
+
+            <span class="stat-view">
+                View Orders →
+            </span>
         </div>
-    </div>
+
+    </a>
 
 
-    <!-- TOTAL CUSTOMERS -->
-    <div class="stat-card">
+    <!-- REGISTERED CUSTOMERS -->
+    <a href="admin-customers.html?type=registered"
+       class="stat-card">
+
         <div class="stat-icon">👥</div>
 
         <div class="stat-info">
@@ -996,32 +1057,40 @@
             <p id="total-customers-count">
                 0
             </p>
+
+            <span class="stat-view">
+                View Customers →
+            </span>
         </div>
-    </div>
-   
+
+    </a>
+
 
     <!-- ORDER CUSTOMERS -->
+    <a href="admin-customers.html?type=orders"
+       class="stat-card">
 
-<div class="stat-card">
+        <div class="stat-icon">🛍️</div>
 
-    <div class="stat-icon">
-        🛍️
-    </div>
+        <div class="stat-info">
+            <h3>Order Customers</h3>
 
-    <div class="stat-info">
+            <p id="order-customers-count">
+                0
+            </p>
 
-        <h3>Order Customers</h3>
+            <span class="stat-view">
+                View Customers →
+            </span>
+        </div>
 
-        <p id="order-customers-count">
-            0
-        </p>
+    </a>
 
-    </div>
-
-</div>
 
     <!-- TOTAL PRODUCTS -->
-    <div class="stat-card">
+    <a href="admin-products.html"
+       class="stat-card">
+
         <div class="stat-icon">📦</div>
 
         <div class="stat-info">
@@ -1030,12 +1099,19 @@
             <p id="total-products-count">
                 0
             </p>
+
+            <span class="stat-view">
+                Manage Products →
+            </span>
         </div>
-    </div>
+
+    </a>
 
 
     <!-- PENDING ORDERS -->
-    <div class="stat-card">
+    <a href="admin-orders.html?status=pending"
+       class="stat-card">
+
         <div class="stat-icon">⏳</div>
 
         <div class="stat-info">
@@ -1044,12 +1120,19 @@
             <p id="pending-orders-count">
                 0
             </p>
+
+            <span class="stat-view">
+                View Pending →
+            </span>
         </div>
-    </div>
+
+    </a>
 
 
     <!-- DELIVERED ORDERS -->
-    <div class="stat-card">
+    <a href="admin-orders.html?status=delivered"
+       class="stat-card">
+
         <div class="stat-icon">🚚</div>
 
         <div class="stat-info">
@@ -1058,8 +1141,13 @@
             <p id="delivered-orders-count">
                 0
             </p>
+
+            <span class="stat-view">
+                View Delivered →
+            </span>
         </div>
-    </div>
+
+    </a>
 
 </section>
 
@@ -1073,7 +1161,7 @@
      SALES OVERVIEW
 ========================================= -->
 
-<section class="sales-overview">
+<section class="sales-overview" id="sales-overview">
 
     <div class="sales-header">
 
@@ -2072,7 +2160,813 @@ loadRecentOrders();
 
 </script>
 
+<script>
 
+/* =========================================
+   SALES OVERVIEW
+   REAL SUPABASE DATA + FILTERS
+========================================= */
+
+let salesOverviewChart = null;
+
+
+/* =========================================
+   LOAD SALES DATA
+========================================= */
+
+async function loadSalesOverview(period = "today") {
+
+    try {
+
+        const {
+            data: orders,
+            error
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select(
+                "created_at, total_amount, order_status"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Sales overview error:",
+                error
+            );
+
+            return;
+        }
+
+
+        const now = new Date();
+
+
+        let startDate;
+        let labels = [];
+        let revenueData = [];
+        let orderData = [];
+
+
+        /* =====================================
+           TODAY
+        ===================================== */
+
+        if (period === "today") {
+
+            startDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+
+
+            labels = [];
+
+            revenueData = [];
+
+            orderData = [];
+
+
+            for (
+                let hour = 0;
+                hour < 24;
+                hour++
+            ) {
+
+                labels.push(
+                    hour + ":00"
+                );
+
+                revenueData.push(0);
+
+                orderData.push(0);
+
+            }
+
+
+            (orders || []).forEach(
+                function(order) {
+
+                    const date =
+                        new Date(
+                            order.created_at
+                        );
+
+
+                    if (
+                        date >= startDate &&
+                        date <= now
+                    ) {
+
+                        const hour =
+                            date.getHours();
+
+
+                        orderData[hour]++;
+
+
+                        const status =
+                            String(
+                                order.order_status ||
+                                ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            status === "delivered"
+                        ) {
+
+                            revenueData[hour] +=
+                                Number(
+                                    order.total_amount
+                                ) || 0;
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           THIS WEEK
+        ===================================== */
+
+        else if (period === "week") {
+
+            const day =
+                now.getDay();
+
+
+            const difference =
+                day === 0
+                    ? 6
+                    : day - 1;
+
+
+            startDate =
+                new Date(now);
+
+
+            startDate.setDate(
+                now.getDate() - difference
+            );
+
+
+            startDate.setHours(
+                0,
+                0,
+                0,
+                0
+            );
+
+
+            labels = [
+                "Mon",
+                "Tue",
+                "Wed",
+                "Thu",
+                "Fri",
+                "Sat",
+                "Sun"
+            ];
+
+
+            revenueData =
+                new Array(7).fill(0);
+
+
+            orderData =
+                new Array(7).fill(0);
+
+
+            (orders || []).forEach(
+                function(order) {
+
+                    const date =
+                        new Date(
+                            order.created_at
+                        );
+
+
+                    if (
+                        date >= startDate &&
+                        date <= now
+                    ) {
+
+                        let index =
+                            date.getDay() - 1;
+
+
+                        if (index < 0) {
+                            index = 6;
+                        }
+
+
+                        orderData[index]++;
+
+
+                        const status =
+                            String(
+                                order.order_status ||
+                                ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            status === "delivered"
+                        ) {
+
+                            revenueData[index] +=
+                                Number(
+                                    order.total_amount
+                                ) || 0;
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           THIS MONTH
+        ===================================== */
+
+        else if (period === "month") {
+
+            startDate =
+                new Date(
+                    now.getFullYear(),
+                    now.getMonth(),
+                    1
+                );
+
+
+            const daysInMonth =
+                new Date(
+                    now.getFullYear(),
+                    now.getMonth() + 1,
+                    0
+                ).getDate();
+
+
+            for (
+                let day = 1;
+                day <= daysInMonth;
+                day++
+            ) {
+
+                labels.push(
+                    String(day)
+                );
+
+                revenueData.push(0);
+
+                orderData.push(0);
+
+            }
+
+
+            (orders || []).forEach(
+                function(order) {
+
+                    const date =
+                        new Date(
+                            order.created_at
+                        );
+
+
+                    if (
+                        date >= startDate &&
+                        date <= now
+                    ) {
+
+                        const day =
+                            date.getDate();
+
+
+                        orderData[day - 1]++;
+
+
+                        const status =
+                            String(
+                                order.order_status ||
+                                ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            status === "delivered"
+                        ) {
+
+                            revenueData[
+                                day - 1
+                            ] +=
+                                Number(
+                                    order.total_amount
+                                ) || 0;
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           THIS YEAR
+        ===================================== */
+
+        else if (period === "year") {
+
+            startDate =
+                new Date(
+                    now.getFullYear(),
+                    0,
+                    1
+                );
+
+
+            labels = [
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec"
+            ];
+
+
+            revenueData =
+                new Array(12).fill(0);
+
+
+            orderData =
+                new Array(12).fill(0);
+
+
+            (orders || []).forEach(
+                function(order) {
+
+                    const date =
+                        new Date(
+                            order.created_at
+                        );
+
+
+                    if (
+                        date >= startDate &&
+                        date <= now
+                    ) {
+
+                        const month =
+                            date.getMonth();
+
+
+                        orderData[month]++;
+
+
+                        const status =
+                            String(
+                                order.order_status ||
+                                ""
+                            )
+                            .trim()
+                            .toLowerCase();
+
+
+                        if (
+                            status === "delivered"
+                        ) {
+
+                            revenueData[month] +=
+                                Number(
+                                    order.total_amount
+                                ) || 0;
+
+                        }
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* =====================================
+           SUMMARY TOTALS
+        ===================================== */
+
+        const totalOrders =
+            orderData.reduce(
+                function(total, value) {
+                    return total + value;
+                },
+                0
+            );
+
+
+        const totalRevenue =
+            revenueData.reduce(
+                function(total, value) {
+                    return total + value;
+                },
+                0
+            );
+
+
+        const revenueElement =
+            document.getElementById(
+                "chart-revenue"
+            );
+
+
+        const ordersElement =
+            document.getElementById(
+                "chart-orders"
+            );
+
+
+        if (revenueElement) {
+
+            revenueElement.textContent =
+                totalRevenue.toLocaleString(
+                    "en-BD"
+                ) +
+                " BDT";
+
+        }
+
+
+        if (ordersElement) {
+
+            ordersElement.textContent =
+                totalOrders;
+
+        }
+
+
+        /* =====================================
+           DESTROY OLD CHART
+        ===================================== */
+
+        if (salesOverviewChart) {
+
+            salesOverviewChart.destroy();
+
+        }
+
+
+        /* =====================================
+           CREATE CHART
+        ===================================== */
+
+        const canvas =
+            document.getElementById(
+                "salesChart"
+            );
+
+
+        if (!canvas) {
+
+            console.error(
+                "salesChart canvas not found"
+            );
+
+            return;
+        }
+
+
+        const ctx =
+            canvas.getContext("2d");
+
+
+        salesOverviewChart =
+            new Chart(
+                ctx,
+                {
+
+                    type: "line",
+
+
+                    data: {
+
+                        labels: labels,
+
+
+                        datasets: [
+
+                            {
+
+                                label:
+                                    "Revenue",
+
+                                data:
+                                    revenueData,
+
+                                yAxisID:
+                                    "revenueAxis",
+
+                                tension:
+                                    0.35,
+
+                                fill:
+                                    true,
+
+                                pointRadius:
+                                    4,
+
+                                pointHoverRadius:
+                                    6
+
+                            },
+
+
+                            {
+
+                                label:
+                                    "Orders",
+
+                                data:
+                                    orderData,
+
+                                yAxisID:
+                                    "ordersAxis",
+
+                                tension:
+                                    0.35,
+
+                                fill:
+                                    false,
+
+                                pointRadius:
+                                    4,
+
+                                pointHoverRadius:
+                                    6
+
+                            }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        responsive:
+                            true,
+
+                        maintainAspectRatio:
+                            false,
+
+
+                        interaction: {
+
+                            mode:
+                                "index",
+
+                            intersect:
+                                false
+
+                        },
+
+
+                        plugins: {
+
+                            legend: {
+
+                                display:
+                                    true,
+
+                                position:
+                                    "top"
+
+                            },
+
+
+                            tooltip: {
+
+                                callbacks: {
+
+                                    label:
+                                        function(
+                                            context
+                                        ) {
+
+                                            const value =
+                                                context.parsed.y ||
+                                                0;
+
+
+                                            if (
+                                                context.dataset.label ===
+                                                "Revenue"
+                                            ) {
+
+                                                return (
+                                                    "Revenue: " +
+                                                    Number(
+                                                        value
+                                                    ).toLocaleString(
+                                                        "en-BD"
+                                                    ) +
+                                                    " BDT"
+                                                );
+
+                                            }
+
+
+                                            return (
+                                                "Orders: " +
+                                                value
+                                            );
+
+                                        }
+
+                                }
+
+                            }
+
+                        },
+
+
+                        scales: {
+
+                            revenueAxis: {
+
+                                type:
+                                    "linear",
+
+                                position:
+                                    "left",
+
+                                beginAtZero:
+                                    true,
+
+                                title: {
+
+                                    display:
+                                        true,
+
+                                    text:
+                                        "Revenue (BDT)"
+
+                                }
+
+                            },
+
+
+                            ordersAxis: {
+
+                                type:
+                                    "linear",
+
+                                position:
+                                    "right",
+
+                                beginAtZero:
+                                    true,
+
+                                ticks: {
+
+                                    precision:
+                                        0
+
+                                },
+
+                                title: {
+
+                                    display:
+                                        true,
+
+                                    text:
+                                        "Orders"
+
+                                },
+
+                                grid: {
+
+                                    drawOnChartArea:
+                                        false
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Sales overview failed:",
+            error
+        );
+
+    }
+
+}
+
+
+/* =========================================
+   FILTER BUTTONS
+========================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        const filters =
+            document.querySelectorAll(
+                ".sales-filter"
+            );
+
+
+        filters.forEach(
+            function(button) {
+
+                button.addEventListener(
+                    "click",
+                    function() {
+
+                        filters.forEach(
+                            function(item) {
+
+                                item.classList.remove(
+                                    "active"
+                                );
+
+                            }
+                        );
+
+
+                        button.classList.add(
+                            "active"
+                        );
+
+
+                        const period =
+                            button.dataset.period;
+
+
+                        loadSalesOverview(
+                            period
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+        /* DEFAULT */
+
+        loadSalesOverview(
+            "today"
+        );
+
+    }
+);
+
+</script>
 
 </body>
 
