@@ -890,169 +890,188 @@
 
 
         // =====================================================
-        // LOAD ORDERS FROM SUPABASE
-        // =====================================================
+// LOAD ORDERS FROM SUPABASE
+// =====================================================
 
-        async function loadOrders() {
+async function loadOrders() {
 
-            const container =
-                document.getElementById(
-                    "orders-list"
-                );
+    // GET STATUS FROM DASHBOARD URL
 
-
-            container.innerHTML = `
-
-                <div class="no-orders">
-
-                    ⏳ Loading orders...
-
-                </div>
-
-            `;
+    const dashboardStatus =
+        new URLSearchParams(
+            window.location.search
+        ).get("status");
 
 
-            // CHECK ADMIN
-
-            const isAdmin =
-                await checkAdminAccess();
-
-
-            if (!isAdmin) {
-
-                return;
-
-            }
-
-
-
-            let ordersQuery =
-    supabaseClient
-        .from("Hey Rosella")
-        .select(`
-            id,
-            created_at,
-            customer_name,
-            customer_phone,
-            customer_address,
-            payment_method,
-            products,
-            total_amount,
-            order_status,
-            order_number,
-            user_id
-        `);
-
-
-// FILTER BY STATUS
-
-if (
-    orderStatus === "pending" ||
-    orderStatus === "delivered"
-) {
-
-    ordersQuery =
-        ordersQuery.eq(
-            "order_status",
-            orderStatus
-        );
-
-}
-
-
-// GET ORDERS
-
-const {
-    data,
-    error
-} =
-    await ordersQuery
-        .order(
-            "created_at",
-            {
-                ascending: false
-            }
+    const container =
+        document.getElementById(
+            "orders-list"
         );
 
 
-// FILTER ORDERS BY STATUS
+    container.innerHTML = `
 
-if (
-    orderStatus === "pending" ||
-    orderStatus === "delivered"
-) {
+        <div class="no-orders">
 
-    const filteredData =
-        (data || []).filter(
-            function(order) {
+            ⏳ Loading orders...
 
-                return (
-                    order.order_status ===
-                    orderStatus
-                );
+        </div>
 
-            }
+    `;
+
+
+    // CHECK ADMIN
+
+    const isAdmin =
+        await checkAdminAccess();
+
+
+    if (!isAdmin) {
+
+        return;
+
+    }
+
+
+    // =====================================================
+    // GET ORDERS
+    // =====================================================
+
+    let ordersQuery =
+        supabaseClient
+            .from("Hey Rosella")
+            .select(`
+                id,
+                created_at,
+                customer_name,
+                customer_phone,
+                customer_address,
+                payment_method,
+                products,
+                total_amount,
+                order_status,
+                order_number,
+                user_id
+            `);
+
+
+    // =====================================================
+    // FILTER BY DASHBOARD STATUS
+    // =====================================================
+
+    if (
+        dashboardStatus === "pending" ||
+        dashboardStatus === "delivered"
+    ) {
+
+        ordersQuery =
+            ordersQuery.eq(
+                "order_status",
+                dashboardStatus
+            );
+
+    }
+
+
+    // =====================================================
+    // GET ORDERS
+    // =====================================================
+
+    const {
+        data,
+        error
+    } =
+        await ordersQuery
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    // =====================================================
+    // DATABASE ERROR
+    // =====================================================
+
+    if (error) {
+
+        console.error(
+            "Order fetch error:",
+            error
         );
 
-    adminOrders =
-        filteredData;
 
-} else {
+        container.innerHTML = `
+
+            <div class="no-orders">
+
+                ❌ Could not load orders.
+
+                <br><br>
+
+                ${escapeHTML(
+                    error.message
+                )}
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    console.log(
+        "Orders received:",
+        data
+    );
+
+
+    // =====================================================
+    // SAVE ORDERS
+    // =====================================================
 
     adminOrders =
         data || [];
 
+
+    // =====================================================
+    // SET DROPDOWN
+    // =====================================================
+
+    const orderFilter =
+        document.getElementById(
+            "order-filter"
+        );
+
+
+    if (
+        orderFilter &&
+        (
+            dashboardStatus === "pending" ||
+            dashboardStatus === "delivered"
+        )
+    ) {
+
+        orderFilter.value =
+            dashboardStatus;
+
+    }
+
+
+    // =====================================================
+    // RENDER ORDERS
+    // =====================================================
+
+    renderOrders(
+        adminOrders
+    );
+
 }
 
-
-
-            // DATABASE ERROR
-
-            if (error) {
-
-                console.error(
-                    "Order fetch error:",
-                    error
-                );
-
-
-                container.innerHTML = `
-
-                    <div class="no-orders">
-
-                        ❌ Could not load orders.
-
-                        <br><br>
-
-                        ${escapeHTML(
-                            error.message
-                        )}
-
-                    </div>
-
-                `;
-
-                return;
-
-            }
-
-
-
-            console.log(
-                "Orders received:",
-                data
-            );
-
-
-            adminOrders =
-                data || [];
-
-
-            renderOrders(
-                adminOrders
-            );
-
-        }
+        
 
 
 
