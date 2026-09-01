@@ -3831,50 +3831,90 @@ function createProductCard(
 
 
     // =================================================
-    // CART BUTTON
-    // =================================================
+// CART BUTTON + STOCK STATUS
+// =================================================
 
-    const cartButton =
-        card.querySelector(
-            ".add-cart-dynamic-btn"
-        );
+const cartButton =
+    card.querySelector(
+        ".add-cart-dynamic-btn"
+    );
 
 
-    if (cartButton) {
+const stock =
+    Number(
+        product.stock_quantity || 0
+    );
 
-        cartButton.addEventListener(
-            "click",
-            function() {
 
-                addToCart(
-                    productName,
-                    productPrice,
-                    cartButton
-                );
+// =========================================
+// OUT OF STOCK
+// =========================================
 
+if (
+    cartButton &&
+    stock <= 0
+) {
+
+    cartButton.textContent =
+        "🔴 Out of Stock";
+
+    cartButton.disabled =
+        true;
+
+    cartButton.style.backgroundColor =
+        "#777";
+
+    cartButton.style.color =
+        "white";
+
+    cartButton.style.cursor =
+        "not-allowed";
+
+    cartButton.style.opacity =
+        "0.7";
+
+}
+
+
+// =========================================
+// IN STOCK
+// =========================================
+
+else if (cartButton) {
+
+    cartButton.addEventListener(
+        "click",
+        function() {
+
+            addToCart(
+                productName,
+                productPrice,
+                cartButton
+            );
+
+
+            cartButton.textContent =
+                "✓ Added";
+
+
+            cartButton.style.backgroundColor =
+                "#3e2723";
+
+
+            setTimeout(function() {
 
                 cartButton.textContent =
-                    "✓ Added";
-
+                    "Add to Cart";
 
                 cartButton.style.backgroundColor =
-                    "#3e2723";
+                    "";
 
+            }, 1500);
 
-                setTimeout(function() {
+        }
+    );
 
-                    cartButton.textContent =
-                        "Add to Cart";
-
-                    cartButton.style.backgroundColor =
-                        "";
-
-                }, 1500);
-
-            }
-        );
-
-    }
+}
 
 
     // =================================================
