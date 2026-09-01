@@ -893,7 +893,130 @@
 }
 
 
+/* =========================================
+   INVENTORY ALERT CARD
+========================================= */
 
+.inventory-alert-card {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 16px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 18px 20px;
+
+    margin-top: 20px;
+
+    background: #fffaf0;
+
+    border: 1px solid #ead9a6;
+
+    border-radius: 14px;
+
+    text-decoration: none;
+
+    color: #38221e;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.inventory-alert-card:hover {
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 18px
+        rgba(56, 34, 30, 0.08);
+}
+
+
+.inventory-alert-icon {
+
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #fff2c7;
+
+    border-radius: 12px;
+
+    font-size: 21px;
+}
+
+
+.inventory-alert-content {
+
+    flex: 1;
+}
+
+
+.inventory-alert-title {
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    margin-bottom: 4px;
+}
+
+
+.inventory-alert-text {
+
+    color: #76645e;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+}
+
+
+.inventory-alert-arrow {
+
+    font-size: 22px;
+
+    font-weight: 600;
+
+    color: #d4af37;
+}
+
+
+@media screen and (max-width: 600px) {
+
+    .inventory-alert-card {
+
+        padding: 16px;
+    }
+
+
+    .inventory-alert-title {
+
+        font-size: 15px;
+    }
+
+
+    .inventory-alert-text {
+
+        font-size: 12px;
+    }
+
+}
 
 
 
@@ -1107,6 +1230,40 @@
 
     </a>
 
+
+               <!-- =========================================
+     INVENTORY ALERT
+========================================= -->
+
+<a
+    href="admin-inventory.html"
+    class="inventory-alert-card"
+>
+
+    <div class="inventory-alert-icon">
+        ⚠️
+    </div>
+
+    <div class="inventory-alert-content">
+
+        <div class="inventory-alert-title">
+            Inventory Alerts
+        </div>
+
+        <div
+            id="dashboard-inventory-alert-text"
+            class="inventory-alert-text"
+        >
+            Checking inventory...
+        </div>
+
+    </div>
+
+    <span class="inventory-alert-arrow">
+        →
+    </span>
+
+</a>
 
 
               <!-- INVENTORY -->
@@ -1619,6 +1776,10 @@ if (productsError) {
         "inventory-stock-count"
     ).textContent =
         totalInventory;
+     
+        // INVENTORY ALERT
+
+        loadInventoryAlert();
 
 }
 
@@ -1758,6 +1919,263 @@ if (productsError) {
     }
 
 }
+
+
+       // =========================================
+// DASHBOARD INVENTORY ALERT
+// =========================================
+
+async function loadInventoryAlert() {
+
+    const alertText =
+        document.getElementById(
+            "dashboard-inventory-alert-text"
+        );
+
+
+    if (!alertText) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("products")
+
+        .select(
+            "stock_quantity"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Inventory alert error:",
+            error
+        );
+
+        alertText.textContent =
+            "Unable to check inventory.";
+
+        return;
+
+    }
+
+
+    const products =
+        data || [];
+
+
+    const lowStock =
+        products.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return (
+                    stock > 0 &&
+                    stock <= 5
+                );
+
+            }
+        ).length;
+
+
+    const outOfStock =
+        products.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return stock === 0;
+
+            }
+        ).length;
+
+
+    const messages = [];
+
+
+    if (lowStock > 0) {
+
+        messages.push(
+            `${lowStock} ${
+                lowStock === 1
+                    ? "product is"
+                    : "products are"
+            } running low on stock`
+        );
+
+    }
+
+
+    if (outOfStock > 0) {
+
+        messages.push(
+            `${outOfStock} ${
+                outOfStock === 1
+                    ? "product is"
+                    : "products are"
+            } currently out of stock`
+        );
+
+    }
+
+
+    if (!messages.length) {
+
+        alertText.textContent =
+            "All products are sufficiently stocked.";
+
+        return;
+
+    }
+
+
+    alertText.textContent =
+        messages.join(" • ");
+
+}
+
+     
+            // =========================================
+// DASHBOARD INVENTORY ALERT
+// =========================================
+
+async function loadInventoryAlert() {
+
+    const alertText =
+        document.getElementById(
+            "dashboard-inventory-alert-text"
+        );
+
+
+    if (!alertText) {
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("products")
+
+        .select(
+            "stock_quantity"
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Inventory alert error:",
+            error
+        );
+
+        alertText.textContent =
+            "Unable to check inventory.";
+
+        return;
+
+    }
+
+
+    const products =
+        data || [];
+
+
+    const lowStock =
+        products.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return (
+                    stock > 0 &&
+                    stock <= 5
+                );
+
+            }
+        ).length;
+
+
+    const outOfStock =
+        products.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return stock === 0;
+
+            }
+        ).length;
+
+
+    const messages = [];
+
+
+    if (lowStock > 0) {
+
+        messages.push(
+            `${lowStock} ${
+                lowStock === 1
+                    ? "product is"
+                    : "products are"
+            } running low on stock`
+        );
+
+    }
+
+
+    if (outOfStock > 0) {
+
+        messages.push(
+            `${outOfStock} ${
+                outOfStock === 1
+                    ? "product is"
+                    : "products are"
+            } currently out of stock`
+        );
+
+    }
+
+
+    if (!messages.length) {
+
+        alertText.textContent =
+            "All products are sufficiently stocked.";
+
+        return;
+
+    }
+
+
+    alertText.textContent =
+        messages.join(" • ");
+
+}
+     
 
 </script>
 

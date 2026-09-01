@@ -762,6 +762,340 @@
 
         }
 
+
+        /* =========================================
+   PROFESSIONAL STOCK ALERT CARDS
+========================================= */
+
+.low-stock-alert,
+.out-stock-alert {
+
+    background: #ffffff;
+
+    border: 1px solid #eadfd9;
+
+    border-radius: 16px;
+
+    padding: 24px;
+
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 6px 20px
+        rgba(56, 34, 30, 0.06);
+}
+
+
+/* Alert Header */
+
+.alert-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+
+.alert-header h2 {
+
+    margin: 0 0 6px;
+
+    color: #38221e;
+
+    font-size: 21px;
+}
+
+
+.alert-header p {
+
+    margin: 0;
+
+    color: #76645e;
+
+    font-size: 14px;
+}
+
+
+/* Alert Count */
+
+.alert-count {
+
+    min-width: 38px;
+
+    height: 38px;
+
+    padding: 0 10px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #fff2c7;
+
+    color: #38221e;
+
+    font-weight: 700;
+
+    font-size: 15px;
+}
+
+
+.alert-count.out-count {
+
+    background: #fde8e8;
+
+    color: #b42318;
+}
+
+
+/* Alert Product Row */
+
+.low-stock-item,
+.out-stock-item {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 16px;
+
+    margin-top: 10px;
+
+    border: 1px solid #eee4df;
+
+    border-radius: 12px;
+
+    background: #fffaf7;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.low-stock-item:hover,
+.out-stock-item:hover {
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 12px
+        rgba(56, 34, 30, 0.07);
+}
+
+
+/* Product Info */
+
+.low-stock-info,
+.out-stock-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    min-width: 180px;
+}
+
+
+.low-stock-info strong,
+.out-stock-info strong {
+
+    color: #38221e;
+
+    font-size: 15px;
+}
+
+
+.low-stock-info span,
+.out-stock-info span {
+
+    color: #8a7770;
+
+    font-size: 13px;
+}
+
+
+/* Stock Quantity */
+
+.low-stock-quantity,
+.out-stock-quantity {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 3px;
+
+    min-width: 90px;
+}
+
+
+.low-stock-quantity span,
+.out-stock-quantity span {
+
+    color: #8a7770;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.4px;
+}
+
+
+.low-stock-quantity strong {
+
+    color: #b7791f;
+
+    font-size: 18px;
+}
+
+
+.out-stock-quantity strong {
+
+    color: #b42318;
+
+    font-size: 18px;
+}
+
+
+/* Reorder / Restock Button */
+
+.reorder-button {
+
+    border: none;
+
+    background: #d4af37;
+
+    color: #ffffff;
+
+    padding: 9px 15px;
+
+    border-radius: 8px;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.reorder-button:hover {
+
+    background: #b99524;
+
+    transform: translateY(-1px);
+}
+
+
+/* Empty Alert Message */
+
+.no-low-stock,
+.no-out-stock {
+
+    padding: 18px;
+
+    border-radius: 10px;
+
+    background: #f8f6f3;
+
+    color: #6f625c;
+
+    text-align: center;
+
+    font-size: 14px;
+}
+
+
+/* Mobile */
+
+@media screen and (max-width: 600px) {
+
+    .low-stock-alert,
+    .out-stock-alert {
+
+        padding: 18px;
+
+        border-radius: 14px;
+    }
+
+
+    .alert-header {
+
+        align-items: flex-start;
+
+    }
+
+
+    .alert-header h2 {
+
+        font-size: 18px;
+    }
+
+
+    .low-stock-item,
+    .out-stock-item {
+
+        flex-wrap: wrap;
+
+        gap: 12px;
+
+        padding: 14px;
+    }
+
+
+    .low-stock-info,
+    .out-stock-info {
+
+        flex: 1;
+
+        min-width: 140px;
+    }
+
+
+    .low-stock-quantity,
+    .out-stock-quantity {
+
+        min-width: 70px;
+    }
+
+
+    .reorder-button {
+
+        width: 100%;
+
+        padding: 10px;
+    }
+
+}
+
+
+
     </style>
 
 </head>
@@ -916,6 +1250,49 @@
     </div>
 
 </section>
+
+
+                <!-- =========================================
+     OUT OF STOCK ALERT
+========================================= -->
+
+<section
+    class="out-stock-alert"
+    id="out-stock-alert"
+>
+
+    <div class="alert-header">
+
+        <div>
+
+            <h2>🔴 Out of Stock Alert</h2>
+
+            <p>
+                Products that are currently unavailable.
+            </p>
+
+        </div>
+
+        <span
+            id="out-stock-alert-count"
+            class="alert-count out-count"
+        >
+            0
+        </span>
+
+    </div>
+
+
+    <div id="out-stock-list">
+
+        <div class="alert-loading">
+            ⏳ Checking stock levels...
+        </div>
+
+    </div>
+
+</section>
+
 
         <!-- =====================================
              PRODUCT INVENTORY
@@ -1157,15 +1534,446 @@
                 data || [];
 
 
-            updateSummary();
+         updateSummary();
 
+renderInventory(
+    inventoryProducts
+);
 
-            renderInventory(
-                inventoryProducts
-            );
+renderLowStockAlert();
+
+renderOutOfStockAlert();
 
         }
-      
+
+
+
+
+        // =========================================
+// LOW STOCK ALERT
+// =========================================
+
+function renderLowStockAlert() {
+
+    const alertList =
+        document.getElementById(
+            "low-stock-list"
+        );
+
+    const alertCount =
+        document.getElementById(
+            "low-stock-alert-count"
+        );
+
+
+    if (
+        !alertList ||
+        !alertCount
+    ) {
+
+        return;
+
+    }
+
+
+    // LOW STOCK = 1 TO 5
+
+    const lowStockProducts =
+        inventoryProducts.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return (
+                    stock > 0 &&
+                    stock <= 5
+                );
+
+            }
+        );
+
+
+    alertCount.textContent =
+        lowStockProducts.length;
+
+
+    // NO LOW STOCK PRODUCTS
+
+    if (!lowStockProducts.length) {
+
+        alertList.innerHTML = `
+
+            <div class="no-low-stock">
+
+                ✅ No products need restocking right now.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // RENDER LOW STOCK PRODUCTS
+
+    alertList.innerHTML =
+        lowStockProducts.map(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+
+                return `
+
+                    <div class="low-stock-item">
+
+                        <div class="low-stock-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    product.name ||
+                                    "Unnamed Product"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(
+                                    product.category ||
+                                    "—"
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        <div class="low-stock-quantity">
+
+                            <span>
+                                Current Stock
+                            </span>
+
+                            <strong>
+                                ${stock}
+                            </strong>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="reorder-button"
+                            onclick="reorderProduct(
+                                ${product.id}
+                            )"
+                        >
+                            🔄 Reorder
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+      // =========================================
+// REORDER PRODUCT
+// =========================================
+
+async function reorderProduct(productId) {
+
+    const product =
+        inventoryProducts.find(
+            function(item) {
+
+                return (
+                    Number(item.id) ===
+                    Number(productId)
+                );
+
+            }
+        );
+
+
+    if (!product) {
+
+        alert(
+            "❌ Product not found."
+        );
+
+        return;
+
+    }
+
+
+    const currentStock =
+        Number(
+            product.stock_quantity || 0
+        );
+
+
+    const quantity =
+        prompt(
+            `Reorder ${product.name}\n\n` +
+            `Current stock: ${currentStock}\n\n` +
+            `Enter quantity to add:`
+        );
+
+
+    // Cancel pressed
+
+    if (quantity === null) {
+
+        return;
+
+    }
+
+
+    const reorderQuantity =
+        Number(quantity);
+
+
+    // Validate quantity
+
+    if (
+        !Number.isInteger(
+            reorderQuantity
+        ) ||
+        reorderQuantity <= 0
+    ) {
+
+        alert(
+            "⚠️ Please enter a valid quantity."
+        );
+
+        return;
+
+    }
+
+
+    const newStock =
+        currentStock +
+        reorderQuantity;
+
+
+    console.log(
+        "Reordering product:",
+        product.name
+    );
+
+    console.log(
+        "Current stock:",
+        currentStock
+    );
+
+    console.log(
+        "Reorder quantity:",
+        reorderQuantity
+    );
+
+    console.log(
+        "New stock:",
+        newStock
+    );
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+
+            .from("products")
+
+            .update({
+
+                stock_quantity:
+                    newStock,
+
+                updated_at:
+                    new Date().toISOString()
+
+            })
+
+            .eq(
+                "id",
+                productId
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Reorder update error:",
+            error
+        );
+
+
+        alert(
+            "❌ Reorder failed:\n\n" +
+            error.message
+        );
+
+        return;
+
+    }
+
+
+    alert(
+        `✅ ${product.name} restocked successfully!\n\n` +
+        `Previous stock: ${currentStock}\n` +
+        `Added: ${reorderQuantity}\n` +
+        `New stock: ${newStock}`
+    );
+
+
+    // Reload inventory
+
+    await loadInventory();
+
+}
+
+
+
+
+// =========================================
+// OUT OF STOCK ALERT
+// =========================================
+
+function renderOutOfStockAlert() {
+
+    const alertList =
+        document.getElementById(
+            "out-stock-list"
+        );
+
+    const alertCount =
+        document.getElementById(
+            "out-stock-alert-count"
+        );
+
+
+    if (
+        !alertList ||
+        !alertCount
+    ) {
+
+        return;
+
+    }
+
+
+    // OUT OF STOCK = 0
+
+    const outOfStockProducts =
+        inventoryProducts.filter(
+            function(product) {
+
+                const stock =
+                    Number(
+                        product.stock_quantity || 0
+                    );
+
+                return stock === 0;
+
+            }
+        );
+
+
+    alertCount.textContent =
+        outOfStockProducts.length;
+
+
+    // NO OUT OF STOCK PRODUCTS
+
+    if (!outOfStockProducts.length) {
+
+        alertList.innerHTML = `
+
+            <div class="no-out-stock">
+
+                ✅ All products are currently in stock.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    // RENDER OUT OF STOCK PRODUCTS
+
+    alertList.innerHTML =
+        outOfStockProducts.map(
+            function(product) {
+
+                return `
+
+                    <div class="out-stock-item">
+
+                        <div class="out-stock-info">
+
+                            <strong>
+                                ${escapeHTML(
+                                    product.name ||
+                                    "Unnamed Product"
+                                )}
+                            </strong>
+
+                            <span>
+                                ${escapeHTML(
+                                    product.category ||
+                                    "—"
+                                )}
+                            </span>
+
+                        </div>
+
+
+                        <div class="out-stock-quantity">
+
+                            <span>
+                                Current Stock
+                            </span>
+
+                            <strong>
+                                0
+                            </strong>
+
+                        </div>
+
+
+                        <button
+                            type="button"
+                            class="reorder-button"
+                            onclick="reorderProduct(
+                                ${product.id}
+                            )"
+                        >
+                            🔄 Restock
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+        ).join("");
+
+}
+
+
+
 
                 // =====================================================
 // INVENTORY STOCK FILTER
