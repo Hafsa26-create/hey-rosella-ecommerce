@@ -1508,6 +1508,110 @@ function setupCheckoutForm() {
                 return;
             }
 
+              // =========================================
+// REDUCE PRODUCT STOCK AFTER SUCCESSFUL ORDER
+// =========================================
+
+for (const cartItem of cart) {
+
+    // Find current product stock
+    const {
+        data: product,
+        error: productError
+    } = await supabaseClient
+
+        .from("products")
+
+        .select(
+            "id, stock_quantity"
+        )
+
+        .eq(
+            "name",
+            cartItem.name
+        )
+
+        .single();
+
+
+    if (productError || !product) {
+
+        console.error(
+            "Could not find product stock:",
+            cartItem.name,
+            productError
+        );
+
+        continue;
+
+    }
+
+
+    const currentStock =
+        Number(
+            product.stock_quantity || 0
+        );
+
+
+    const orderQuantity =
+        Number(
+            cartItem.quantity || 1
+        );
+
+
+    const newStock =
+        Math.max(
+            0,
+            currentStock - orderQuantity
+        );
+
+
+    // Update Supabase stock
+    const {
+        error: stockError
+    } = await supabaseClient
+
+        .from("products")
+
+        .update({
+
+            stock_quantity:
+                newStock,
+
+            updated_at:
+                new Date().toISOString()
+
+        })
+
+        .eq(
+            "id",
+            product.id
+        );
+
+
+    if (stockError) {
+
+        console.error(
+            "Stock update failed:",
+            cartItem.name,
+            stockError
+        );
+
+    } else {
+
+        console.log(
+            "Stock updated:",
+            cartItem.name,
+            currentStock,
+            "→",
+            newStock
+        );
+
+    }
+
+}
+
+
 
             // ORDER SUCCESS
 
@@ -1731,56 +1835,124 @@ async function trackOrder() {
 // =====================================================
 
 supabaseClient.auth.onAuthStateChange(
-    function(event, session) {
+    async function(event, session) {
 
         console.log(
             "Auth state:",
             event
         );
 
+
         const logoutButton =
-            document.getElementById("logout-button");
-
-
-        // CUSTOMER LOGGED IN
-        if (session) {
-
-            console.log(
-                "Customer logged in:",
-                session.user.email
-            );
-
-            console.log(
-                "Email verified:",
-                !!session.user.email_confirmed_at
+            document.getElementById(
+                "logout-button"
             );
 
 
-            // Show logout button
-            if (logoutButton) {
+        // =========================================
+        // NO SESSION
+        // =========================================
 
-                logoutButton.style.display =
-                    "inline-block";
-
-            }
-
-        }
-
-        // CUSTOMER LOGGED OUT
-        else {
+        if (!session) {
 
             console.log(
-                "Customer is not logged in."
+                "No user logged in."
             );
 
 
-            // Hide logout button
             if (logoutButton) {
 
                 logoutButton.style.display =
                     "none";
 
             }
+
+            return;
+
+        }
+
+
+        // =========================================
+        // CHECK USER ROLE
+        // =========================================
+
+        const {
+            data: profile,
+            error
+        } = await supabaseClient
+
+            .from("profiles")
+
+            .select("role")
+
+            .eq(
+                "id",
+                session.user.id
+            )
+
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "Auth role check error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        // =========================================
+        // ADMIN
+        // =========================================
+
+        if (
+            profile &&
+            profile.role === "Admin"
+        ) {
+
+            console.log(
+                "Admin logged in:",
+                session.user.email
+            );
+
+
+            // Do NOT treat admin as customer
+            if (logoutButton) {
+
+                logoutButton.style.display =
+                    "none";
+
+            }
+
+            return;
+
+        }
+
+
+        // =========================================
+        // CUSTOMER
+        // =========================================
+
+        console.log(
+            "Customer logged in:",
+            session.user.email
+        );
+
+
+        console.log(
+            "Email verified:",
+            !!session.user.email_confirmed_at
+        );
+
+
+        if (logoutButton) {
+
+            logoutButton.style.display =
+                "inline-block";
 
         }
 
@@ -1827,23 +1999,114 @@ async function checkCustomerAccount() {
 // =====================================================
 
 async function openCustomerProfile() {
-    const account = await checkCustomerAccount();
+
+    console.log("OPEN CUSTOMER PROFILE CALLED");
+
+    const account =
+        await checkCustomerAccount();
+
 
     if (!account.loggedIn) {
-        alert("Please login first.");
+
+        alert(
+            "Please login first."
+        );
+
         openAuthPopup();
+
         return;
+
     }
 
-    const section = document.getElementById("customer-profile-section");
+
+    // =========================================
+    // CHECK USER ROLE
+    // =========================================
+
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+
+        .from("profiles")
+
+        .select("role")
+
+        .eq(
+            "id",
+            account.customer.id
+        )
+
+        .single();
+
+        console.log(
+    "CURRENT USER ID:",
+    account.customer.id
+);
+
+console.log(
+    "PROFILE ROLE:",
+    profile?.role
+);
+
+
+    if (error) {
+
+        console.error(
+            "Role check error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    // =========================================
+    // ADMIN SHOULD NOT USE CUSTOMER PROFILE
+    // =========================================
+
+    if (
+        profile &&
+        profile.role === "Admin"
+    ) {
+
+        alert(
+            "Admin account detected. Please use the Admin Dashboard."
+        );
+
+        window.location.href =
+            "admin.html";
+
+        return;
+
+    }
+
+
+    // =========================================
+    // CUSTOMER PROFILE
+    // =========================================
+
+    const section =
+        document.getElementById(
+            "customer-profile-section"
+        );
+
 
     if (section) {
-        section.style.display = "block";
+
+        section.style.display =
+            "block";
+
     }
 
-    console.log("Customer profile opened:", account.customer.email);
-}
 
+    console.log(
+        "Customer profile opened:",
+        account.customer.email
+    );
+
+}
 function closeCustomerProfile() {
     const section = document.getElementById("customer-profile-section");
 
@@ -2230,6 +2493,10 @@ function addToRecentlyViewed(productName, productPrice, productImage = "") {
 }
 
 
+// =====================================================
+// OPEN CUSTOMER PROFILE
+// =====================================================
+
 async function openCustomerProfile() {
 
     const result =
@@ -2238,51 +2505,126 @@ async function openCustomerProfile() {
     const session =
         result.data.session;
 
+
+    // =========================================
+    // NO LOGIN
+    // =========================================
+
     if (!session) {
 
-        alert("Please login to view your account.");
+        alert(
+            "Please login to view your account."
+        );
 
         openAuthPopup();
 
         return;
     }
 
-    // Hide all account forms when opening account
+
+    // =========================================
+    // CHECK USER ROLE
+    // =========================================
+
+    const {
+        data: profile,
+        error
+    } = await supabaseClient
+
+        .from("profiles")
+
+        .select("role")
+
+        .eq(
+            "id",
+            session.user.id
+        )
+
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Role check error:",
+            error
+        );
+
+        return;
+    }
+
+
+    // =========================================
+    // ADMIN ACCOUNT
+    // =========================================
+
+    if (
+        profile &&
+        profile.role === "Admin"
+    ) {
+
+        alert(
+            "Admin account detected. Opening Admin Dashboard..."
+        );
+
+        window.location.href =
+            "admin.html";
+
+        return;
+    }
+
+
+    // =========================================
+    // CUSTOMER ACCOUNT
+    // =========================================
+
     closeAllCustomerForms();
+
 
     const popup =
         document.getElementById(
             "customer-account-popup"
         );
 
+
     const profileName =
         document.getElementById(
             "profile-name"
         );
+
 
     const profileEmail =
         document.getElementById(
             "profile-email"
         );
 
+
     if (profileName) {
 
         profileName.textContent =
             session.user.user_metadata?.full_name ||
             "Customer";
+
     }
+
 
     if (profileEmail) {
 
         profileEmail.textContent =
             session.user.email || "";
+
     }
+
 
     if (popup) {
 
-        popup.style.display = "flex";
+        popup.style.display =
+            "flex";
+
     }
+
 }
+
 
 // =====================================================
 // CLOSE CUSTOMER PROFILE
@@ -2663,7 +3005,6 @@ window.addEventListener(
 
 
 
-
 // =====================================================
 // HOME ACCOUNT BUTTON
 // =====================================================
@@ -2676,6 +3017,10 @@ async function openAccountPage() {
     } = await supabaseClient.auth.getSession();
 
 
+    // =========================================
+    // SESSION ERROR
+    // =========================================
+
     if (error) {
 
         console.error(
@@ -2684,23 +3029,87 @@ async function openAccountPage() {
         );
 
         return;
+
     }
 
 
-    // CUSTOMER ALREADY LOGGED IN
+    // =========================================
+    // NO USER LOGGED IN
+    // =========================================
 
-    if (data.session) {
+    if (!data.session) {
 
-        window.location.href =
-            "my-account.html";
+        openAuthPopup();
 
         return;
+
     }
 
 
-    // CUSTOMER NOT LOGGED IN
+    // =========================================
+    // CHECK USER ROLE
+    // =========================================
 
-    openAuthPopup();
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+
+        .from("profiles")
+
+        .select("role")
+
+        .eq(
+            "id",
+            data.session.user.id
+        )
+
+        .single();
+
+
+    // =========================================
+    // PROFILE ERROR
+    // =========================================
+
+    if (profileError) {
+
+        console.error(
+            "Account role check error:",
+            profileError
+        );
+
+        return;
+
+    }
+
+
+    // =========================================
+    // ADMIN ACCOUNT
+    // =========================================
+
+    if (
+        profile &&
+        profile.role === "Admin"
+    ) {
+
+        console.log(
+            "Admin account detected."
+        );
+
+        window.location.href =
+            "admin.html";
+
+        return;
+
+    }
+
+
+    // =========================================
+    // CUSTOMER ACCOUNT
+    // =========================================
+
+    window.location.href =
+        "my-account.html";
 
 }
 
