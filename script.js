@@ -1463,6 +1463,112 @@ function setupCheckoutForm() {
                 "HR-" + Date.now();
 
 
+
+
+                // =========================================
+// CHECK STOCK BEFORE PLACING ORDER
+// =========================================
+
+for (const cartItem of cart) {
+
+    const {
+        data: product,
+        error: productError
+    } = await supabaseClient
+
+        .from("products")
+
+        .select(
+            "id, name, stock_quantity"
+        )
+
+        .eq(
+            "name",
+            cartItem.name
+        )
+
+        .single();
+
+
+    // PRODUCT NOT FOUND
+
+    if (productError || !product) {
+
+        console.error(
+            "Stock check failed:",
+            cartItem.name,
+            productError
+        );
+
+        alert(
+            "Sorry! We could not verify the stock for:\n\n" +
+            cartItem.name
+        );
+
+        return;
+
+    }
+
+
+    const currentStock =
+        Number(
+            product.stock_quantity || 0
+        );
+
+
+    const orderQuantity =
+        Number(
+            cartItem.quantity || 1
+        );
+
+
+    // OUT OF STOCK
+
+    if (currentStock <= 0) {
+
+        alert(
+            "🔴 Out of Stock\n\n" +
+            cartItem.name +
+            "\n\nThis product is currently unavailable."
+        );
+
+        return;
+
+    }
+
+
+    // NOT ENOUGH STOCK
+
+    if (
+        orderQuantity >
+        currentStock
+    ) {
+
+        alert(
+            "⚠️ Not Enough Stock\n\n" +
+            cartItem.name +
+            "\n\n" +
+            "Available stock: " +
+            currentStock +
+            "\n" +
+            "Your cart quantity: " +
+            orderQuantity +
+            "\n\n" +
+            "Please reduce the quantity and try again."
+        );
+
+        return;
+
+    }
+
+}
+
+
+// =========================================
+// STOCK VERIFIED — CONTINUE ORDER
+// =========================================
+
+
             // SAVE ORDER TO SUPABASE
 
            const orderResult =
