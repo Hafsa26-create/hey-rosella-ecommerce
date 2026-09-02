@@ -93,6 +93,145 @@ function addToCart(productName, productPrice, button) {
 
 
 // =====================================================
+// ADD TO CART WITH STOCK CHECK
+// =====================================================
+
+async function addToCart(productName, productPrice, button) {
+
+    try {
+
+        // Get latest stock from Supabase
+        const { data, error } = await supabaseClient
+            .from("products")
+            .select("stock_quantity")
+            .eq("name", productName)
+            .single();
+
+        if (error) {
+
+            console.error("Stock check error:", error);
+
+            alert(
+                "Unable to check product stock. Please try again."
+            );
+
+            return false;
+        }
+
+        const availableStock =
+            Number(data.stock_quantity) || 0;
+
+
+        // =================================================
+        // OUT OF STOCK
+        // =================================================
+
+        if (availableStock <= 0) {
+
+            alert(
+                "Sorry, this product is currently out of stock."
+            );
+
+            return false;
+        }
+
+
+        // =================================================
+        // CHECK CURRENT CART QUANTITY
+        // =================================================
+
+        const existingProduct = cart.find(function(product) {
+
+            return product.name === productName;
+
+        });
+
+
+        if (existingProduct) {
+
+            // Already reached stock limit
+            if (
+                Number(existingProduct.quantity) >=
+                availableStock
+            ) {
+
+                alert(
+                    "Only " +
+                    availableStock +
+                    " item(s) available in stock."
+                );
+
+                return false;
+            }
+
+
+            existingProduct.quantity += 1;
+
+        } else {
+
+            cart.push({
+
+                name: productName,
+
+                price: Number(productPrice),
+
+                quantity: 1
+
+            });
+
+        }
+
+
+        // =================================================
+        // SAVE CART
+        // =================================================
+
+        saveCart();
+
+        updateCartCount();
+
+        showCartItems();
+
+
+        // =================================================
+        // BUTTON STATE
+        // =================================================
+
+        if (button) {
+
+            button.textContent = "✓ Added";
+
+            button.disabled = true;
+
+            button.style.opacity = "0.7";
+
+            button.style.cursor = "default";
+
+        }
+
+
+        console.log("Cart:", cart);
+
+        return true;
+
+
+    } catch (error) {
+
+        console.error(
+            "Add to cart error:",
+            error
+        );
+
+        alert(
+            "Something went wrong while adding the product."
+        );
+
+        return false;
+    }
+}
+
+
+// =====================================================
 // ADD TO CART SUCCESS MESSAGE
 // =====================================================
 
@@ -254,21 +393,66 @@ function showCartItems() {
 
 
 // =====================================================
-// INCREASE QUANTITY
+// INCREASE QUANTITY WITH STOCK CHECK
 // =====================================================
 
-function increaseQuantity(index) {
+async function increaseQuantity(index) {
 
     if (!cart[index]) {
         return;
     }
 
-    cart[index].quantity += 1;
+    const product = cart[index];
 
-    saveCart();
+    try {
 
-    updateCartCount();
-    showCartItems();
+        // Get latest stock from Supabase
+        const { data, error } = await supabaseClient
+            .from("products")
+            .select("stock_quantity")
+            .eq("name", product.name)
+            .single();
+
+        if (error) {
+            console.error("Stock check error:", error);
+            alert("Unable to check product stock. Please try again.");
+            return;
+        }
+
+        const availableStock = Number(data.stock_quantity) || 0;
+
+        // Out of stock
+        if (availableStock <= 0) {
+            alert("Sorry, this product is currently out of stock.");
+            return;
+        }
+
+        // Maximum stock reached
+        if (product.quantity >= availableStock) {
+            alert(
+                "Only " +
+                availableStock +
+                " item(s) available in stock."
+            );
+            return;
+        }
+
+        // Increase quantity
+        product.quantity += 1;
+
+        saveCart();
+
+        updateCartCount();
+        showCartItems();
+
+    } catch (error) {
+
+        console.error("Quantity update error:", error);
+
+        alert(
+            "Something went wrong while checking stock."
+        );
+    }
 }
 
 
@@ -1618,105 +1802,88 @@ for (const cartItem of cart) {
 // REDUCE PRODUCT STOCK AFTER SUCCESSFUL ORDER
 // =========================================
 
+// =========================================
+// REDUCE PRODUCT STOCK AFTER SUCCESSFUL ORDER
+// USING ATOMIC SUPABASE RPC
+// =========================================
+
 for (const cartItem of cart) {
 
-    // Find current product stock
+    // Find product ID
     const {
         data: product,
         error: productError
     } = await supabaseClient
-
         .from("products")
-
-        .select(
-            "id, stock_quantity"
-        )
-
-        .eq(
-            "name",
-            cartItem.name
-        )
-
+        .select("id")
+        .eq("name", cartItem.name)
         .single();
 
 
+    // PRODUCT NOT FOUND
     if (productError || !product) {
 
         console.error(
-            "Could not find product stock:",
+            "Could not find product:",
             cartItem.name,
             productError
         );
 
         continue;
-
     }
 
 
-    const currentStock =
-        Number(
-            product.stock_quantity || 0
-        );
-
-
     const orderQuantity =
-        Number(
-            cartItem.quantity || 1
-        );
+        Number(cartItem.quantity || 1);
 
 
-    const newStock =
-        Math.max(
-            0,
-            currentStock - orderQuantity
-        );
-
-
-    // Update Supabase stock
+    // ATOMIC STOCK REDUCTION
     const {
+        data: stockUpdated,
         error: stockError
     } = await supabaseClient
-
-        .from("products")
-
-        .update({
-
-            stock_quantity:
-                newStock,
-
-            updated_at:
-                new Date().toISOString()
-
-        })
-
-        .eq(
-            "id",
-            product.id
+        .rpc(
+            "reduce_product_stock",
+            {
+                p_product_id: product.id,
+                p_quantity: orderQuantity
+            }
         );
 
 
+    // STOCK UPDATE FAILED
     if (stockError) {
 
         console.error(
-            "Stock update failed:",
+            "Stock reduction failed:",
             cartItem.name,
             stockError
         );
 
-    } else {
-
-        console.log(
-            "Stock updated:",
-            cartItem.name,
-            currentStock,
-            "→",
-            newStock
-        );
-
+        continue;
     }
 
-}
 
+    // NOT ENOUGH STOCK
+    if (stockUpdated !== true) {
+
+        console.error(
+            "Stock could not be reduced:",
+            cartItem.name
+        );
+
+        continue;
+    }
+
+
+    console.log(
+        "Stock successfully reduced:",
+        cartItem.name,
+        "Quantity:",
+        orderQuantity
+    );
+
+}
 
 
             // ORDER SUCCESS
@@ -4449,38 +4616,40 @@ function renderWishlist() {
 
         if (cartButton) {
 
-            cartButton.addEventListener(
-                "click",
-                function() {
+    cartButton.addEventListener(
+        "click",
+        async function() {
 
-                    // ADD TO CART
-                    addToCart(
-                        product.name,
-                        product.price,
-                        cartButton
-                    );
-
-
-                    // REMOVE FROM WISHLIST
-                    removeFromWishlist(
-                        product.name
-                    );
-
-
-                    // SUCCESS STATE
-                    cartButton.textContent =
-                        "✓ Added to Cart";
-
-                    cartButton.style.backgroundColor =
-                        "#3e2723";
-
-                    cartButton.style.color =
-                        "white";
-
-                }
+            const added = await addToCart(
+                product.name,
+                product.price,
+                cartButton
             );
 
+           
+            if (!added) {
+                return;
+            }
+
+            
+            removeFromWishlist(
+                product.name
+            );
+
+            // SUCCESS STATE
+            cartButton.textContent =
+                "✓ Added to Cart";
+
+            cartButton.style.backgroundColor =
+                "#3e2723";
+
+            cartButton.style.color =
+                "white";
+
         }
+    );
+
+}
 
 
         // =================================================
