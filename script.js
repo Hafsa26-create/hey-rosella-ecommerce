@@ -3212,11 +3212,6 @@ async function handleForgotPassword() {
 }
 
 
-// tomar existing code
-// ...
-// ...
-// existing last function
-
 
 // =====================================================
 // CLOSE ALL CUSTOMER ACCOUNT FORMS
