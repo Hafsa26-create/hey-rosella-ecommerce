@@ -431,13 +431,7 @@
             );
 
 
-        /* =====================================================
-           ADMIN EMAIL
-        ===================================================== */
-
-        const ADMIN_EMAIL =
-            "heyrosella26@gmail.com";
-
+        
 
         /* =====================================================
            CHECK ADMIN ACCESS
@@ -483,28 +477,51 @@
             }
 
 
-            const email =
-                session.user.email;
+           const {
+    data: profile,
+    error: profileError
+} = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", session.user.id)
+    .single();
 
+if (profileError) {
 
-            if (
-                !email ||
-                email.toLowerCase() !==
-                ADMIN_EMAIL.toLowerCase()
-            ) {
+    console.error(
+        "Admin profile check error:",
+        profileError
+    );
 
-                alert(
-                    "Access denied. Admin only."
-                );
+    await supabaseClient.auth.signOut();
 
-                await supabaseClient.auth.signOut();
+    alert(
+        "Unable to verify admin access."
+    );
 
-                window.location.href =
-                    "admin-login.html";
+    window.location.href =
+        "admin-login.html";
 
-                return false;
-            }
+    return false;
+}
 
+if (
+    !profile ||
+    String(profile.role).toLowerCase() !==
+    "admin"
+) {
+
+    alert(
+        "Access denied. Admin only."
+    );
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "admin-login.html";
+
+    return false;
+}
 
             return true;
         }
