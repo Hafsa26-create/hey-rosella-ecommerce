@@ -2597,6 +2597,7 @@ function loadWishlistData() {
 
 
 // Save wishlist
+
 function saveWishlist() {
 
     localStorage.setItem(
@@ -2608,19 +2609,26 @@ function saveWishlist() {
 
 
 // Add product to wishlist
-function addToWishlist(
+
+function addToWishlist
+(
+    productId,
     productName,
     productPrice,
     productImage = ""
-) {
+) 
+
+{
 
     // Check if already exists
+ 
     const alreadyExists =
-        wishlist.some(function(product) {
+    wishlist.some(function(product) 
+    {
 
-            return product.name === productName;
+        return String(product.id) === String(productId);
 
-        });
+    });
 
 
     if (alreadyExists) {
@@ -2631,16 +2639,15 @@ function addToWishlist(
 
 
     // Add product
-    wishlist.push({
-
-        name: productName,
-
-        price: Number(productPrice) || 0,
-
-        image: productImage || ""
-
-    });
-
+    
+    wishlist.push(
+        {
+            id: String(productId),
+             name: productName,
+              price: Number(productPrice) || 0,
+                image: productImage || ""
+       }
+            );
 
     // Save
     saveWishlist();
