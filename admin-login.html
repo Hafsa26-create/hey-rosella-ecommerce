@@ -214,24 +214,7 @@
     }
 
 
-    // =========================
-    // CHECK ADMIN EMAIL
-    // =========================
-
-    const adminEmail =
-        "heyrosella26@gmail.com";
-
-
-    if (
-        email.toLowerCase() !==
-        adminEmail.toLowerCase()
-    ) {
-
-        message.textContent =
-            "Access denied. Admin email only.";
-
-        return;
-    }
+    
 
 
     message.textContent =
@@ -284,13 +267,76 @@
 
     // SUCCESS
 
+    // =========================
+// CHECK ADMIN ROLE
+// =========================
+
+const user = data.user;
+
+if (!user) {
+
     message.textContent =
-        "Login successful!";
+        "Login failed. Please try again.";
+
+    return;
+}
 
 
-    window.location.href =
-        "admin.html";
+// Get user's profile role
 
+const {
+    data: profile,
+    error: profileError
+} = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+
+
+if (profileError) {
+
+    console.error(
+        "Admin role check error:",
+        profileError
+    );
+
+    await supabaseClient.auth.signOut();
+
+    message.textContent =
+        "Unable to verify admin access.";
+
+    return;
+}
+
+
+// =========================
+// ADMIN ONLY
+// =========================
+
+if (
+    !profile ||
+    String(profile.role).toLowerCase() !== "admin"
+) {
+
+    await supabaseClient.auth.signOut();
+
+    message.textContent =
+        "Access denied. Admin account required.";
+
+    return;
+}
+
+
+// =========================
+// ADMIN LOGIN SUCCESS
+// =========================
+
+message.textContent =
+    "Login successful!";
+
+window.location.href =
+    "admin.html";
 }
 
     </script>
