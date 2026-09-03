@@ -2206,6 +2206,7 @@ document.addEventListener(
             "Hey Rosella website loaded successfully."
         );
     }
+    
 );
 
 
@@ -2223,126 +2224,6 @@ async function checkCustomerAccount() {
     };
 }
 
-// =====================================================
-// CUSTOMER PROFILE
-// =====================================================
-
-async function openCustomerProfile() {
-
-    console.log("OPEN CUSTOMER PROFILE CALLED");
-
-    const account =
-        await checkCustomerAccount();
-
-
-    if (!account.loggedIn) {
-
-        alert(
-            "Please login first."
-        );
-
-        openAuthPopup();
-
-        return;
-
-    }
-
-
-    // =========================================
-    // CHECK USER ROLE
-    // =========================================
-
-    const {
-        data: profile,
-        error
-    } = await supabaseClient
-
-        .from("profiles")
-
-        .select("role")
-
-        .eq(
-            "id",
-            account.customer.id
-        )
-
-        .single();
-
-        console.log(
-    "CURRENT USER ID:",
-    account.customer.id
-);
-
-console.log(
-    "PROFILE ROLE:",
-    profile?.role
-);
-
-
-    if (error) {
-
-        console.error(
-            "Role check error:",
-            error
-        );
-
-        return;
-
-    }
-
-
-    // =========================================
-    // ADMIN SHOULD NOT USE CUSTOMER PROFILE
-    // =========================================
-
-    if (
-        profile &&
-        profile.role === "Admin"
-    ) {
-
-        alert(
-            "Admin account detected. Please use the Admin Dashboard."
-        );
-
-        window.location.href =
-            "admin.html";
-
-        return;
-
-    }
-
-
-    // =========================================
-    // CUSTOMER PROFILE
-    // =========================================
-
-    const section =
-        document.getElementById(
-            "customer-profile-section"
-        );
-
-
-    if (section) {
-
-        section.style.display =
-            "block";
-
-    }
-
-
-    console.log(
-        "Customer profile opened:",
-        account.customer.email
-    );
-
-}
-function closeCustomerProfile() {
-    const section = document.getElementById("customer-profile-section");
-
-    if (section) {
-        section.style.display = "none";
-    }
-}
 
 // =====================================================
 // CHANGE PASSWORD
@@ -3532,15 +3413,17 @@ function addToWishlist(
 // REMOVE FROM WISHLIST
 // =====================================================
 
-function removeFromWishlist(productName) {
+function removeFromWishlist(productId)
+{
 
     let wishlist = getWishlist();
 
-    wishlist = wishlist.filter(function(product) {
+    wishlist = wishlist.filter(function(product) 
+    {
+          return String(product.id) !== String(productId);
 
-        return product.name !== productName;
-
-    });
+    }
+    );
 
     saveWishlist(wishlist);
 
@@ -3952,40 +3835,39 @@ if (
 // =========================================
 
 else if (cartButton) {
+cartButton.addEventListener(
+    "click",
+    async function() {
 
-    cartButton.addEventListener(
-        "click",
-        function() {
+        const added = await addToCart(
+            product.id,
+            productName,
+            productPrice,
+            cartButton
+        );
 
-           addToCart(
-              product.id,
-                productName,
-                  productPrice,
-                    cartButton
-            );
+        if (!added) {
+            return;
+        }
 
+        cartButton.textContent =
+            "✓ Added";
+
+        cartButton.style.backgroundColor =
+            "#3e2723";
+
+        setTimeout(function() {
 
             cartButton.textContent =
-                "✓ Added";
-
+                "Add to Cart";
 
             cartButton.style.backgroundColor =
-                "#3e2723";
+                "";
 
+        }, 1500);
 
-            setTimeout(function() {
-
-                cartButton.textContent =
-                    "Add to Cart";
-
-                cartButton.style.backgroundColor =
-                    "";
-
-            }, 1500);
-
-        }
-    );
-
+    }
+);
 }
 
 
@@ -4434,9 +4316,10 @@ function renderWishlist() {
                 }
 
             
-            removeFromWishlist(
-                product.name
-            );
+            removeFromWishlist
+               (
+                 product.id
+                );
 
             // SUCCESS STATE
             cartButton.textContent =
@@ -4470,8 +4353,9 @@ function renderWishlist() {
                 "click",
                 function() {
 
-                    removeFromWishlist(
-                        product.name
+                    removeFromWishlist 
+                    (
+                      product.id
                     );
 
                 }
