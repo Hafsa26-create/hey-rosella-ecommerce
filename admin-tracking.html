@@ -1,1240 +1,393 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Order Tracking - Hey Rosella</title>
-
     <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #fff0f5;
-            color: #3e2723;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        .admin-header {
-            background: #3e2723;
-            color: white;
-            padding: 18px 30px;
-
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .admin-logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .admin-badge {
-            background: #d4af37;
-            color: white;
-            padding: 7px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        .container {
-            max-width: 1100px;
-            margin: 50px auto;
-            padding: 0 20px;
-        }
-
-        .page-title {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .page-title p {
-            color: #6d4c41;
-            font-size: 16px;
-        }
-
-
-        /* =========================
-           SEARCH SECTION
-        ========================= */
-
-        .search-section {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            margin-bottom: 30px;
-        }
-
-        .search-section label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .search-box {
-            width: 100%;
-            padding: 13px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .search-box:focus {
-            border-color: #d4af37;
-        }
-
-
-        /* =========================
-           FILTER
-        ========================= */
-
-        .filter-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .filter-row label {
-            margin: 0;
-        }
-
-        .filter-select {
-            padding: 11px 14px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            background: white;
-            color: #3e2723;
-            cursor: pointer;
-        }
-
-
-        /* =========================
-           TRACKING LIST
-        ========================= */
-
-        .tracking-list {
-            display: grid;
-            gap: 25px;
-        }
-
-        .tracking-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-        }
-
-        .tracking-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .order-number {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .order-date {
-            font-size: 13px;
-            color: #795548;
-            margin-top: 5px;
-        }
-
-
-        /* =========================
-           STATUS BADGES
-        ========================= */
-
-        .status-badge {
-            padding: 7px 13px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: bold;
-        }
-
-        .pending {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .processing {
-            background: #dbeafe;
-            color: #1e40af;
-        }
-
-        .shipped {
-            background: #e0e7ff;
-            color: #3730a3;
-        }
-
-        .delivered {
-            background: #d1fae5;
-            color: #065f46;
-        }
-
-        .cancelled {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-
-        /* =========================
-           CUSTOMER INFO
-        ========================= */
-
-        .customer-info {
-            background: #fff8fa;
-            padding: 18px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .customer-info h3 {
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-
-        .customer-info p {
-            margin: 7px 0;
-            font-size: 14px;
-        }
-
-
-        /* =========================
-           TIMELINE
-        ========================= */
-
-        .timeline {
-            margin: 25px 0;
-        }
-
-        .timeline-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-
-        .timeline-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            position: relative;
-            padding-bottom: 25px;
-        }
-
-        .timeline-step:last-child {
-            padding-bottom: 0;
-        }
-
-        .timeline-icon {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: #ddd;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            flex-shrink: 0;
-            font-size: 15px;
-        }
-
-        .timeline-step.completed .timeline-icon {
-            background: #d4af37;
-            color: white;
-        }
-
-        .timeline-step.current .timeline-icon {
-            background: #3e2723;
-            color: white;
-        }
-
-        .timeline-content strong {
-            display: block;
-            margin-bottom: 4px;
-        }
-
-        .timeline-content span {
-            font-size: 13px;
-            color: #795548;
-        }
-
-        .timeline-line {
-            position: absolute;
-            left: 17px;
-            top: 35px;
-            width: 2px;
-            height: calc(100% - 10px);
-            background: #ddd;
-        }
-
-        .timeline-step.completed .timeline-line {
-            background: #d4af37;
-        }
-
-
-        /* =========================
-           UPDATE SECTION
-        ========================= */
-
-        .update-section {
-            border-top: 1px solid #eee;
-            padding-top: 20px;
-
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .update-section label {
-            font-weight: bold;
-        }
-
-        .status-select {
-            padding: 10px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            color: #3e2723;
-            cursor: pointer;
-        }
-
-        .update-button {
-            border: none;
-            background: #d4af37;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .update-button:hover {
-            background: #b8962e;
-        }
-
-
-        /* =========================
-           NO RESULTS
-        ========================= */
-
-        .no-results {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            text-align: center;
-            color: #795548;
-            display: none;
-        }
-
-
-        /* =========================
-           BACK BUTTON
-        ========================= */
-
-        .back-section {
-            margin-top: 35px;
-            margin-bottom: 30px;
-        }
-
-        .back-button {
-            display: inline-block;
-            text-decoration: none;
-            background: #3e2723;
-            color: white;
-            padding: 11px 18px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .back-button:hover {
-            background: #2b1b18;
-        }
-
-
-        /* =========================
-           MOBILE
-        ========================= */
-
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Arial, sans-serif; background: #fff0f5; color: #3e2723; }
+        .admin-header { background: #3e2723; color: white; padding: 18px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .admin-logo { font-size: 24px; font-weight: bold; }
+        .admin-badge { background: #d4af37; color: white; padding: 7px 14px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .container { max-width: 1100px; margin: 50px auto; padding: 0 20px; }
+        .page-title { text-align: center; margin-bottom: 30px; }
+        .page-title h1 { font-size: 32px; margin-bottom: 10px; }
+        .page-title p { color: #6d4c41; font-size: 16px; }
+        .search-section { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,.08); margin-bottom: 30px; }
+        .search-section label { display: block; font-weight: bold; margin-bottom: 10px; }
+        .search-box { width: 100%; padding: 13px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 15px; outline: none; }
+        .search-box:focus { border-color: #d4af37; }
+        .filter-row { display: flex; align-items: center; gap: 15px; margin-top: 20px; flex-wrap: wrap; }
+        .filter-row label { margin: 0; }
+        .filter-select { padding: 11px 14px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white; color: #3e2723; cursor: pointer; }
+        .tracking-list { display: grid; gap: 25px; }
+        .tracking-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,.08); }
+        .tracking-header { display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px; }
+        .order-number { font-size: 20px; font-weight: bold; }
+        .order-date { font-size: 13px; color: #795548; margin-top: 5px; }
+        .status-badge { padding: 7px 13px; border-radius: 20px; font-size: 13px; font-weight: bold; }
+        .pending { background: #fff3cd; color: #856404; }
+        .processing { background: #dbeafe; color: #1e40af; }
+        .shipped { background: #e0e7ff; color: #3730a3; }
+        .delivered { background: #d1fae5; color: #065f46; }
+        .cancelled { background: #fee2e2; color: #991b1b; }
+        .customer-info { background: #fff8fa; padding: 18px; border-radius: 10px; margin-bottom: 20px; }
+        .customer-info h3 { margin-top: 0; margin-bottom: 12px; }
+        .customer-info p { margin: 7px 0; font-size: 14px; }
+        .products-list { margin-top: 8px; }
+        .products-list p { margin: 6px 0; }
+        .timeline { margin: 25px 0; }
+        .timeline-title { font-size: 18px; font-weight: bold; margin-bottom: 20px; }
+        .timeline-step { display: flex; align-items: flex-start; gap: 15px; position: relative; padding-bottom: 25px; }
+        .timeline-step:last-child { padding-bottom: 0; }
+        .timeline-icon { width: 35px; height: 35px; border-radius: 50%; background: #ddd; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; }
+        .timeline-step.completed .timeline-icon { background: #d4af37; color: white; }
+        .timeline-step.current .timeline-icon { background: #3e2723; color: white; }
+        .timeline-content strong { display: block; margin-bottom: 4px; }
+        .timeline-content span { font-size: 13px; color: #795548; }
+        .timeline-line { position: absolute; left: 17px; top: 35px; width: 2px; height: calc(100% - 10px); background: #ddd; }
+        .timeline-step.completed .timeline-line { background: #d4af37; }
+        .update-section { border-top: 1px solid #eee; padding-top: 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .update-section label { font-weight: bold; }
+        .status-select { padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; background: white; color: #3e2723; cursor: pointer; }
+        .update-button { border: none; background: #d4af37; color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .update-button:hover { background: #b8962e; }
+        .update-button:disabled { opacity: .6; cursor: not-allowed; }
+        .no-results { background: white; padding: 40px; border-radius: 15px; text-align: center; color: #795548; display: none; }
+        .loading-message, .error-message { background: white; padding: 30px; border-radius: 15px; text-align: center; color: #795548; }
+        .back-section { margin-top: 35px; margin-bottom: 30px; }
+        .back-button { display: inline-block; text-decoration: none; background: #3e2723; color: white; padding: 11px 18px; border-radius: 8px; font-weight: bold; }
+        .back-button:hover { background: #2b1b18; }
         @media (max-width: 600px) {
-
-            .admin-header {
-                padding: 15px 20px;
-            }
-
-            .admin-logo {
-                font-size: 20px;
-            }
-
-            .container {
-                margin-top: 30px;
-            }
-
-            .page-title h1 {
-                font-size: 27px;
-            }
-
-            .tracking-card {
-                padding: 18px;
-            }
-
-            .update-section {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .status-select,
-            .update-button {
-                width: 100%;
-            }
-
+            .admin-header { padding: 15px 20px; }
+            .admin-logo { font-size: 20px; }
+            .container { margin-top: 30px; }
+            .page-title h1 { font-size: 27px; }
+            .tracking-card { padding: 18px; }
+            .update-section { align-items: stretch; flex-direction: column; }
+            .status-select, .update-button { width: 100%; }
         }
-
     </style>
-
 </head>
-
-
 <body>
-
-
-    <!-- =========================
-         HEADER
-    ========================= -->
-
     <header class="admin-header">
-
-        <div class="admin-logo">
-            Hey Rosella 💎
-        </div>
-
-        <div class="admin-badge">
-            ADMIN
-        </div>
-
+        <div class="admin-logo">Hey Rosella 💎</div>
+        <div class="admin-badge">ADMIN</div>
     </header>
 
-
-    <!-- =========================
-         MAIN CONTAINER
-    ========================= -->
-
     <main class="container">
-
-
         <div class="page-title">
-
-            <h1>
-                🚚 Order Tracking
-            </h1>
-
-            <p>
-                Track and update customer order delivery status.
-            </p>
-
+            <h1>🚚 Order Tracking</h1>
+            <p>Track and update customer order delivery status.</p>
         </div>
-
-
-        <!-- =========================
-             SEARCH + FILTER
-        ========================= -->
 
         <section class="search-section">
-
-            <label for="searchInput">
-                🔍 Search Order
-            </label>
-
-            <input
-                type="text"
-                id="searchInput"
-                class="search-box"
-                placeholder="Search by order ID, customer name or phone..."
-            >
-
-
+            <label for="searchInput">🔍 Search Order</label>
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by order ID, customer name or phone...">
             <div class="filter-row">
-
-                <label for="statusFilter">
-                    Filter Status:
-                </label>
-
-                <select
-                    id="statusFilter"
-                    class="filter-select"
-                >
-
-                    <option value="all">
-                        All Orders
-                    </option>
-
-                    <option value="Pending">
-                        Pending
-                    </option>
-
-                    <option value="Processing">
-                        Processing
-                    </option>
-
-                    <option value="Shipped">
-                        Shipped
-                    </option>
-
-                    <option value="Delivered">
-                        Delivered
-                    </option>
-
-                    <option value="Cancelled">
-                        Cancelled
-                    </option>
-
+                <label for="statusFilter">Filter Status:</label>
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">All Orders</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Processing">Processing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
                 </select>
-
             </div>
-
         </section>
-
-
-        <!-- =========================
-             ORDERS
-        ========================= -->
 
         <section>
-
-            <div
-                id="trackingList"
-                class="tracking-list"
-            >
-
-             </div>
+            <div id="trackingList" class="tracking-list">
+                <div class="loading-message">Loading orders...</div>
+            </div>
+            <div id="noResults" class="no-results">No orders found.</div>
         </section>
 
-
-        <!-- =========================
-             BACK BUTTON
-        ========================= -->
-
         <div class="back-section">
-
-            <a
-                href="admin.html"
-                class="back-button"
-            >
-                ← Back to Admin Dashboard
-            </a>
-
+            <a href="admin.html" class="back-button">← Back to Admin Dashboard</a>
         </div>
-
-
     </main>
 
-
-    <!-- =========================
-         JAVASCRIPT
-    ========================= -->
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        const SUPABASE_URL = "https://aktxgvbzmuuatwpimcyz.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // =========================
-// ADMIN ACCESS CHECK
-// =========================
+        function escapeHTML(value) {
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
 
-async function checkAdminAccess() {
-
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getSession();
-
-    if (error) {
-
-        console.error(
-            "Admin session error:",
-            error
-        );
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-    const session = data.session;
-
-    if (!session) {
-
-        alert(
-            "Please login as admin first."
-        );
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-    const {
-        data: profile,
-        error: profileError
-    } = await supabaseClient
-        .from("profiles")
-        .select("role")
-        .eq("id", session.user.id)
-        .single();
-
-    if (profileError) {
-
-        console.error(
-            "Admin profile check error:",
-            profileError
-        );
-
-        await supabaseClient.auth.signOut();
-
-        alert(
-            "Unable to verify admin access."
-        );
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-    if (
-        !profile ||
-        String(profile.role).toLowerCase() !==
-        "admin"
-    ) {
-
-        alert(
-            "Access denied. Admin only."
-        );
-
-        await supabaseClient.auth.signOut();
-
-        window.location.href =
-            "admin-login.html";
-
-        return false;
-    }
-
-    return true;
-}
-
-        /* =========================
-           SEARCH ORDERS
-        ========================= */
-
-        function searchOrders() {
-
-            const searchInput =
-                document
-                    .getElementById("searchInput")
-                    .value
-                    .toLowerCase()
-                    .trim();
-
-
-            const selectedStatus =
-                document
-                    .getElementById("statusFilter")
-                    .value;
-
-
-            const cards =
-                document.querySelectorAll(
-                    ".tracking-card"
-                );
-
-
-            let visibleCount = 0;
-
-
-            cards.forEach(function(card) {
-
-                const searchData = (
-                    card.getAttribute("data-search") || ""
-                ).toLowerCase();
-
-
-                const cardStatus =
-                    card.getAttribute("data-status");
-
-
-                const matchesSearch =
-                    searchData.includes(searchInput);
-
-
-                const matchesStatus =
-                    selectedStatus === "all" ||
-                    cardStatus === selectedStatus;
-
-
-                if (
-                    matchesSearch &&
-                    matchesStatus
-                ) {
-
-                    card.style.display = "";
-
-                    visibleCount++;
-
-                } else {
-
-                    card.style.display = "none";
-
+        function parseProducts(products) {
+            if (Array.isArray(products)) return products;
+            if (typeof products === "string") {
+                try {
+                    const parsed = JSON.parse(products);
+                    return Array.isArray(parsed) ? parsed : [];
+                } catch (error) {
+                    console.warn("Unable to parse order products:", error);
+                    return [];
                 }
+            }
+            return [];
+        }
 
-            });
+        function getStatusClass(status) {
+            const normalized = String(status || "Pending").toLowerCase();
+            return ["pending", "processing", "shipped", "delivered", "cancelled"].includes(normalized)
+                ? normalized
+                : "pending";
+        }
 
+        async function checkAdminAccess() {
+            const { data, error } = await supabaseClient.auth.getSession();
 
-            const noResults =
-                document.getElementById(
-                    "noResults"
-                );
-
-
-            if (visibleCount === 0) {
-
-                noResults.style.display = "block";
-
-            } else {
-
-                noResults.style.display = "none";
-
+            if (error || !data.session) {
+                if (error) console.error("Admin session error:", error);
+                alert("Please login as admin first.");
+                window.location.href = "admin-login.html";
+                return false;
             }
 
+            const { data: profile, error: profileError } = await supabaseClient
+                .from("profiles")
+                .select("role")
+                .eq("id", data.session.user.id)
+                .single();
+
+            if (profileError || !profile || String(profile.role).toLowerCase() !== "admin") {
+                console.error("Admin profile check error:", profileError);
+                await supabaseClient.auth.signOut();
+                alert("Access denied. Admin only.");
+                window.location.href = "admin-login.html";
+                return false;
+            }
+
+            return true;
         }
 
+        function searchOrders() {
+            const searchValue = document.getElementById("searchInput").value.toLowerCase().trim();
+            const selectedStatus = document.getElementById("statusFilter").value;
+            const cards = document.querySelectorAll(".tracking-card");
+            const noResults = document.getElementById("noResults");
+            let visibleCount = 0;
 
-        /* =========================
-           FILTER ORDERS
-        ========================= */
+            cards.forEach(card => {
+                const searchData = (card.dataset.search || "").toLowerCase();
+                const cardStatus = card.dataset.status || "";
+                const matchesSearch = searchData.includes(searchValue);
+                const matchesStatus = selectedStatus === "all" || cardStatus.toLowerCase() === selectedStatus.toLowerCase();
+                const visible = matchesSearch && matchesStatus;
+
+                card.style.display = visible ? "" : "none";
+                if (visible) visibleCount++;
+            });
+
+            noResults.style.display = visibleCount === 0 ? "block" : "none";
+        }
 
         function filterOrders() {
-
             searchOrders();
-
         }
 
+        function createTimeline(status) {
+            const steps = [
+                { name: "Pending", icon: "🕐", text: "Order received" },
+                { name: "Processing", icon: "⚙️", text: "Order is being prepared" },
+                { name: "Shipped", icon: "📦", text: "Order has been shipped" },
+                { name: "Delivered", icon: "✓", text: "Order delivered" }
+            ];
 
+            const currentIndex = steps.findIndex(step => step.name.toLowerCase() === String(status).toLowerCase());
+            const isCancelled = String(status).toLowerCase() === "cancelled";
 
-        /* =========================
-           AUTOMATIC SEARCH
-        ========================= */
+            let html = '<div class="timeline"><div class="timeline-title">Order Progress</div>';
 
-        document
-            .getElementById("searchInput")
-            .addEventListener(
-                "input",
-                searchOrders
-            );
+            if (isCancelled) {
+                html += '<div class="timeline-step current"><div class="timeline-icon">✕</div><div class="timeline-content"><strong>Cancelled</strong><span>This order has been cancelled.</span></div></div>';
+            } else {
+                steps.forEach((step, index) => {
+                    const state = index < currentIndex ? "completed" : index === currentIndex ? "current" : "";
+                    html += `<div class="timeline-step ${state}">
+                        <div class="timeline-icon">${step.icon}</div>
+                        <div class="timeline-content"><strong>${escapeHTML(step.name)}</strong><span>${escapeHTML(step.text)}</span></div>
+                        ${index < steps.length - 1 ? '<div class="timeline-line"></div>' : ''}
+                    </div>`;
+                });
+            }
 
-
-        /* =========================
-           STATUS FILTER
-        ========================= */
-
-        document
-            .getElementById("statusFilter")
-            .addEventListener(
-                "change",
-                filterOrders
-            );
-
-    </script>
-    <!-- =========================
-     SUPABASE ORDER STATUS UPDATE
-========================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-const SUPABASE_URL =
-    "https://aktxgvbzmuuatwpimcyz.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
-
-const supabaseClient =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-
-/* =========================
-   UPDATE ORDER STATUS
-========================= */
-
-async function updateOrderStatus(orderNumber) {
-
-    const select =
-        document.getElementById(
-            "select-" + orderNumber
-        );
-
-    if (!select) {
-
-        alert("Status selector not found.");
-
-        return;
-
-    }
-
-    const newStatus =
-        select.value;
-
-
-    if (!newStatus) {
-
-        alert("Please select a status.");
-
-        return;
-
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } = await supabaseClient
-
-            .from("Hey Rosella")
-
-            .update({
-                order_status: newStatus
-            })
-
-            .eq(
-                "order_number",
-                orderNumber
-            )
-
-            .select();
-
-
-        if (error) {
-
-            console.error(
-                "Order status update error:",
-                error
-            );
-
-            alert(
-                "Status update failed: " +
-                error.message
-            );
-
-            return;
-
+            html += '</div>';
+            return html;
         }
 
-
-        if (!data || data.length === 0) {
-
-            alert(
-                "Order was not updated. " +
-                "Please check the Order ID and RLS policy."
-            );
-
-            return;
-
-        }
-
-
-        /* =========================
-           UPDATE STATUS BADGE
-        ========================= */
-
-        const statusBadge =
-            document.getElementById(
-                "status-" + orderNumber
-            );
-
-
-        if (statusBadge) {
-
-            statusBadge.textContent =
-                newStatus;
-
-            statusBadge.className =
-                "status-badge " +
-                newStatus.toLowerCase();
-
-        }
-
-
-        /* =========================
-           UPDATE CARD DATA STATUS
-        ========================= */
-
-        const card =
-            select.closest(
-                ".tracking-card"
-            );
-
-
-        if (card) {
-
-            card.dataset.status =
-                newStatus;
-
-        }
-
-
-        alert(
-            "Order #" +
-            orderNumber +
-            " status updated to " +
-            newStatus +
-            " successfully!"
-        );
-
-
-    } catch (err) {
-
-        console.error(
-            "Unexpected error:",
-            err
-        );
-
-        alert(
-            "Something went wrong while updating the order."
-        );
-
-    }
-
-}
-
-/* =========================
-   LOAD ORDERS
-========================= */
-
-async function loadTrackingOrders() {
-
-    const trackingList =
-        document.getElementById("trackingList");
-
-    if (!trackingList) {
-        return;
-    }
-
-    trackingList.innerHTML =
-        "<p>Loading orders...</p>";
-
-    try {
-
-        const {
-            data: orders,
-            error
-        } = await supabaseClient
-            .from("Hey Rosella")
-            .select("*")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-        if (error) {
-
-            console.error(
-                "Orders loading error:",
-                error
-            );
-
-            trackingList.innerHTML =
-                "<p>Unable to load orders.</p>";
-
-            return;
-        }
-
-        if (!orders || orders.length === 0) {
-
-            trackingList.innerHTML = "";
-
-            document.getElementById(
-                "noResults"
-            ).style.display = "block";
-
-            return;
-        }
-
-        trackingList.innerHTML = "";
-
-        orders.forEach(function(order) {
-
-            trackingList.innerHTML +=
-                createTrackingCard(order);
-
-        });
-
-        searchOrders();
-
-    } catch (err) {
-
-        console.error(
-            "Unexpected order loading error:",
-            err
-        );
-
-        trackingList.innerHTML =
-            "<p>Something went wrong while loading orders.</p>";
-    }
-}
-
-
-/* =========================
-   CREATE TRACKING CARD
-========================= */
-
-function createTrackingCard(order) {
-
-    const status =
-        order.order_status || "Pending";
-
-    const orderNumber =
-        order.order_number || order.id;
-
-    const customerName =
-        order.customer_name || "Unknown Customer";
-
-    const customerPhone =
-        order.customer_phone || "N/A";
-
-    const customerAddress =
-        order.customer_address || "N/A";
-
-    const createdDate =
-        order.created_at
-            ? new Date(
-                order.created_at
-            ).toLocaleString()
-            : "N/A";
-
-    const products =
-        Array.isArray(order.products)
-            ? order.products
-            : [];
-
-    let productHTML = "";
-
-    products.forEach(function(product) {
-
-        const name =
-            product.name || "Product";
-
-        const quantity =
-            product.quantity || 1;
-
-        productHTML +=
-            "<p>" +
-            escapeHTML(name) +
-            " × " +
-            quantity +
-            "</p>";
-
-    });
-
-    return `
-        <div
-            class="tracking-card"
-            data-search="${escapeHTML(
-                String(orderNumber) +
-                " " +
-                customerName +
-                " " +
-                customerPhone
-            )}"
-            data-status="${escapeHTML(status)}"
-        >
-
-            <div class="tracking-header">
-
-                <div>
-
-                    <div class="order-number">
-                        Order #${escapeHTML(
-                            String(orderNumber)
-                        )}
+        function createTrackingCard(order) {
+            const status = order.order_status || "Pending";
+            const orderNumber = order.order_number || order.id || "N/A";
+            const orderId = order.id;
+            const customerName = order.customer_name || "Unknown Customer";
+            const customerPhone = order.customer_phone || "N/A";
+            const customerAddress = order.customer_address || "N/A";
+            const createdDate = order.created_at ? new Date(order.created_at).toLocaleString() : "N/A";
+            const products = parseProducts(order.products);
+
+            let productHTML = "";
+            if (products.length) {
+                productHTML = products.map(product => {
+                    const name = product?.name || product?.product_name || "Product";
+                    const quantity = Number(product?.quantity) || 1;
+                    return `<p>${escapeHTML(name)} × ${quantity}</p>`;
+                }).join("");
+            } else {
+                productHTML = "<p>No product details available.</p>";
+            }
+
+            const searchData = `${orderNumber} ${customerName} ${customerPhone}`;
+            const safeOrderId = escapeHTML(String(orderId));
+            const statusClass = getStatusClass(status);
+
+            return `<div class="tracking-card"
+                data-order-id="${safeOrderId}"
+                data-search="${escapeHTML(searchData)}"
+                data-status="${escapeHTML(status)}">
+                <div class="tracking-header">
+                    <div>
+                        <div class="order-number">Order #${escapeHTML(orderNumber)}</div>
+                        <div class="order-date">${escapeHTML(createdDate)}</div>
                     </div>
-
-                    <div class="order-date">
-                        ${escapeHTML(createdDate)}
-                    </div>
-
+                    <span id="status-${safeOrderId}" class="status-badge ${statusClass}">${escapeHTML(status)}</span>
                 </div>
 
-                <span
-                    id="status-${escapeHTML(
-                        String(orderNumber)
-                    )}"
-                    class="status-badge ${escapeHTML(
-                        status.toLowerCase()
-                    )}"
-                >
-                    ${escapeHTML(status)}
-                </span>
+                <div class="customer-info">
+                    <h3>Customer Information</h3>
+                    <p><strong>Name:</strong> ${escapeHTML(customerName)}</p>
+                    <p><strong>Phone:</strong> ${escapeHTML(customerPhone)}</p>
+                    <p><strong>Address:</strong> ${escapeHTML(customerAddress)}</p>
+                    <p><strong>Products:</strong></p>
+                    <div class="products-list">${productHTML}</div>
+                </div>
 
-            </div>
+                ${createTimeline(status)}
 
+                <div class="update-section">
+                    <label for="select-${safeOrderId}">Update Status:</label>
+                    <select id="select-${safeOrderId}" class="status-select">
+                        ${["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].map(option =>
+                            `<option value="${option}" ${String(status).toLowerCase() === option.toLowerCase() ? "selected" : ""}>${option}</option>`
+                        ).join("")}
+                    </select>
+                    <button type="button" class="update-button" onclick="updateOrderStatus('${String(orderId).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}')">Update Status</button>
+                </div>
+            </div>`;
+        }
 
-            <div class="customer-info">
+        async function updateOrderStatus(orderId) {
+            const select = document.getElementById("select-" + orderId);
+            if (!select) {
+                alert("Status selector not found.");
+                return;
+            }
 
-                <h3>
-                    Customer Information
-                </h3>
+            const newStatus = select.value;
+            const button = select.parentElement.querySelector(".update-button");
+            const card = select.closest(".tracking-card");
+            const oldStatus = card ? card.dataset.status : "";
 
-                <p>
-                    <strong>Name:</strong>
-                    ${escapeHTML(customerName)}
-                </p>
+            if (!newStatus || !orderId) {
+                alert("Please select a valid status.");
+                return;
+            }
 
-                <p>
-                    <strong>Phone:</strong>
-                    ${escapeHTML(customerPhone)}
-                </p>
+            if (button) {
+                button.disabled = true;
+                button.textContent = "Updating...";
+            }
 
-                <p>
-                    <strong>Address:</strong>
-                    ${escapeHTML(customerAddress)}
-                </p>
+            try {
+                const { data, error } = await supabaseClient
+                    .from("Hey Rosella")
+                    .update({ order_status: newStatus })
+                    .eq("id", orderId)
+                    .select("id, order_number, order_status");
 
-                <p>
-                    <strong>Products:</strong>
-                </p>
+                if (error) throw error;
 
-                ${productHTML}
+                if (!data || data.length === 0) {
+                    throw new Error("Order was not updated. Check the admin UPDATE RLS policy.");
+                }
 
-            </div>
+                if (card) {
+                    card.dataset.status = newStatus;
+                    card.outerHTML = createTrackingCard({
+                        ...data[0],
+                        id: orderId,
+                        order_number: card.querySelector(".order-number")?.textContent.replace(/^Order #/, "") || data[0].order_number,
+                        customer_name: "",
+                        customer_phone: "",
+                        customer_address: "",
+                        products: []
+                    });
+                }
 
+                /* Reload so the card keeps all original customer/product data. */
+                await loadTrackingOrders();
+                alert(`Order #${data[0].order_number || orderId} status updated to ${newStatus} successfully!`);
+            } catch (error) {
+                console.error("Order status update error:", error);
+                alert("Status update failed: " + error.message);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = "Update Status";
+                }
+            }
+        }
 
-            <div class="update-section">
+        async function loadTrackingOrders() {
+            const trackingList = document.getElementById("trackingList");
+            const noResults = document.getElementById("noResults");
+            trackingList.innerHTML = '<div class="loading-message">Loading orders...</div>';
+            noResults.style.display = "none";
 
-                <label>
-                    Update Status:
-                </label>
+            try {
+                const { data: orders, error } = await supabaseClient
+                    .from("Hey Rosella")
+                    .select("*")
+                    .order("created_at", { ascending: false });
 
-                <select
-                    id="select-${escapeHTML(
-                        String(orderNumber)
-                    )}"
-                    class="status-select"
-                >
+                if (error) throw error;
 
-                    <option
-                        value="Pending"
-                        ${status === "Pending"
-                            ? "selected"
-                            : ""}
-                    >
-                        Pending
-                    </option>
+                if (!orders || orders.length === 0) {
+                    trackingList.innerHTML = "";
+                    noResults.style.display = "block";
+                    return;
+                }
 
-                    <option
-                        value="Processing"
-                        ${status === "Processing"
-                            ? "selected"
-                            : ""}
-                    >
-                        Processing
-                    </option>
+                trackingList.innerHTML = orders.map(createTrackingCard).join("");
+                searchOrders();
+            } catch (error) {
+                console.error("Orders loading error:", error);
+                trackingList.innerHTML = '<div class="error-message">Unable to load orders. Please check your admin access and RLS policies.</div>';
+                noResults.style.display = "none";
+            }
+        }
 
-                    <option
-                        value="Shipped"
-                        ${status === "Shipped"
-                            ? "selected"
-                            : ""}
-                    >
-                        Shipped
-                    </option>
+        document.addEventListener("DOMContentLoaded", async () => {
+            document.getElementById("searchInput").addEventListener("input", searchOrders);
+            document.getElementById("statusFilter").addEventListener("change", filterOrders);
 
-                    <option
-                        value="Delivered"
-                        ${status === "Delivered"
-                            ? "selected"
-                            : ""}
-                    >
-                        Delivered
-                    </option>
-
-                    <option
-                        value="Cancelled"
-                        ${status === "Cancelled"
-                            ? "selected"
-                            : ""}
-                    >
-                        Cancelled
-                    </option>
-
-                </select>
-
-
-                <button
-                    type="button"
-                    class="update-button"
-                    onclick="updateOrderStatus('${escapeJS(
-                        String(orderNumber)
-                    )}')"
-                >
-                    Update Status
-                </button>
-
-            </div>
-
-        </div>
-    `;
-}
-
-</script>
-
-
+            const isAdmin = await checkAdminAccess();
+            if (isAdmin) {
+                await loadTrackingOrders();
+            }
+        });
+    </script>
 </body>
-
 </html>
