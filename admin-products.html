@@ -38,6 +38,94 @@
                 SUPABASE_URL,
                 SUPABASE_KEY
             );
+         
+          // =====================================================
+// ADMIN ACCESS CHECK
+// =====================================================
+
+async function checkAdminAccess() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+
+        console.error(
+            "Admin session error:",
+            error
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    const session =
+        data.session;
+
+    if (!session) {
+
+        alert(
+            "Please login as admin first."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+    if (profileError) {
+
+        console.error(
+            "Admin profile check error:",
+            profileError
+        );
+
+        await supabaseClient.auth.signOut();
+
+        alert(
+            "Unable to verify admin access."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    if (
+        !profile ||
+        String(profile.role).toLowerCase() !==
+        "admin"
+    ) {
+
+        alert(
+            "Access denied. Admin only."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    return true;
+}
 
     </script>
 
@@ -1584,15 +1672,24 @@ console.log(
         // PAGE LOAD
         // =====================================================
 
-        window.addEventListener(
-            "DOMContentLoaded",
-            function() {
+       window.addEventListener
+       (
+              "DOMContentLoaded",
+                  async function() 
+                  {
 
-                loadProducts();
+                    const isAdmin =
+                       await checkAdminAccess();
 
+           if (!isAdmin) 
+           {
+            return;
             }
-        );
 
+                  loadProducts();
+
+                 }
+        );
 
     </script>
 
