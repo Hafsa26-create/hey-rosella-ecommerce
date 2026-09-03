@@ -487,35 +487,56 @@
             return false;
         }
 
-
-        const user =
-            session.user;
-
-
-        const adminEmail =
-            "heyrosella26@gmail.com";
-
-
-        if (
-            !user.email ||
-            user.email.toLowerCase() !==
-            adminEmail.toLowerCase()
-        ) {
-
-            alert(
-                "Access denied. Admin only."
-            );
-
-            await supabaseClient.auth.signOut();
-
-            window.location.href =
-                "admin-login.html";
-
-            return false;
-        }
+const {
+    data: profile,
+    error: profileError
+} = await supabaseClient
+    .from("profiles")
+    .select("role")
+    .eq("id", session.user.id)
+    .single();
 
 
-        return true;
+if (profileError) {
+
+    console.error(
+        "Admin profile check error:",
+        profileError
+    );
+
+    await supabaseClient.auth.signOut();
+
+    alert(
+        "Unable to verify admin access."
+    );
+
+    window.location.href =
+        "admin-login.html";
+
+    return false;
+}
+
+
+if (
+    !profile ||
+    String(profile.role).toLowerCase() !==
+    "admin"
+) {
+
+    alert(
+        "Access denied. Admin only."
+    );
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+        "admin-login.html";
+
+    return false;
+}
+
+
+return true;
 
     }
 
