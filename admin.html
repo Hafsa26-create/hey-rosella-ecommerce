@@ -1638,15 +1638,18 @@ async function loadDashboardStatistics() {
         // TOTAL CUSTOMERS
         // =========================
 
-       const {
-    data: customerData,
-    error: customersError
-} = await supabaseClient
-    .from("profiles")
-    .select("id");
-
-const totalCustomers =
-    customerData ? customerData.length : 0;
+      const
+       {
+            count: totalCustomers,
+              error: customersError
+        } = await supabaseClient
+              .from("profiles")
+              .select("id",    
+              {
+                    count: "exact",
+                        head: true
+             }
+        );
 
         if (customersError) {
 
@@ -2049,132 +2052,7 @@ async function loadInventoryAlert() {
 }
 
      
-            // =========================================
-// DASHBOARD INVENTORY ALERT
-// =========================================
-
-async function loadInventoryAlert() {
-
-    const alertText =
-        document.getElementById(
-            "dashboard-inventory-alert-text"
-        );
-
-
-    if (!alertText) {
-
-        return;
-
-    }
-
-
-    const {
-        data,
-        error
-    } = await supabaseClient
-
-        .from("products")
-
-        .select(
-            "stock_quantity"
-        );
-
-
-    if (error) {
-
-        console.error(
-            "Inventory alert error:",
-            error
-        );
-
-        alertText.textContent =
-            "Unable to check inventory.";
-
-        return;
-
-    }
-
-
-    const products =
-        data || [];
-
-
-    const lowStock =
-        products.filter(
-            function(product) {
-
-                const stock =
-                    Number(
-                        product.stock_quantity || 0
-                    );
-
-                return (
-                    stock > 0 &&
-                    stock <= 5
-                );
-
-            }
-        ).length;
-
-
-    const outOfStock =
-        products.filter(
-            function(product) {
-
-                const stock =
-                    Number(
-                        product.stock_quantity || 0
-                    );
-
-                return stock === 0;
-
-            }
-        ).length;
-
-
-    const messages = [];
-
-
-    if (lowStock > 0) {
-
-        messages.push(
-            `${lowStock} ${
-                lowStock === 1
-                    ? "product is"
-                    : "products are"
-            } running low on stock`
-        );
-
-    }
-
-
-    if (outOfStock > 0) {
-
-        messages.push(
-            `${outOfStock} ${
-                outOfStock === 1
-                    ? "product is"
-                    : "products are"
-            } currently out of stock`
-        );
-
-    }
-
-
-    if (!messages.length) {
-
-        alertText.textContent =
-            "All products are sufficiently stocked.";
-
-        return;
-
-    }
-
-
-    alertText.textContent =
-        messages.join(" • ");
-
-}
+           
      
 
 </script>
@@ -2186,82 +2064,111 @@ async function loadInventoryAlert() {
 
 <script>
 
-    // =========================
-    // CHECK ADMIN LOGIN
-    // =========================
+  // =========================
+// CHECK ADMIN LOGIN
+// =========================
 
-    async function checkAdminAccess() {
+async function checkAdminAccess() {
 
-        const {
-            data,
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+
+    if (error) {
+
+        console.error(
+            "Admin session error:",
             error
-        } = await supabaseClient.auth.getSession();
+        );
 
+        window.location.href =
+            "admin-login.html";
 
-        if (error) {
-
-            console.error(
-                "Admin session error:",
-                error
-            );
-
-            window.location.href =
-                "admin-login.html";
-
-            return;
-        }
-
-
-        const session =
-    data.session;
-
-
-// NOT LOGGED IN
-
-if (!session) {
-
-    alert(
-        "Please login as admin first."
-    );
-
-    window.location.href =
-        "admin-login.html";
-
-    return;
-}
-
-
-// =========================
-// CHECK ADMIN EMAIL
-// =========================
-
-const adminEmail =
-    "heyrosella26@gmail.com";
-
-const loggedInEmail =
-    session.user.email;
-
-
-// NOT ADMIN
-
-if (
-    loggedInEmail.toLowerCase() !==
-    adminEmail.toLowerCase()
-) {
-
-    alert(
-        "Access denied. Admin only."
-    );
-
-    await supabaseClient.auth.signOut();
-
-    window.location.href =
-        "admin-login.html";
-
-    return;
-}
+        return false;
     }
 
+
+    const session =
+        data.session;
+
+
+    // NOT LOGGED IN
+
+    if (!session) {
+
+        alert(
+            "Please login as admin first."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // =========================
+    // CHECK ADMIN ROLE
+    // =========================
+
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+
+    if (profileError) {
+
+        console.error(
+            "Admin profile check error:",
+            profileError
+        );
+
+        await supabaseClient.auth.signOut();
+
+        alert(
+            "Unable to verify admin access."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // NOT ADMIN
+
+    if (
+        !profile ||
+        String(profile.role).toLowerCase() !==
+        "admin"
+    ) {
+
+        alert(
+            "Access denied. Admin only."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+
+    // ADMIN VERIFIED
+
+    return true;
+
+}
 
     // =========================
     // ADMIN LOGOUT
@@ -2306,14 +2213,20 @@ if (
 
 async function startAdminDashboard() {
 
-    await checkAdminAccess();
+    const isAdmin =
+        await checkAdminAccess();
+
+
+    if (!isAdmin) {
+        return;
+    }
+
 
     await loadDashboardStatistics();
 
     await loadRecentOrders();
 
 }
-
 startAdminDashboard();
 
 
@@ -2625,12 +2538,6 @@ async function loadRecentOrders() {
 }
 
           
-
-// =====================================================
-// START RECENT ORDERS
-// =====================================================
-
-loadRecentOrders();
 
 </script>
 
