@@ -58,17 +58,17 @@ function saveCart() {
 // ADD TO CART WITH STOCK CHECK
 // =====================================================
 
-async function addToCart(productName, productPrice, button) {
+async function addToCart(productId, productName, productPrice, button)  {
 
     try {
 
         // Get latest stock from Supabase
         const { data, error } = await supabaseClient
             .from("products")
+            
             .select("stock_quantity")
-            .eq("name", productName)
-            .single();
-
+                      .eq("id", productId)
+                            .single();
         if (error) {
 
             console.error("Stock check error:", error);
@@ -103,11 +103,8 @@ async function addToCart(productName, productPrice, button) {
         // =================================================
 
         const existingProduct = cart.find(function(product) {
-
-            return product.name === productName;
-
-        });
-
+    return String(product.id) === String(productId);
+});
 
         if (existingProduct) {
 
@@ -132,16 +129,13 @@ async function addToCart(productName, productPrice, button) {
         } else {
 
             cart.push({
+               id: String(productId),
+                 name: productName,
+                   price: Number(productPrice),
+                            quantity: 1
+                 });
 
-                name: productName,
-
-                price: Number(productPrice),
-
-                quantity: 1
-
-            });
-
-        }
+             }
 
 
         // =================================================
@@ -372,7 +366,7 @@ async function increaseQuantity(index) {
         const { data, error } = await supabaseClient
             .from("products")
             .select("stock_quantity")
-            .eq("name", product.name)
+            .eq("id", product.id)
             .single();
 
         if (error) {
@@ -4116,10 +4110,11 @@ else if (cartButton) {
         "click",
         function() {
 
-            addToCart(
+           addToCart(
+              product.id,
                 productName,
-                productPrice,
-                cartButton
+                  productPrice,
+                    cartButton
             );
 
 
