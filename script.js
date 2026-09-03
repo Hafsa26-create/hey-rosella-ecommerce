@@ -3594,32 +3594,7 @@ function getWishlist() {
 }
 
 
-   // =====================================================
-// REMOVE FROM WISHLIST
-// =====================================================
-
-function removeFromWishlist(productName) {
-
-    let wishlist = getWishlist();
-
-    wishlist = wishlist.filter(function(product) {
-
-        return product.name !== productName;
-
-    });
-
-    saveWishlist(wishlist);
-
-    console.log(
-        "Removed from wishlist:",
-        productName
-    );
-
-    renderWishlist();
-
-    updateWishlistButtons();
-
-}
+  
 
 // =====================================================
 // SAVE WISHLIST
