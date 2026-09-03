@@ -1000,11 +1000,10 @@
     white-space: nowrap;
 
     transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+    background 0.2s ease,
+    transform 0.2s ease;
+
 }
-
-
 .reorder-button:hover {
 
     background: #b99524;
@@ -1441,7 +1440,93 @@
             SUPABASE_KEY
         );
 
+             // =========================================
+// ADMIN ACCESS CHECK
+// =========================================
 
+async function checkAdminAccess() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient.auth.getSession();
+
+    if (error) {
+
+        console.error(
+            "Admin session error:",
+            error
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    const session =
+        data.session;
+
+    if (!session) {
+
+        alert(
+            "Please login as admin first."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    const {
+        data: profile,
+        error: profileError
+    } = await supabaseClient
+        .from("profiles")
+        .select("role")
+        .eq("id", session.user.id)
+        .single();
+
+    if (profileError) {
+
+        console.error(
+            "Admin profile check error:",
+            profileError
+        );
+
+        await supabaseClient.auth.signOut();
+
+        alert(
+            "Unable to verify admin access."
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    if (
+        !profile ||
+        String(profile.role).toLowerCase() !==
+        "admin"
+    ) {
+
+        alert(
+            "Access denied. Admin only."
+        );
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    return true;
+}
 
         // =========================================
         // GLOBAL DATA
@@ -1975,72 +2060,7 @@ function renderOutOfStockAlert() {
 
 
 
-                // =====================================================
-// INVENTORY STOCK FILTER
-// =====================================================
-
-function filterInventory() {
-
-    const selectedFilter =
-        document.getElementById(
-            "stock-filter"
-        ).value;
-
-
-    const filteredProducts =
-        inventoryProducts.filter(
-            function(product) {
-
-                const stock =
-                    Number(
-                        product.stock_quantity || 0
-                    );
-
-
-                if (
-                    selectedFilter ===
-                    "in-stock"
-                ) {
-
-                    return stock > 5;
-
-                }
-
-
-                if (
-                    selectedFilter ===
-                    "low-stock"
-                ) {
-
-                    return (
-                        stock > 0 &&
-                        stock <= 5
-                    );
-
-                }
-
-
-                if (
-                    selectedFilter ===
-                    "out-of-stock"
-                ) {
-
-                    return stock === 0;
-
-                }
-
-
-                return true;
-
-            }
-        );
-
-
-    renderInventory(
-        filteredProducts
-    );
-
-}
+                
 
 
 
@@ -2657,12 +2677,24 @@ function filterInventory() {
 
         }
 
+// =========================================
+// START
+// =========================================
+window.addEventListener(
+    "DOMContentLoaded",
+    async function() {
 
-        // =========================================
-        // START
-        // =========================================
+        const isAdmin =
+            await checkAdminAccess();
 
-        loadInventory();
+        if (!isAdmin) {
+            return;
+        }
+
+        await loadInventory();
+
+    }
+);
 
     </script>
 
