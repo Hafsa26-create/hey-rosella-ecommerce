@@ -1624,10 +1624,9 @@ for (const cartItem of cart) {
         )
 
         .eq(
-            "name",
-            cartItem.name
-        )
-
+              "id",
+                cartItem.id
+            )
         .single();
 
 
@@ -1773,7 +1772,7 @@ for (const cartItem of cart) {
     } = await supabaseClient
         .from("products")
         .select("id")
-        .eq("name", cartItem.name)
+       .eq("id", cartItem.id)
         .single();
 
 
@@ -4573,16 +4572,19 @@ function renderWishlist() {
         "click",
         async function() {
 
-            const added = await addToCart(
-                product.name,
-                product.price,
-                cartButton
-            );
+            const added = await addToCart
+                    (
+                      product.id,
+                        product.name,
+                         product.price,
+                           cartButton
+                    );
 
            
-            if (!added) {
+            if (!added) 
+                {
                 return;
-            }
+                }
 
             
             removeFromWishlist(
