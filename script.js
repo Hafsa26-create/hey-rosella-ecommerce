@@ -1606,289 +1606,109 @@ function setupCheckoutForm() {
 
 
 
-                // =========================================
-// CHECK STOCK BEFORE PLACING ORDER
-// =========================================
-
-for (const cartItem of cart) {
-
-    const {
-        data: product,
-        error: productError
-    } = await supabaseClient
-
-        .from("products")
-
-        .select(
-            "id, name, stock_quantity"
-        )
-
-        .eq(
-              "id",
-                cartItem.id
-            )
-        .single();
-
-
-    // PRODUCT NOT FOUND
-
-    if (productError || !product) {
-
-        console.error(
-            "Stock check failed:",
-            cartItem.name,
-            productError
-        );
-
-        alert(
-            "Sorry! We could not verify the stock for:\n\n" +
-            cartItem.name
-        );
-
-        return;
-
-    }
-
-
-    const currentStock =
-        Number(
-            product.stock_quantity || 0
-        );
-
-
-    const orderQuantity =
-        Number(
-            cartItem.quantity || 1
-        );
-
-
-    // OUT OF STOCK
-
-    if (currentStock <= 0) {
-
-        alert(
-            "🔴 Out of Stock\n\n" +
-            cartItem.name +
-            "\n\nThis product is currently unavailable."
-        );
-
-        return;
-
-    }
-
-
-    // NOT ENOUGH STOCK
-
-    if (
-        orderQuantity >
-        currentStock
-    ) {
-
-        alert(
-            "⚠️ Not Enough Stock\n\n" +
-            cartItem.name +
-            "\n\n" +
-            "Available stock: " +
-            currentStock +
-            "\n" +
-            "Your cart quantity: " +
-            orderQuantity +
-            "\n\n" +
-            "Please reduce the quantity and try again."
-        );
-
-        return;
-
-    }
-
-}
-
 
 // =========================================
 // STOCK VERIFIED — CONTINUE ORDER
 // =========================================
 
 
-            // SAVE ORDER TO SUPABASE
-
-           const orderResult =
-    await supabaseClient
-        .from("Hey Rosella")
-        .insert([
-            {
-                user_id: session.user.id,
-
-                customer_name: name,
-
-                customer_phone: phone,
-
-                customer_address: address,
-
-                payment_method: payment,
-
-                products: cart,
-
-                total_amount: total,
-
-                order_status: "pending",
-
-                order_number: orderNumber
-            }
-        ]);
-                    
-
-            // CHECK ERROR
-
-            if (orderResult.error) {
-
-                console.error(
-                    "Order error:",
-                    orderResult.error
-                );
-
-                alert(
-                    "Sorry! Your order could not be placed.\n\n" +
-                    orderResult.error.message
-                );
-
-                return;
-            }
-
-              // =========================================
-// REDUCE PRODUCT STOCK AFTER SUCCESSFUL ORDER
+         // =========================================
+// SAVE ORDER + VERIFY PRICE + REDUCE STOCK
+// ATOMIC SUPABASE RPC
 // =========================================
 
+const {
+    data: orderData,
+    error: orderError
+} = await supabaseClient.rpc(
+    "place_order",
+    {
+        p_customer_name: name,
+        p_customer_phone: phone,
+        p_customer_address: address,
+        p_payment_method: payment,
+
+        // Only product ID + quantity are trusted from cart
+        p_products: cart.map(item => ({
+            id: Number(item.id),
+            quantity: Number(item.quantity || 1)
+        }))
+    }
+);
+
+
 // =========================================
-// REDUCE PRODUCT STOCK AFTER SUCCESSFUL ORDER
-// USING ATOMIC SUPABASE RPC
+// CHECK ORDER ERROR
 // =========================================
 
-for (const cartItem of cart) {
+if (orderError) {
 
-    // Find product ID
-    const {
-        data: product,
-        error: productError
-    } = await supabaseClient
-        .from("products")
-        .select("id")
-       .eq("id", cartItem.id)
-        .single();
-
-
-    // PRODUCT NOT FOUND
-    if (productError || !product) {
-
-        console.error(
-            "Could not find product:",
-            cartItem.name,
-            productError
-        );
-
-        continue;
-    }
-
-
-    const orderQuantity =
-        Number(cartItem.quantity || 1);
-
-
-    // ATOMIC STOCK REDUCTION
-    const {
-        data: stockUpdated,
-        error: stockError
-    } = await supabaseClient
-        .rpc(
-            "reduce_product_stock",
-            {
-                p_product_id: product.id,
-                p_quantity: orderQuantity
-            }
-        );
-
-
-    // STOCK UPDATE FAILED
-    if (stockError) {
-
-        console.error(
-            "Stock reduction failed:",
-            cartItem.name,
-            stockError
-        );
-
-        continue;
-    }
-
-
-    // NOT ENOUGH STOCK
-    if (stockUpdated !== true) {
-
-        console.error(
-            "Stock could not be reduced:",
-            cartItem.name
-        );
-
-        continue;
-    }
-
-
-    console.log(
-        "Stock successfully reduced:",
-        cartItem.name,
-        "Quantity:",
-        orderQuantity
+    console.error(
+        "Order placement error:",
+        orderError
     );
 
+    alert(
+        "Sorry! Your order could not be placed.\n\n" +
+        orderError.message
+    );
+
+    return;
 }
 
 
-            // ORDER SUCCESS
+// =========================================
+// ORDER SUCCESS
+// =========================================
 
-            console.log(
-                "Order saved successfully:",
-                orderResult.data
-            );
-
-            alert(
-                "✨ Order Placed Successfully! ✨\n\n" +
-                "Order Number: " +
-                orderNumber +
-                "\n\n" +
-                "Thank you for shopping with Hey Rosella 💎" +
-                "\n\n" +
-                "We will contact you soon."
-            );
+console.log(
+    "Order saved successfully:",
+    orderData
+);
 
 
-            // EMPTY CART
-
-            cart = [];
-
-            localStorage.removeItem(
-                "heyRosellaCart"
-            );
-
-            updateCartCount();
-            showCartItems();
-
-
-            // CLOSE CHECKOUT
-
-            const checkoutPopup =
-                document.getElementById("checkout-popup");
-
-            if (checkoutPopup) {
-                checkoutPopup.style.display = "none";
-            }
+alert(
+    "✨ Order Placed Successfully! ✨\n\n" +
+    "Order Number: " +
+    orderData.order_number +
+    "\n\n" +
+    "Thank you for shopping with Hey Rosella 💎" +
+    "\n\n" +
+    "We will contact you soon."
+);
 
 
-            // RESET FORM
+// =========================================
+// EMPTY CART
+// =========================================
 
-            checkoutForm.reset();
-        }
-    );
+cart = [];
+
+localStorage.removeItem(
+    "heyRosellaCart"
+);
+
+updateCartCount();
+showCartItems();
+
+
+// =========================================
+// CLOSE CHECKOUT
+// =========================================
+
+const checkoutPopup =
+    document.getElementById("checkout-popup");
+
+if (checkoutPopup) {
+    checkoutPopup.style.display = "none";
 }
 
+
+// =========================================
+// RESET FORM
+// =========================================
+
+checkoutForm.reset();
 
 // =====================================================
 // LOGOUT CUSTOMER
