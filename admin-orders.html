@@ -1778,113 +1778,99 @@ async function updateOrderStatus(
 }
 
 
-        // =====================================================
-        // DELETE ORDER
-        // =====================================================
+      ```js
+// =====================================================
+// DELETE ORDER
+// =====================================================
 
-        async function deleteOrder(
-            orderId
-        ) {
+async function deleteOrder(
+    orderId
+) {
 
+    const confirmed =
+        confirm(
+            "Are you sure you want to permanently delete this order?"
+        );
 
-            const confirmed =
-                confirm(
-                    "Are you sure you want to permanently delete this order?"
-                );
+    if (!confirmed) {
+        return;
+    }
 
+    try {
 
-            if (!confirmed) {
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.rpc(
+                "delete_order",
+                {
+                    p_order_id: orderId
+                }
+            );
 
-                return;
+        if (error) {
 
-            }
+            console.error(
+                "Delete order error:",
+                error
+            );
 
+            alert(
+                "Could not delete order.\n\n" +
+                error.message
+            );
 
+            return;
+        }
 
-            try {
+        if (!data || data.success !== true) {
 
+            throw new Error(
+                "Order was not deleted."
+            );
+        }
 
-                const {
-                    error
-                } =
+        // REMOVE FROM LOCAL ARRAY
 
-                    await supabaseClient
+        adminOrders =
+            adminOrders.filter(
+                function(order) {
 
-                        .from("Hey Rosella")
-
-                        .delete()
-
-                        .eq(
-                            "id",
-                            orderId
-                        );
-
-
-
-                if (error) {
-
-                    console.error(
-                        "Delete order error:",
-                        error
+                    return (
+                        String(order.id) !==
+                        String(orderId)
                     );
-
-
-                    alert(
-                        "Could not delete order.\n\n" +
-                        error.message
-                    );
-
-
-                    return;
 
                 }
+            );
 
+        // RE-RENDER
 
+        filterOrders();
 
-                // REMOVE FROM LOCAL ARRAY
+        alert(
+            "🗑️ Order deleted successfully."
+        );
 
-                adminOrders =
-                    adminOrders.filter(
-                        function(order) {
+    }
 
-                            return (
-                                order.id !==
-                                orderId
-                            );
+    catch (error) {
 
-                        }
-                    );
+        console.error(
+            "Unexpected delete error:",
+            error
+        );
 
+        alert(
+            "Something went wrong while deleting the order.\n\n" +
+            error.message
+        );
 
+    }
 
-                // RE-RENDER
-
-                filterOrders();
-
-
-
-                alert(
-                    "🗑️ Order deleted successfully."
-                );
-
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Unexpected delete error:",
-                    error
-                );
-
-
-                alert(
-                    "Something went wrong while deleting the order."
-                );
-
-            }
-
-        }
+}
+```
 
 
 
