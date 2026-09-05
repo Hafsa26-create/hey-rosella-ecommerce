@@ -1503,6 +1503,11 @@ function setupCheckoutForm() {
 
             event.preventDefault();
 
+
+            // =====================================================
+            // CHECK LOGIN SESSION
+            // =====================================================
+
             const sessionResult =
                 await supabaseClient.auth.getSession();
 
@@ -1516,14 +1521,29 @@ function setupCheckoutForm() {
                 );
 
                 closeCheckout();
-
                 openAuthPopup();
 
                 return;
             }
 
 
+            // =====================================================
+            // CHECK CART
+            // =====================================================
+
+            if (!cart || cart.length === 0) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+                return;
+            }
+
+
+            // =====================================================
             // CUSTOMER INFORMATION
+            // =====================================================
 
             const nameElement =
                 document.getElementById("customer-name");
@@ -1533,6 +1553,7 @@ function setupCheckoutForm() {
 
             const addressElement =
                 document.getElementById("customer-address");
+
 
             if (
                 !nameElement ||
@@ -1547,6 +1568,7 @@ function setupCheckoutForm() {
                 return;
             }
 
+
             const name =
                 nameElement.value.trim();
 
@@ -1555,6 +1577,7 @@ function setupCheckoutForm() {
 
             const address =
                 addressElement.value.trim();
+
 
             if (!name || !phone || !address) {
 
@@ -1566,12 +1589,15 @@ function setupCheckoutForm() {
             }
 
 
+            // =====================================================
             // PAYMENT METHOD
+            // =====================================================
 
             const paymentElement =
                 document.querySelector(
                     'input[name="payment"]:checked'
                 );
+
 
             if (!paymentElement) {
 
@@ -1582,133 +1608,128 @@ function setupCheckoutForm() {
                 return;
             }
 
+
             const payment =
                 paymentElement.value;
 
 
-            // CALCULATE TOTAL
+            // =====================================================
+            // PLACE ORDER THROUGH SUPABASE RPC
+            // =====================================================
 
-            let total = 0;
+            const {
+                data: orderData,
+                error: orderError
+            } = await supabaseClient.rpc(
+                "place_order",
+                {
+                    p_customer_name: name,
+                    p_customer_phone: phone,
+                    p_customer_address: address,
+                    p_payment_method: payment,
 
-            cart.forEach(function (product) {
+                    p_products: cart.map(function(item) {
 
-                total +=
-                    Number(product.price) *
-                    Number(product.quantity);
-            });
+                        return {
+                            id: Number(item.id),
+                            quantity: Number(
+                                item.quantity || 1
+                            )
+                        };
 
-
-            // ORDER NUMBER
-
-            const orderNumber =
-                "HR-" + Date.now();
-
-
-
-
-
-// =========================================
-// STOCK VERIFIED — CONTINUE ORDER
-// =========================================
-
-
-         // =========================================
-// SAVE ORDER + VERIFY PRICE + REDUCE STOCK
-// ATOMIC SUPABASE RPC
-// =========================================
-
-const {
-    data: orderData,
-    error: orderError
-} = await supabaseClient.rpc(
-    "place_order",
-    {
-        p_customer_name: name,
-        p_customer_phone: phone,
-        p_customer_address: address,
-        p_payment_method: payment,
-
-        // Only product ID + quantity are trusted from cart
-        p_products: cart.map(item => ({
-            id: Number(item.id),
-            quantity: Number(item.quantity || 1)
-        }))
-    }
-);
+                    })
+                }
+            );
 
 
-// =========================================
-// CHECK ORDER ERROR
-// =========================================
+            // =====================================================
+            // ORDER ERROR
+            // =====================================================
 
-if (orderError) {
+            if (orderError) {
 
-    console.error(
-        "Order placement error:",
-        orderError
+                console.error(
+                    "Place order error:",
+                    orderError
+                );
+
+                alert(
+                    "❌ Order could not be placed.\n\n" +
+                    orderError.message
+                );
+
+                return;
+            }
+
+
+            // =====================================================
+            // ORDER SUCCESS
+            // =====================================================
+
+            console.log(
+                "Order placed successfully:",
+                orderData
+            );
+
+
+            const createdOrder =
+                Array.isArray(orderData)
+                    ? orderData[0]
+                    : orderData;
+
+
+            const createdOrderNumber =
+                createdOrder?.order_number || "";
+
+
+            alert(
+                "🎉 Order placed successfully!" +
+                (
+                    createdOrderNumber
+                        ? "\n\nOrder Number: " +
+                          createdOrderNumber
+                        : ""
+                )
+            );
+
+
+            // =====================================================
+            // CLEAR CART
+            // =====================================================
+
+            cart = [];
+
+            localStorage.removeItem(
+                "heyRosellaCart"
+            );
+
+
+            // =====================================================
+            // UPDATE CART UI
+            // =====================================================
+
+            updateCartCount();
+
+            showCartItems();
+
+
+            // =====================================================
+            // RESET CHECKOUT FORM
+            // =====================================================
+
+            checkoutForm.reset();
+
+
+            // =====================================================
+            // CLOSE CHECKOUT
+            // =====================================================
+
+            closeCheckout();
+
+        }
     );
-
-    alert(
-        "Sorry! Your order could not be placed.\n\n" +
-        orderError.message
-    );
-
-    return;
 }
 
-
-// =========================================
-// ORDER SUCCESS
-// =========================================
-
-console.log(
-    "Order saved successfully:",
-    orderData
-);
-
-
-alert(
-    "✨ Order Placed Successfully! ✨\n\n" +
-    "Order Number: " +
-    orderData.order_number +
-    "\n\n" +
-    "Thank you for shopping with Hey Rosella 💎" +
-    "\n\n" +
-    "We will contact you soon."
-);
-
-
-// =========================================
-// EMPTY CART
-// =========================================
-
-cart = [];
-
-localStorage.removeItem(
-    "heyRosellaCart"
-);
-
-updateCartCount();
-showCartItems();
-
-
-// =========================================
-// CLOSE CHECKOUT
-// =========================================
-
-const checkoutPopup =
-    document.getElementById("checkout-popup");
-
-if (checkoutPopup) {
-    checkoutPopup.style.display = "none";
-}
-
-
-// =========================================
-// RESET FORM
-// =========================================
-
-checkoutForm.reset();
 
 // =====================================================
 // LOGOUT CUSTOMER
@@ -1862,12 +1883,12 @@ async function trackOrder() {
 
             <p>
                 <strong>Order ID:</strong>
-                ${order.order_number}
+                ${escapeHTML(order.order_number)}
             </p>
 
             <p>
                 <strong>Status:</strong>
-                ${order.order_status}
+                ${escapeHTML(order.order_status)}
             </p>
 
         </div>
@@ -3676,15 +3697,25 @@ cartButton.addEventListener(
         cartButton.style.backgroundColor =
             "#3e2723";
 
-        setTimeout(function() {
+        
+setTimeout(function() {
 
-            cartButton.textContent =
-                "Add to Cart";
+    cartButton.textContent =
+        "Add to Cart";
 
-            cartButton.style.backgroundColor =
-                "";
+    cartButton.disabled =
+        false;
 
-        }, 1500);
+    cartButton.style.backgroundColor =
+        "";
+
+    cartButton.style.opacity =
+        "1";
+
+    cartButton.style.cursor =
+        "pointer";
+
+}, 4000);
 
     }
 );
@@ -4189,23 +4220,3 @@ function renderWishlist() {
     });
 
 }
-// =====================================================
-// INITIALIZE WEBSITE
-// =====================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-        loadProducts();
-
-        renderWishlist();
-
-        updateCartCount();
-
-        console.log(
-            "Hey Rosella products initialized."
-        );
-
-    }
-);
