@@ -833,8 +833,7 @@
             }
 
 
-            const session =
-                data.session;
+            const session = data.session;
 
 
             if (!session) {
@@ -1667,134 +1666,116 @@ async function loadOrders() {
 
 
         // =====================================================
-        // UPDATE ORDER STATUS
-        // =====================================================
+// UPDATE ORDER STATUS
+// =====================================================
 
-        async function updateOrderStatus(
-            orderId,
-            newStatus
-        ) {
+async function updateOrderStatus(
+    orderId,
+    newStatus
+) {
 
-            try {
+    try {
 
-
-                const {
-                    error
-                } =
-
-                    await supabaseClient
-
-                        .from("Hey Rosella")
-
-                        .update({
-
-                            order_status:
-                                newStatus
-
-                        })
-
-                        .eq(
-                            "id",
-                            orderId
-                        );
-
-
-
-                if (error) {
-
-                    console.error(
-                        "Status update error:",
-                        error
-                    );
-
-
-                    alert(
-                        "Could not update order status.\n\n" +
-                        error.message
-                    );
-
-
-                    return;
-
-                }
-
-
-
-                // UPDATE LOCAL DATA
-
-                const order =
-                    adminOrders.find(
-                        function(item) {
-
-                            return (
-                                item.id ===
-                                orderId
-                            );
-
-                        }
-                    );
-
-
-
-                if (order) {
-
-                    order.order_status =
-                        newStatus;
-
-                }
-
-
-
-                // RE-RENDER
-
-                const selectedFilter =
-                    document.getElementById(
-                        "order-filter"
-                    ).value;
-
-
-                if (
-                    selectedFilter ===
-                    "all"
-                ) {
-
-                    renderOrders(
-                        adminOrders
-                    );
-
-                }
-
-                else {
-
-                    filterOrders();
-
-                }
-
-
-
-                alert(
-                    "✅ Order status updated successfully!"
-                );
-
-
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "update_order_status",
+            {
+                p_order_id: orderId,
+                p_new_status: newStatus
             }
+        );
 
-            catch (error) {
+        if (error) {
 
-                console.error(
-                    "Unexpected status error:",
-                    error
-                );
+            console.error(
+                "Status update error:",
+                error
+            );
+
+            alert(
+                "Could not update order status.\n\n" +
+                error.message
+            );
+
+            await loadOrders();
+
+            return;
+        }
 
 
-                alert(
-                    "Something went wrong while updating the order."
-                );
+        // UPDATE LOCAL DATA
 
-            }
+        const order =
+            adminOrders.find(
+                function(item) {
+
+                    return (
+                        String(item.id) ===
+                        String(orderId)
+                    );
+
+                }
+            );
+
+
+        if (order) {
+
+            order.order_status =
+                newStatus;
 
         }
 
+
+        // RE-RENDER
+
+        const selectedFilter =
+            document.getElementById(
+                "order-filter"
+            ).value;
+
+
+        if (
+            selectedFilter ===
+            "all"
+        ) {
+
+            renderOrders(
+                adminOrders
+            );
+
+        }
+
+        else {
+
+            filterOrders();
+
+        }
+
+
+        alert(
+            "✅ Order status updated successfully!"
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected status error:",
+            error
+        );
+
+        alert(
+            "Something went wrong while updating the order."
+        );
+
+        await loadOrders();
+
+    }
+
+}
 
 
         // =====================================================
