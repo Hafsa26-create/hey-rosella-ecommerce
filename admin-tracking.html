@@ -289,66 +289,64 @@
         }
 
         async function updateOrderStatus(orderId) {
-            const select = document.getElementById("select-" + orderId);
-            if (!select) {
-                alert("Status selector not found.");
-                return;
+    const select = document.getElementById("select-" + orderId);
+
+    if (!select) {
+        alert("Status selector not found.");
+        return;
+    }
+
+    const newStatus = select.value;
+    const button = select.parentElement.querySelector(".update-button");
+    const card = select.closest(".tracking-card");
+
+    if (!newStatus || !orderId) {
+        alert("Please select a valid status.");
+        return;
+    }
+
+    if (button) {
+        button.disabled = true;
+        button.textContent = "Updating...";
+    }
+
+    try {
+        const { data, error } = await supabaseClient.rpc(
+            "update_order_status",
+            {
+                p_order_id: orderId,
+                p_new_status: newStatus
             }
+        );
 
-            const newStatus = select.value;
-            const button = select.parentElement.querySelector(".update-button");
-            const card = select.closest(".tracking-card");
-            const oldStatus = card ? card.dataset.status : "";
+        if (error) throw error;
 
-            if (!newStatus || !orderId) {
-                alert("Please select a valid status.");
-                return;
-            }
-
-            if (button) {
-                button.disabled = true;
-                button.textContent = "Updating...";
-            }
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from("Hey Rosella")
-                    .update({ order_status: newStatus })
-                    .eq("id", orderId)
-                    .select("id, order_number, order_status");
-
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    throw new Error("Order was not updated. Check the admin UPDATE RLS policy.");
-                }
-
-                if (card) {
-                    card.dataset.status = newStatus;
-                    card.outerHTML = createTrackingCard({
-                        ...data[0],
-                        id: orderId,
-                        order_number: card.querySelector(".order-number")?.textContent.replace(/^Order #/, "") || data[0].order_number,
-                        customer_name: "",
-                        customer_phone: "",
-                        customer_address: "",
-                        products: []
-                    });
-                }
-
-                /* Reload so the card keeps all original customer/product data. */
-                await loadTrackingOrders();
-                alert(`Order #${data[0].order_number || orderId} status updated to ${newStatus} successfully!`);
-            } catch (error) {
-                console.error("Order status update error:", error);
-                alert("Status update failed: " + error.message);
-            } finally {
-                if (button) {
-                    button.disabled = false;
-                    button.textContent = "Update Status";
-                }
-            }
+        if (!data || data.success !== true) {
+            throw new Error("Order status was not updated.");
         }
+
+        if (card) {
+            card.dataset.status = newStatus;
+        }
+
+        // Reload so the card keeps all original customer/product data.
+        await loadTrackingOrders();
+
+        alert(
+            `Order #${orderId} status updated to ${newStatus} successfully!`
+        );
+
+    } catch (error) {
+        console.error("Order status update error:", error);
+        alert("Status update failed: " + error.message);
+
+    } finally {
+        if (button) {
+            button.disabled = false;
+            button.textContent = "Update Status";
+        }
+    }
+}
 
         async function loadTrackingOrders() {
             const trackingList = document.getElementById("trackingList");
