@@ -1521,107 +1521,120 @@ console.log(
 
 
 
-        // =====================================================
-        // DELETE PRODUCT
-        // =====================================================
+       // =====================================================
+// DELETE PRODUCT
+// =====================================================
 
-        async function deleteProduct(productId) {
+async function deleteProduct(productId) {
 
-            const {
-                data: product,
-                error: fetchError
-            } = await supabaseClient
-
-                .from("products")
-
-                .select("name")
-
-                .eq(
-                    "id",
-                    productId
-                )
-
-                .single();
+    const {
+        data: product,
+        error: fetchError
+    } = await supabaseClient
+        .from("products")
+        .select("name")
+        .eq("id", productId)
+        .single();
 
 
-            if (
-                fetchError ||
-                !product
-            ) {
+    if (
+        fetchError ||
+        !product
+    ) {
 
-                console.error(
-                    "Delete fetch error:",
-                    fetchError
-                );
+        console.error(
+            "Delete fetch error:",
+            fetchError
+        );
+
+        alert(
+            "❌ Unable to find this product."
+        );
+
+        return;
+
+    }
 
 
-                alert(
-                    "❌ Unable to find this product."
-                );
+    const confirmed =
+        confirm(
+            `Are you sure you want to deactivate "${product.name}"?`
+        );
 
 
-                return;
+    if (!confirmed) {
 
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient.rpc(
+            "deactivate_product",
+            {
+                p_product_id: productId
             }
+        );
 
 
-            const confirmed =
-                confirm(
+        if (error) {
 
-                    `Are you sure you want to delete "${product.name}"?`
-
-                );
-
-
-            if (!confirmed) {
-
-                return;
-
-            }
-
-
-            const {
+            console.error(
+                "Deactivate product error:",
                 error
-            } = await supabaseClient
-
-                .from("products")
-
-                .delete()
-
-                .eq(
-                    "id",
-                    productId
-                );
-
-
-            if (error) {
-
-                console.error(
-                    "Delete product error:",
-                    error
-                );
-
-
-                alert(
-                    "❌ Product deletion failed:\n\n" +
-                    error.message
-                );
-
-
-                return;
-
-            }
-
-
-            alert(
-                "🗑️ Product deleted successfully."
             );
 
+            alert(
+                "❌ Product deactivation failed:\n\n" +
+                error.message
+            );
 
-            await loadProducts();
+            return;
 
         }
 
+
+        if (
+            !data ||
+            data.success !== true
+        ) {
+
+            throw new Error(
+                "Product was not deactivated."
+            );
+
+        }
+
+
+        alert(
+            "✅ Product deactivated successfully."
+        );
+
+
+        await loadProducts();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Unexpected deactivate error:",
+            error
+        );
+
+        alert(
+            "❌ Something went wrong.\n\n" +
+            error.message
+        );
+
+    }
+
+}
 
 
         // =====================================================
@@ -1654,6 +1667,9 @@ console.log(
                 "product-image-url"
             ).value = "";
 
+            document.getElementById(
+    "product-stock"
+).value = "";
 
             editingProductId =
                 null;
