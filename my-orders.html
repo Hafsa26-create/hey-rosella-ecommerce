@@ -151,6 +151,16 @@
                 SUPABASE_KEY
             );
 
+            function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
 
         // ==========================================
         // LOAD CUSTOMER ORDERS
@@ -250,7 +260,7 @@
                         </h3>
 
                         <p class="order-info">
-                            ${ordersError.message}
+                            ${escapeHTML(ordersError.message)}
                         </p>
 
                     </div>
@@ -326,24 +336,23 @@
 
                         order.products.forEach(
                             function(product) {
+productsHTML += `
 
-                                productsHTML += `
+    <div class="order-info">
 
-                                    <div class="order-info">
+        ${escapeHTML(product.name)}
 
-                                        ${product.name}
+        ×
 
-                                        ×
+        ${escapeHTML(product.quantity)}
 
-                                        ${product.quantity}
+        -
 
-                                        -
+        ${escapeHTML(product.price)} BDT
 
-                                        ${product.price} BDT
+    </div>
 
-                                    </div>
-
-                                `;
+`;
 
                             }
                         );
@@ -376,7 +385,7 @@
                     orderCard.innerHTML = `
 
                         <h3>
-                            Order #${order.order_number}
+                            Order #${escapeHTML(order.order_number)}
                         </h3>
 
 
@@ -409,7 +418,7 @@
                                 Total:
                             </strong>
 
-                            ${order.total_amount} BDT
+                            ${escapeHTML(order.total_amount)} BDT
 
                         </div>
 
@@ -420,7 +429,7 @@
                                 Payment:
                             </strong>
 
-                            ${order.payment_method}
+                          ${escapeHTML(order.payment_method)}
 
                         </div>
 
@@ -429,7 +438,7 @@
 
                             Status:
 
-                            ${order.order_status}
+                            ${escapeHTML(order.order_status)}
 
                         </div>
 
