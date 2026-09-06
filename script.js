@@ -2014,11 +2014,35 @@ document.addEventListener(
 
         setupCheckoutForm();
 
+
+        // =========================================
+        // PRODUCT SEARCH
+        // =========================================
+
+        const searchInput =
+            document.getElementById("search-input");
+
+        if (searchInput) {
+
+            searchInput.addEventListener(
+                "input",
+                function () {
+
+                    setProductSearch(
+                        searchInput.value
+                    );
+
+                }
+            );
+
+        }
+
+
         console.log(
             "Hey Rosella website loaded successfully."
         );
+
     }
-    
 );
 
 
@@ -2205,52 +2229,263 @@ function closeOrderDetails() {
 }
 
 // =====================================================
-// PRODUCT SEARCH + FILTER
+// PRODUCT SEARCH + CATEGORY FILTER
 // =====================================================
 
 let currentSearchTerm = "";
 let currentCategory = "all";
-let currentSort = "default";
+
+
+// =====================================================
+// SEARCH PRODUCTS
+// =====================================================
 
 function setProductSearch(searchTerm) {
-    currentSearchTerm = searchTerm.trim().toLowerCase();
+
+    currentSearchTerm =
+        String(searchTerm || "")
+            .trim()
+            .toLowerCase();
+
     applyProductFilters();
 }
+
+
+// =====================================================
+// CATEGORY FILTER
+// =====================================================
 
 function setProductCategory(category) {
-    currentCategory = category.trim().toLowerCase();
+
+    currentCategory =
+        String(category || "all")
+            .trim()
+            .toLowerCase();
+
     applyProductFilters();
 }
+
+
+// =====================================================
+// APPLY SEARCH + CATEGORY FILTER
+// =====================================================
 
 function applyProductFilters() {
-    console.log("Search:", currentSearchTerm);
-    console.log("Category:", currentCategory);
+
+    const shopContainer =
+        document.getElementById("shop-products");
+
+    if (!shopContainer) {
+        return;
+    }
+
+    const cards =
+        shopContainer.querySelectorAll(".shop-card");
+
+    let visibleProducts = 0;
+
+    cards.forEach(function(card) {
+
+        const productName =
+            String(
+                card.dataset.productName || ""
+            ).toLowerCase();
+
+        const productCategory =
+            String(
+                card.dataset.productCategory || ""
+            ).toLowerCase();
+
+
+        // =========================================
+        // SEARCH MATCH
+        // =========================================
+
+        const searchMatch =
+            currentSearchTerm === "" ||
+            productName.includes(currentSearchTerm) ||
+            productCategory.includes(currentSearchTerm);
+
+
+        // =========================================
+        // CATEGORY MATCH
+        // =========================================
+
+        const categoryMatch =
+            currentCategory === "all" ||
+            productCategory === currentCategory;
+
+
+        // =========================================
+        // SHOW / HIDE
+        // =========================================
+
+        if (
+            searchMatch &&
+            categoryMatch
+        ) {
+
+            card.style.display = "";
+
+            visibleProducts++;
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+
+    // =========================================
+    // NO RESULTS MESSAGE
+    // =========================================
+
+    let noResult =
+        document.getElementById(
+            "no-product-result"
+        );
+
+
+    if (!noResult) {
+
+        noResult =
+            document.createElement("p");
+
+        noResult.id =
+            "no-product-result";
+
+        noResult.textContent =
+            "No products found.";
+
+        noResult.style.textAlign =
+            "center";
+
+        noResult.style.color =
+            "#38221e";
+
+        noResult.style.fontSize =
+            "18px";
+
+        noResult.style.fontWeight =
+            "bold";
+
+        noResult.style.margin =
+            "30px 0";
+
+        shopContainer.appendChild(
+            noResult
+        );
+
+    }
+
+
+    if (visibleProducts === 0) {
+
+        noResult.style.display =
+            "block";
+
+    } else {
+
+        noResult.style.display =
+            "none";
+
+    }
+
 }
+
+
+// =====================================================
+// CLEAR SEARCH + CATEGORY
+// =====================================================
 
 function clearProductFilters() {
+
     currentSearchTerm = "";
     currentCategory = "all";
+
+    const searchInput =
+        document.getElementById(
+            "search-input"
+        );
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
     applyProductFilters();
+
 }
 
-// =====================================================
-// PRODUCT SORTING
-// =====================================================
+let currentSort = "default";
 
 function setProductSort(sortType) {
-    currentSort = sortType;
+    currentSort =
+        String(sortType || "default")
+            .trim()
+            .toLowerCase();
+
     applyProductSorting();
 }
 
 function applyProductSorting() {
-    console.log("Sort:", currentSort);
+    const shopContainer =
+        document.getElementById("shop-products");
+
+    if (!shopContainer) {
+        return;
+    }
+
+    const cards = Array.from(
+        shopContainer.querySelectorAll(".shop-card")
+    );
+
+    if (cards.length === 0) {
+        return;
+    }
+
+    cards.sort(function (a, b) {
+        const priceA =
+            Number(a.dataset.productPrice) || 0;
+
+        const priceB =
+            Number(b.dataset.productPrice) || 0;
+
+        const nameA =
+            String(a.dataset.productName || "");
+
+        const nameB =
+            String(b.dataset.productName || "");
+
+        if (currentSort === "price-low-high") {
+            return priceA - priceB;
+        }
+
+        if (currentSort === "price-high-low") {
+            return priceB - priceA;
+        }
+
+        if (currentSort === "name-a-z") {
+            return nameA.localeCompare(nameB);
+        }
+
+        if (currentSort === "name-z-a") {
+            return nameB.localeCompare(nameA);
+        }
+
+        return 0;
+    });
+
+    cards.forEach(function (card) {
+        shopContainer.appendChild(card);
+    });
 }
 
 function resetProductSort() {
     currentSort = "default";
     applyProductSorting();
 }
-
 
 
 // =====================================================
@@ -2941,99 +3176,108 @@ window.addEventListener(
 // HOME ACCOUNT BUTTON
 // =====================================================
 
-async function openAccountPage() {
+      async function openAccountPage() 
+        {
 
-    const {
-        data,
-        error
-    } = await supabaseClient.auth.getSession();
+             const 
+            {
+                data,
+                error
+            } = await supabaseClient.auth.getSession();
 
 
     // =========================================
     // SESSION ERROR
     // =========================================
 
-    if (error) {
+        if (error) 
+         {
 
-        console.error(
-            "Account session error:",
-            error
-        );
+            console.error
+             (
+                "Account session error:",
+                error
+             );
 
-        return;
+              return;
 
-    }
+            }
 
 
     // =========================================
     // NO USER LOGGED IN
     // =========================================
 
-    if (!data.session) {
+        if (!data.session)
+             {
 
-        openAuthPopup();
+             openAuthPopup();
 
-        return;
+             return;
 
-    }
+            }
 
 
     // =========================================
     // CHECK USER ROLE
     // =========================================
 
-    const {
-        data: profile,
-        error: profileError
-    } = await supabaseClient
+         const 
+        {
+            data: profile,
+            error: profileError
+        } = await supabaseClient
 
-        .from("profiles")
+          .from("profiles")
 
-        .select("role")
+          .select("role")
 
-        .eq(
-            "id",
-            data.session.user.id
-        )
+         .eq(
+               "id",
+                data.session.user.id
+            )
 
-        .single();
+          .single();
 
 
     // =========================================
     // PROFILE ERROR
     // =========================================
 
-    if (profileError) {
+            if (profileError) 
+                {
 
-        console.error(
-            "Account role check error:",
-            profileError
-        );
+                 console.error
+                  (
+                    "Account role check error:",
+                     profileError
+                  );
 
-        return;
+                    return;
 
-    }
+                }
 
 
-    // =========================================
-    // ADMIN ACCOUNT
-    // =========================================
+          // =========================================
+              // ADMIN ACCOUNT
+           // =========================================
 
-    if (
-    profile &&
-    String(profile.role).toLowerCase() === "admin"
-) {
+         if (
+            profile &&
+             String(profile.role).toLowerCase() === "admin"
+            ) {
 
-        console.log(
+           console.log
+           (
             "Admin account detected."
-        );
+           );
 
-        window.location.href =
-            "admin.html";
+             window.location.href =
+               "admin.html";
 
-        return;
+            return;
 
-    }
+             }
 
 
     // =========================================
@@ -3044,13 +3288,6 @@ async function openAccountPage() {
         "my-account.html";
 
 }
-
-
-
-
-
-
-
 
 
 
@@ -3076,176 +3313,6 @@ document.addEventListener(
 );
 
 
-// =====================================================
-// SMART PRODUCT SEARCH
-// =====================================================
-
-function searchProducts() {
-
-    const searchInput =
-        document.getElementById("search-input");
-
-    if (!searchInput) {
-        return;
-    }
-
-    const searchText =
-        searchInput.value.toLowerCase().trim();
-
-    const productCards =
-
-    
-        document.querySelectorAll(
-            ".product-card, .shop-card"
-        );
-
-    let foundProducts = 0;
-
-    productCards.forEach(function (card) {
-
-        const productNameElement =
-            card.querySelector("h3");
-
-        if (!productNameElement) {
-            return;
-        }
-
-        const productName =
-            productNameElement.textContent
-                .toLowerCase()
-                .trim();
-
-        // =============================================
-        // CATEGORY KEYWORDS
-        // =============================================
-
-        let category = "";
-
-        if (
-            productName.includes("jhumka") ||
-            productName.includes("jhumki")
-        ) {
-            category = "jhumka earrings";
-        }
-
-        else if (
-            productName.includes("earring")
-        ) {
-            category = "earrings";
-        }
-
-        else if (
-            productName.includes("ring")
-        ) {
-            category = "rings";
-        }
-
-        else if (
-            productName.includes("pendant")
-        ) {
-            category = "pendant necklace";
-        }
-
-        else if (
-            productName.includes("necklace")
-        ) {
-            category = "necklace";
-        }
-
-        else if (
-            productName.includes("bracelet")
-        ) {
-            category = "bracelet";
-        }
-
-        // =============================================
-        // SEARCH MATCH
-        // =============================================
-
-        const searchWords =
-            searchText.split(" ");
-
-        const matchesProduct =
-            searchWords.every(function (word) {
-
-                return (
-                    productName.includes(word) ||
-                    category.includes(word)
-                );
-
-            });
-
-        // =============================================
-        // SHOW / HIDE PRODUCT
-        // =============================================
-
-        if (
-            searchText === "" ||
-            matchesProduct
-        ) {
-
-            card.style.display = "";
-
-            foundProducts++;
-
-        } else {
-
-            card.style.display = "none";
-        }
-    });
-
-    // =============================================
-    // NO RESULT MESSAGE
-    // =============================================
-
-    let noResult =
-        document.getElementById("no-search-result");
-
-    if (!noResult) {
-
-        noResult =
-            document.createElement("p");
-
-        noResult.id =
-            "no-search-result";
-
-        noResult.textContent =
-            "No products found.";
-
-        noResult.style.color =
-            "#38221e";
-
-        noResult.style.fontSize =
-            "18px";
-
-        noResult.style.fontWeight =
-            "bold";
-
-        noResult.style.marginTop =
-            "30px";
-
-        const shopSection =
-            document.querySelector(".shop");
-
-        if (shopSection) {
-            shopSection.appendChild(noResult);
-        }
-    }
-
-    if (
-        searchText !== "" &&
-        foundProducts === 0
-    ) {
-
-        noResult.style.display =
-            "block";
-
-    } else {
-
-        noResult.style.display =
-            "none";
-    }
-}
 
 
 // =====================================================
@@ -3622,31 +3689,44 @@ function createProductCard(
     const productId =
         String(product.id);
 
-
     const productName =
         String(
             product.name || "Product"
         );
 
-
     const productPrice =
         Number(product.price) || 0;
-
 
     const productImage =
         product.image_url || "";
 
+    const productCategory =
+        String(product.category || "")
+            .trim()
+            .toLowerCase();
 
     const card =
         document.createElement("div");
-
 
     card.className =
         type === "featured"
             ? "product-card"
             : "shop-card";
 
+    card.dataset.productId =
+        productId;
 
+    card.dataset.productName =
+        productName.toLowerCase();
+
+    card.dataset.productCategory =
+        productCategory;
+
+    card.dataset.productPrice =
+        productPrice;
+
+
+    
     const imageClass =
         type === "featured"
             ? "product-image"
@@ -4075,13 +4155,15 @@ async function loadProducts() {
         // UPDATE WISHLIST BUTTONS
         // =================================================
 
-        updateWishlistButtons();
+       updateWishlistButtons();
 
+applyProductFilters();
+applyProductSorting();
 
-        console.log(
-            "Products loaded successfully:",
-            products.length
-        );
+console.log(
+    "Products loaded successfully:",
+    products.length
+);
 
     }
 
