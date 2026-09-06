@@ -2201,32 +2201,703 @@ function closeMyOrders() {
     }
 }
 
-// =====================================================
+/// =====================================================
 // ORDER DETAILS
 // =====================================================
 
 async function openOrderDetails(orderNumber) {
+
     if (!orderNumber) {
         alert("Order number is missing.");
         return;
     }
 
-    const section = document.getElementById("order-details-section");
+    const section =
+        document.getElementById("order-details-section");
 
-    if (section) {
-        section.style.display = "block";
+    if (!section) {
+        alert("Order details section not found.");
+        return;
     }
 
-    console.log("Opening order:", orderNumber);
+    section.style.display = "block";
+
+    section.innerHTML = `
+        <div
+            style="
+                position:relative;
+                width:100%;
+                max-width:700px;
+                max-height:90vh;
+                overflow-y:auto;
+                background:white;
+                border-radius:15px;
+                padding:30px;
+                box-sizing:border-box;
+            "
+        >
+
+            <button
+                type="button"
+                onclick="closeOrderDetails()"
+                style="
+                    position:absolute;
+                    right:15px;
+                    top:10px;
+                    border:none;
+                    background:none;
+                    font-size:28px;
+                    cursor:pointer;
+                    color:#3e2723;
+                "
+            >
+                ×
+            </button>
+
+            <h2
+                style="
+                    text-align:center;
+                    color:#3e2723;
+                    margin-top:0;
+                "
+            >
+                Order Details 📦
+            </h2>
+
+            <p style="text-align:center;">
+                Loading order details...
+            </p>
+
+        </div>
+    `;
+
+    try {
+
+        const {
+            data: orderData,
+            error
+        } = await supabaseClient
+            .from("Hey Rosella")
+            .select(`
+                id,
+                created_at,
+                customer_name,
+                customer_phone,
+                customer_address,
+                payment_method,
+                products,
+                total_amount,
+                order_status,
+                order_number
+            `)
+            .eq("order_number", orderNumber)
+            .single();
+
+        if (error) {
+
+            console.error(
+                "Order details error:",
+                error
+            );
+
+            section.innerHTML = `
+                <div
+                    style="
+                        background:white;
+                        padding:30px;
+                        border-radius:15px;
+                        text-align:center;
+                    "
+                >
+
+                    <button
+                        type="button"
+                        onclick="closeOrderDetails()"
+                        style="
+                            float:right;
+                            border:none;
+                            background:none;
+                            font-size:28px;
+                            cursor:pointer;
+                        "
+                    >
+                        ×
+                    </button>
+
+                    <h2 style="color:#3e2723;">
+                        Unable to Load Order
+                    </h2>
+
+                    <p>
+                        We could not load this order.
+                        Please try again.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+        if (!orderData) {
+
+            section.innerHTML = `
+                <div
+                    style="
+                        background:white;
+                        padding:30px;
+                        border-radius:15px;
+                        text-align:center;
+                    "
+                >
+
+                    <button
+                        type="button"
+                        onclick="closeOrderDetails()"
+                        style="
+                            float:right;
+                            border:none;
+                            background:none;
+                            font-size:28px;
+                            cursor:pointer;
+                        "
+                    >
+                        ×
+                    </button>
+
+                    <h2>
+                        Order Not Found
+                    </h2>
+
+                    <p>
+                        We could not find this order.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        // =================================================
+        // FORMAT DATE
+        // =================================================
+
+        const orderDate =
+            orderData.created_at
+                ? new Date(
+                    orderData.created_at
+                ).toLocaleString("en-BD")
+                : "N/A";
+
+
+        // =================================================
+        // PRODUCTS
+        // =================================================
+
+        let productsHTML = `
+            <p>No product information available.</p>
+        `;
+
+        if (
+            Array.isArray(orderData.products) &&
+            orderData.products.length > 0
+        ) {
+
+            productsHTML = `
+                <div
+                    style="
+                        display:flex;
+                        flex-direction:column;
+                        gap:10px;
+                    "
+                >
+            `;
+
+            orderData.products.forEach(function(product) {
+
+                const productName =
+                    escapeHTML(
+                        product.name ||
+                        product.product_name ||
+                        "Product"
+                    );
+
+                const quantity =
+                    Number(
+                        product.quantity || 1
+                    );
+
+                const price =
+                    Number(
+                        product.price || 0
+                    );
+
+                const subtotal =
+                    price * quantity;
+
+                productsHTML += `
+                    <div
+                        style="
+                            padding:12px;
+                            background:#fff8e1;
+                            border-radius:8px;
+                            display:flex;
+                            justify-content:space-between;
+                            gap:15px;
+                            flex-wrap:wrap;
+                        "
+                    >
+
+                        <span>
+                            <strong>
+                                ${productName}
+                            </strong>
+
+                            × ${quantity}
+                        </span>
+
+                        <span>
+                            ৳${subtotal.toLocaleString("en-BD")}
+                        </span>
+
+                    </div>
+                `;
+            });
+
+            productsHTML += `</div>`;
+        }
+
+
+        // =================================================
+        // ORDER DETAILS HTML
+        // =================================================
+
+        section.innerHTML = `
+
+            <div
+                style="
+                    position:relative;
+                    width:100%;
+                    max-width:700px;
+                    max-height:90vh;
+                    overflow-y:auto;
+                    background:white;
+                    border-radius:15px;
+                    padding:30px;
+                    box-sizing:border-box;
+                "
+            >
+
+                <button
+                    type="button"
+                    onclick="closeOrderDetails()"
+                    style="
+                        position:absolute;
+                        right:15px;
+                        top:10px;
+                        border:none;
+                        background:none;
+                        font-size:28px;
+                        cursor:pointer;
+                        color:#3e2723;
+                    "
+                >
+                    ×
+                </button>
+
+
+                <h2
+                    style="
+                        text-align:center;
+                        color:#3e2723;
+                        margin-top:0;
+                    "
+                >
+                    Order Details 📦
+                </h2>
+
+
+                <div
+                    style="
+                        background:#fff8e1;
+                        padding:15px;
+                        border-radius:10px;
+                        margin-bottom:20px;
+                    "
+                >
+
+                    <p>
+                        <strong>Order Number:</strong>
+                        ${escapeHTML(orderData.order_number)}
+                    </p>
+
+                    <p>
+                        <strong>Order Date:</strong>
+                        ${escapeHTML(orderDate)}
+                    </p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        ${escapeHTML(orderData.order_status)}
+                    </p>
+
+                    <p>
+                        <strong>Payment:</strong>
+                        ${escapeHTML(
+                            orderData.payment_method || "N/A"
+                        )}
+                    </p>
+
+                </div>
+
+
+                <h3 style="color:#3e2723;">
+                    Customer Information
+                </h3>
+
+                <p>
+                    <strong>Name:</strong>
+                    ${escapeHTML(
+                        orderData.customer_name || "N/A"
+                    )}
+                </p>
+
+                <p>
+                    <strong>Phone:</strong>
+                    ${escapeHTML(
+                        orderData.customer_phone || "N/A"
+                    )}
+                </p>
+
+                <p>
+                    <strong>Address:</strong>
+                    ${escapeHTML(
+                        orderData.customer_address || "N/A"
+                    )}
+                </p>
+
+
+                <h3 style="color:#3e2723;">
+                    Ordered Products
+                </h3>
+
+                ${productsHTML}
+
+
+                <div
+                    style="
+                        margin-top:20px;
+                        padding:15px;
+                        background:#3e2723;
+                        color:white;
+                        border-radius:10px;
+                        text-align:right;
+                        font-size:20px;
+                        font-weight:bold;
+                    "
+                >
+
+                    Total:
+                    ৳${Number(
+                        orderData.total_amount || 0
+                    ).toLocaleString("en-BD")}
+
+                </div>
+
+            </div>
+        `;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected order details error:",
+            error
+        );
+
+        section.innerHTML = `
+            <div
+                style="
+                    background:white;
+                    padding:30px;
+                    border-radius:15px;
+                    text-align:center;
+                "
+            >
+
+                <button
+                    type="button"
+                    onclick="closeOrderDetails()"
+                    style="
+                        float:right;
+                        border:none;
+                        background:none;
+                        font-size:28px;
+                        cursor:pointer;
+                    "
+                >
+                    ×
+                </button>
+
+                <h2>
+                    Something went wrong
+                </h2>
+
+                <p>
+                    Please try again later.
+                </p>
+
+            </div>
+        `;
+    }
 }
 
+
+// =====================================================
+// CLOSE ORDER DETAILS
+// =====================================================
+
 function closeOrderDetails() {
-    const section = document.getElementById("order-details-section");
+
+    const section =
+        document.getElementById(
+            "order-details-section"
+        );
 
     if (section) {
         section.style.display = "none";
     }
 }
+        // =====================================================
+// PRODUCT DETAILS
+// =====================================================
+
+function openProductDetails(
+    productId,
+    productName,
+    productPrice,
+    productImage,
+    productCategory,
+    stockQuantity
+) {
+
+    let section =
+        document.getElementById("product-details-section");
+
+    // Create section if it does not exist
+    if (!section) {
+
+        section =
+            document.createElement("div");
+
+        section.id =
+            "product-details-section";
+
+        section.style.position = "fixed";
+        section.style.inset = "0";
+        section.style.background = "rgba(0,0,0,0.55)";
+        section.style.zIndex = "99999";
+        section.style.display = "flex";
+        section.style.alignItems = "center";
+        section.style.justifyContent = "center";
+        section.style.padding = "20px";
+        section.style.boxSizing = "border-box";
+
+        document.body.appendChild(section);
+    }
+
+    const imageHTML =
+        productImage
+            ? `
+                <img
+                    src="${escapeHTML(productImage)}"
+                    alt="${escapeHTML(productName)}"
+                    style="
+                        width:100%;
+                        max-width:400px;
+                        height:320px;
+                        object-fit:cover;
+                        border-radius:12px;
+                    "
+                >
+            `
+            : `
+                <div
+                    style="
+                        width:100%;
+                        max-width:400px;
+                        height:320px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        background:#f5f5f5;
+                        border-radius:12px;
+                    "
+                >
+                    No Image
+                </div>
+            `;
+
+    const stock =
+        Number(stockQuantity) || 0;
+
+    const stockText =
+        stock > 0
+            ? "In Stock"
+            : "Out of Stock";
+
+    section.innerHTML = `
+
+        <div
+            style="
+                position:relative;
+                width:100%;
+                max-width:700px;
+                max-height:90vh;
+                overflow-y:auto;
+                background:white;
+                border-radius:15px;
+                padding:30px;
+                box-sizing:border-box;
+                text-align:center;
+            "
+        >
+
+            <button
+                type="button"
+                onclick="closeProductDetails()"
+                style="
+                    position:absolute;
+                    right:15px;
+                    top:10px;
+                    border:none;
+                    background:none;
+                    font-size:28px;
+                    cursor:pointer;
+                    color:#3e2723;
+                "
+            >
+                ×
+            </button>
+
+            ${imageHTML}
+
+            <h2 style="color:#3e2723;">
+                ${escapeHTML(productName)}
+            </h2>
+
+            <p>
+                <strong>Category:</strong>
+                ${escapeHTML(productCategory)}
+            </p>
+
+            <p
+                style="
+                    font-size:22px;
+                    font-weight:bold;
+                    color:#3e2723;
+                "
+            >
+                ৳${Number(productPrice || 0).toLocaleString("en-BD")}
+            </p>
+
+            <p>
+                <strong>Availability:</strong>
+                ${stockText}
+            </p>
+
+            ${
+                stock > 0
+                    ? `
+                        <button
+                            type="button"
+                            id="details-cart-button"
+                            style="
+                                padding:12px 25px;
+                                border:none;
+                                border-radius:8px;
+                                background:#d4af37;
+                                color:white;
+                                cursor:pointer;
+                                font-size:16px;
+                            "
+                        >
+                            🛒 Add to Cart
+                        </button>
+                    `
+                    : `
+                        <button
+                            type="button"
+                            disabled
+                            style="
+                                padding:12px 25px;
+                                border:none;
+                                border-radius:8px;
+                                background:#777;
+                                color:white;
+                                cursor:not-allowed;
+                            "
+                        >
+                            🔴 Out of Stock
+                        </button>
+                    `
+            }
+
+        </div>
+    `;
+
+    section.style.display = "flex";
+
+    const cartButton =
+        document.getElementById("details-cart-button");
+
+    if (cartButton) {
+
+        cartButton.addEventListener(
+            "click",
+            async function() {
+
+                const added =
+                    await addToCart(
+                        productId,
+                        productName,
+                        productPrice,
+                        cartButton
+                    );
+
+                if (added) {
+
+                    cartButton.textContent =
+                        "✓ Added to Cart";
+
+                }
+
+            }
+        );
+
+    }
+}
+
+
+// =====================================================
+// CLOSE PRODUCT DETAILS
+// =====================================================
+
+function closeProductDetails() {
+
+    const section =
+        document.getElementById(
+            "product-details-section"
+        );
+
+    if (section) {
+
+        section.style.display = "none";
+
+    }
+}
+
 
 // =====================================================
 // PRODUCT SEARCH + CATEGORY FILTER
@@ -3763,7 +4434,7 @@ function createProductCard(
 
             `;
 
-
+     card.style.cursor = "pointer";
     card.innerHTML = `
 
         <div class="${imageClass}">
@@ -3915,6 +4586,31 @@ setTimeout(function() {
 );
 }
 
+
+// =================================================
+// PRODUCT DETAILS CLICK
+// =================================================
+
+card.addEventListener("click", function(event) {
+
+    // Don't open details when clicking buttons
+    if (
+        event.target.closest(".add-cart-dynamic-btn") ||
+        event.target.closest(".wishlist-dynamic-btn")
+    ) {
+        return;
+    }
+
+    openProductDetails(
+        product.id,
+        product.name,
+        product.price,
+        product.image_url || "",
+        product.category || "",
+        product.stock_quantity || 0
+    );
+
+});
 
     // =================================================
     // WISHLIST BUTTON
