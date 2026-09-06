@@ -1389,22 +1389,44 @@ color: #3e2723 !important;
     <!-- =========================
          SHOP SECTION
     ========================= -->
+<section id="shop" class="shop">
 
-    <section id="shop" class="shop">
+    <h2>Shop Our Collection</h2>
 
-        <h2>Shop Our Collection</h2>
+    <p>
+        Find the perfect piece to complete your look.
+    </p>
 
-        <p>
-            Find the perfect piece to complete your look.
+    <!-- SORTING -->
+    <div class="shop-controls">
+
+        <label for="sort-products">
+            Sort By:
+        </label>
+
+        <select
+            id="sort-products"
+            onchange="setProductSort(this.value)"
+        >
+            <option value="default">Default</option>
+            <option value="price-low-high">Price: Low to High</option>
+            <option value="price-high-low">Price: High to Low</option>
+            <option value="name-a-z">Name: A to Z</option>
+            <option value="name-z-a">Name: Z to A</option>
+        </select>
+
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="shop-products" id="shop-products">
+
+        <p id="products-loading">
+            Loading products...
         </p>
 
-        <div class="shop-products" id="shop-products">
+    </div>
 
-    <p id="products-loading">Loading products...</p>
-
-</div>
-    </section>
-
+</section>
     <!-- =========================
          FAQ SECTION
     ========================= -->
