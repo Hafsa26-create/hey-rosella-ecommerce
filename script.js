@@ -1244,65 +1244,36 @@ async function signupCustomer() {
     // SAVE CUSTOMER TO PROFILES TABLE
     // ================================================
 
-    if (!data.user) {
+   // ================================================
+// CHECK AUTH USER
+// ================================================
 
-        console.error(
-            "User was not returned after signup."
-        );
+if (!data.user) {
 
-        alert(
-            "Account created, but user information could not be saved."
-        );
-
-        return;
-    }
-
-
-    const userId =
-        data.user.id;
-
-
-    const {
-        error: profileError
-    } =
-        await supabaseClient
-            .from("profiles")
-            .insert({
-
-                id: userId,
-
-                full_name: name
-
-            });
-
-
-    if (profileError) {
-
-        console.error(
-            "Profile insert error:",
-            profileError
-        );
-
-        alert(
-            "Account created, but customer profile could not be saved.\n\n" +
-            profileError.message
-        );
-
-        return;
-    }
-
-
-    console.log(
-        "Customer profile saved successfully."
+    console.error(
+        "User was not returned after signup."
     );
-
 
     alert(
-        "Account created successfully! Please verify your email."
+        "Account could not be created. Please try again."
     );
 
+    return;
+}
 
-    showVerificationSection(email);
+
+// ================================================
+// SIGNUP SUCCESS
+// ================================================
+
+alert(
+    "Account created successfully! Please verify your email."
+);
+
+showVerificationSection(email);
+
+
+  
 
 }
 
@@ -1980,9 +1951,9 @@ supabaseClient.auth.onAuthStateChange(
         // =========================================
 
         if (
-            profile &&
-            profile.role === "Admin"
-        ) {
+    profile &&
+    String(profile.role).toLowerCase() === "admin"
+) {
 
             console.log(
                 "Admin logged in:",
@@ -2381,10 +2352,10 @@ async function openCustomerProfile() {
     // ADMIN ACCOUNT
     // =========================================
 
-    if (
-        profile &&
-        profile.role === "Admin"
-    ) {
+   if (
+    profile &&
+    String(profile.role).toLowerCase() === "admin"
+) {
 
         alert(
             "Admin account detected. Opening Admin Dashboard..."
@@ -2493,22 +2464,59 @@ function showChangePasswordForm() {
 // =====================================================
 // HANDLE CHANGE PASSWORD
 // =====================================================
-
 async function handleChangePassword() {
 
-    const newPassword =
-        document.getElementById(
-            "new-password"
-        ).value;
+    const currentPasswordElement =
+        document.getElementById("current-password");
 
+    const newPasswordElement =
+        document.getElementById("new-password");
+
+    const confirmPasswordElement =
+        document.getElementById("confirm-new-password");
+
+
+    // =====================================================
+    // CHECK FORM FIELDS
+    // =====================================================
+
+    if (
+        !currentPasswordElement ||
+        !newPasswordElement ||
+        !confirmPasswordElement
+    ) {
+
+        console.error(
+            "Password form fields not found."
+        );
+
+        alert(
+            "Password form could not be loaded. Please refresh the page."
+        );
+
+        return;
+    }
+
+
+    const currentPassword =
+        currentPasswordElement.value;
+
+    const newPassword =
+        newPasswordElement.value;
 
     const confirmPassword =
-        document.getElementById(
-            "confirm-new-password"
-        ).value;
+        confirmPasswordElement.value;
 
 
-    if (!newPassword || !confirmPassword) {
+    // =====================================================
+    // REQUIRED FIELDS
+    // =====================================================
+
+    if (
+        !currentPassword ||
+        !newPassword ||
+        !confirmPassword
+    ) {
 
         alert(
             "Please fill in all password fields."
@@ -2518,15 +2526,37 @@ async function handleChangePassword() {
     }
 
 
-    if (newPassword !== confirmPassword) {
+    // =====================================================
+    // NEW PASSWORD ≠ CURRENT PASSWORD
+    // =====================================================
+
+    if (newPassword === currentPassword) {
 
         alert(
-            "Passwords do not match."
+            "New password must be different from your current password."
         );
 
         return;
     }
 
+
+    // =====================================================
+    // PASSWORD MATCH
+    // =====================================================
+
+    if (newPassword !== confirmPassword) {
+
+        alert(
+            "New passwords do not match."
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // PASSWORD LENGTH
+    // =====================================================
 
     if (newPassword.length < 6) {
 
@@ -2538,8 +2568,81 @@ async function handleChangePassword() {
     }
 
 
+    // =====================================================
+    // GET CURRENT SESSION
+    // =====================================================
+
     const {
-        error
+        data: sessionData,
+        error: sessionError
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (
+        sessionError ||
+        !sessionData.session
+    ) {
+
+        alert(
+            "Your session has expired. Please login again."
+        );
+
+        return;
+    }
+
+
+    const email =
+        sessionData.session.user.email;
+
+
+    if (!email) {
+
+        alert(
+            "Your account email could not be found."
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // VERIFY CURRENT PASSWORD
+    // =====================================================
+
+    const {
+        error: verifyError
+    } =
+        await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: currentPassword
+
+        });
+
+
+    if (verifyError) {
+
+        console.error(
+            "Current password verification error:",
+            verifyError
+        );
+
+        alert(
+            "Current password is incorrect."
+        );
+
+        return;
+    }
+
+
+    // =====================================================
+    // UPDATE PASSWORD
+    // =====================================================
+
+    const {
+        error: updateError
     } =
         await supabaseClient.auth.updateUser({
 
@@ -2548,47 +2651,58 @@ async function handleChangePassword() {
         });
 
 
-    if (error) {
+    if (updateError) {
 
         console.error(
             "Password update error:",
-            error
+            updateError
         );
 
         alert(
             "Could not change password.\n\n" +
-            error.message
+            updateError.message
         );
 
         return;
     }
 
 
+    // =====================================================
+    // SUCCESS
+    // =====================================================
+
     alert(
         "🔐 Password changed successfully!"
     );
 
 
-    document.getElementById(
-        "current-password"
-    ).value = "";
+    // =====================================================
+    // CLEAR PASSWORD FIELDS
+    // =====================================================
+
+    currentPasswordElement.value = "";
+
+    newPasswordElement.value = "";
+
+    confirmPasswordElement.value = "";
 
 
-    document.getElementById(
-        "new-password"
-    ).value = "";
+    // =====================================================
+    // CLOSE FORM
+    // =====================================================
 
+    const section =
+        document.getElementById(
+            "change-password-section"
+        );
 
-    document.getElementById(
-        "confirm-new-password"
-    ).value = "";
+    if (section) {
 
+        section.style.display = "none";
 
-    document.getElementById(
-        "change-password-section"
-    ).style.display = "none";
+    }
+
 }
-
 
 function showEditProfileForm() {
 
@@ -2906,9 +3020,9 @@ async function openAccountPage() {
     // =========================================
 
     if (
-        profile &&
-        profile.role === "Admin"
-    ) {
+    profile &&
+    String(profile.role).toLowerCase() === "admin"
+) {
 
         console.log(
             "Admin account detected."
