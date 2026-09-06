@@ -1123,63 +1123,63 @@ color: #3e2723 !important;
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('all')"
+               onclick="setProductCategory('all')"
             >
                 All Categories
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Earrings')"
+                onclick="setProductCategory('Earrings')"
             >
                 Earrings
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Jhumka')"
+               onclick="setProductCategory('Jhumka')"
             >
                 Jhumka
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Chhoto Jhumka')"
+               onclick="setProductCategory('Chhoto Jhumka')"
             >
                 Chhoto Jhumka
             </a>
 
             <a
-                href="#shop"
-                onclick="filterProductsByCategory('Kashmeri Jhumka')"
-            >
-                Kashmeri Jhumka
-            </a>
+    href="#shop"
+    onclick="setProductCategory('Kashmiri Jhumka')"
+>
+    Kashmiri Jhumka
+</a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Pendant')"
+               onclick="setProductCategory('Pendant')"
             >
                 Pendant
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Rings')"
+                onclick="setProductCategory('Rings')"
             >
                 Rings
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Necklace')"
+              onclick="setProductCategory('Necklace')"
             >
                 Necklace
             </a>
 
             <a
                 href="#shop"
-                onclick="filterProductsByCategory('Bracelet')"
+                onclick="setProductCategory('Bracelet')"
             >
                 Bracelet
             </a>
@@ -1216,19 +1216,18 @@ color: #3e2723 !important;
     <!-- SEARCH BAR -->
     <div class="search-box">
 
-        <input
-            type="text"
-            id="search-input"
-            placeholder="Search jewellery..."
-            onkeyup="searchProducts()"
-        >
+<input
+    type="text"
+    id="search-input"
+    placeholder="Search jewellery..."
+>
 
-        <button
-            type="button"
-            onclick="searchProducts()"
-        >
-            🔍
-        </button>
+<button
+    type="button"
+    onclick="setProductSearch(document.getElementById('search-input').value)"
+>
+    🔍
+</button>
 
     </div>
 
