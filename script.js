@@ -3089,9 +3089,14 @@ function clearProductFilters() {
 
 }
 
+
+
 let currentSort = "default";
+let originalProductOrder = [];
+
 
 function setProductSort(sortType) {
+
     currentSort =
         String(sortType || "default")
             .trim()
@@ -3100,7 +3105,14 @@ function setProductSort(sortType) {
     applyProductSorting();
 }
 
+function resetProductSort() {
+    currentSort = "default";
+    applyProductSorting();
+}
+
+
 function applyProductSorting() {
+
     const shopContainer =
         document.getElementById("shop-products");
 
@@ -3116,7 +3128,8 @@ function applyProductSorting() {
         return;
     }
 
-    cards.sort(function (a, b) {
+    cards.sort(function(a, b) {
+
         const priceA =
             Number(a.dataset.productPrice) || 0;
 
@@ -3129,35 +3142,81 @@ function applyProductSorting() {
         const nameB =
             String(b.dataset.productName || "");
 
-        if (currentSort === "price-low-high") {
-            return priceA - priceB;
+        const orderA =
+            Number(a.dataset.originalOrder);
+
+        const orderB =
+            Number(b.dataset.originalOrder);
+
+
+        // =========================================
+        // DEFAULT / RESET
+        // =========================================
+
+        if (currentSort === "default") {
+
+            return orderA - orderB;
+
         }
+
+
+        // =========================================
+        // PRICE LOW → HIGH
+        // =========================================
+
+        if (currentSort === "price-low-high") {
+
+            return priceA - priceB;
+
+        }
+
+
+        // =========================================
+        // PRICE HIGH → LOW
+        // =========================================
 
         if (currentSort === "price-high-low") {
+
             return priceB - priceA;
+
         }
+
+
+        // =========================================
+        // NAME A → Z
+        // =========================================
 
         if (currentSort === "name-a-z") {
+
             return nameA.localeCompare(nameB);
+
         }
+
+
+        // =========================================
+        // NAME Z → A
+        // =========================================
 
         if (currentSort === "name-z-a") {
+
             return nameB.localeCompare(nameA);
+
         }
 
-        return 0;
+
+        return orderA - orderB;
+
+
     });
 
-    cards.forEach(function (card) {
+
+    cards.forEach(function(card) {
+
         shopContainer.appendChild(card);
+
     });
-}
 
-function resetProductSort() {
-    currentSort = "default";
-    applyProductSorting();
 }
-
 
 // =====================================================
 // RECENTLY VIEWED
@@ -3257,6 +3316,7 @@ async function openCustomerProfile() {
     // =========================================
     // ADMIN ACCOUNT
     // =========================================
+  
 
    if (
     profile &&
@@ -4795,21 +4855,22 @@ async function loadProducts() {
 
             shopContainer.innerHTML = "";
 
+           products.forEach(function(product, index) {
 
-            products.forEach(function(product) {
+            const card =
+             createProductCard(
+              product,
+               "shop"
+            );
 
-                const card =
-                    createProductCard(
-                        product,
-                        "shop"
-                    );
+            card.dataset.originalOrder =
+                String(index);
 
+            shopContainer.appendChild(
+             card
+             );
 
-                shopContainer.appendChild(
-                    card
-                );
-
-            });
+             });
 
         }
 
