@@ -14,6 +14,10 @@
 
     <style>
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -29,62 +33,145 @@
 
         .orders-header {
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
         }
 
         .orders-header h1 {
-            font-size: 25px;
-            margin-bottom: 8px;
+            font-size: 27px;
+            margin: 0 0 8px;
+            color: #3e2723;
         }
 
         .orders-header p {
+            margin: 0;
             color: #474242;
+            font-size: 15px;
         }
 
         .order-card {
             background: rgb(255, 231, 231);
             padding: 25px;
             margin-bottom: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             font-size: 15px;
         }
 
         .order-card h3 {
-            margin-top: 7px;
+            margin: 0 0 15px;
             color: #3e2723;
+            font-size: 19px;
         }
 
         .order-info {
             margin: 8px 0;
+            line-height: 1.6;
         }
 
         .order-status {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 7px 12px;
+            background: #fff7f7;
+            border-radius: 6px;
             font-weight: bold;
-            margin-top: 10px;
+            color: #3e2723;
+        }
+
+        .order-details {
+            display: none;
+            margin-top: 18px;
+            padding: 17px;
+            background: #fff7f7;
+            border-radius: 9px;
+            border: 1px solid rgba(62, 39, 35, 0.08);
+        }
+
+        .order-details.show {
+            display: block;
+        }
+
+        .details-button,
+        .track-button {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.2s ease;
+        }
+
+        .details-button {
+            background: #3e2723;
+            color: white;
+            border: none;
+            margin-right: 8px;
         }
 
         .track-button {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 4px 20px;
             background: #d4af37;
             color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
+            border: none;
+        }
+
+        .details-button:hover,
+        .track-button:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
         }
 
         .back-button {
             display: inline-block;
-            margin-top: 40px;
-            padding: 5px 20px;
+            margin-top: 15px;
+            padding: 8px 20px;
             background: #3e2723;
             color: white;
             text-decoration: none;
             border-radius: 8px;
             font-size: 14px;
+            transition: 0.2s ease;
+        }
+
+        .back-button:hover {
+            opacity: 0.9;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 25px;
+            color: #474242;
+        }
+
+        @media (max-width: 600px) {
+
+            .orders-page {
+                margin: 20px auto;
+                padding: 15px;
+            }
+
+            .orders-header h1 {
+                font-size: 23px;
+            }
+
+            .order-card {
+                padding: 20px;
+            }
+
+            .details-button,
+            .track-button {
+                width: 100%;
+                text-align: center;
+                margin-right: 0;
+                margin-top: 12px;
+            }
+
+            .back-button {
+                width: 100%;
+                text-align: center;
+            }
+
         }
 
     </style>
@@ -109,11 +196,11 @@
         </div>
 
 
-        <!-- ORDERS WILL APPEAR HERE -->
+        <!-- ORDERS -->
 
         <div id="orders-container">
 
-            <p style="text-align: center;">
+            <p class="loading-message">
                 Loading your orders...
             </p>
 
@@ -151,22 +238,38 @@
                 SUPABASE_KEY
             );
 
-            function escapeHTML(value) {
 
-    return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        // ==========================================
+        // ESCAPE HTML
+        // ==========================================
 
-}
+        function escapeHTML(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
 
         // ==========================================
         // LOAD CUSTOMER ORDERS
         // ==========================================
 
         async function loadMyOrders() {
+
+            const container =
+                document.getElementById(
+                    "orders-container"
+                );
+
+
+            // ==========================================
+            // GET SESSION
+            // ==========================================
 
             const {
                 data,
@@ -175,14 +278,28 @@
                 await supabaseClient.auth.getSession();
 
 
-            // SESSION ERROR
-
             if (error) {
 
                 console.error(
                     "Session error:",
                     error
                 );
+
+                container.innerHTML = `
+
+                    <div class="order-card">
+
+                        <h3>
+                            Could not load your account
+                        </h3>
+
+                        <p class="order-info">
+                            ${escapeHTML(error.message)}
+                        </p>
+
+                    </div>
+
+                `;
 
                 return;
             }
@@ -192,7 +309,9 @@
                 data.session;
 
 
+            // ==========================================
             // USER NOT LOGGED IN
+            // ==========================================
 
             if (!session) {
 
@@ -240,7 +359,9 @@
                     );
 
 
+            // ==========================================
             // ORDER ERROR
+            // ==========================================
 
             if (ordersError) {
 
@@ -249,9 +370,7 @@
                     ordersError
                 );
 
-                document.getElementById(
-                    "orders-container"
-                ).innerHTML = `
+                container.innerHTML = `
 
                     <div class="order-card">
 
@@ -260,7 +379,9 @@
                         </h3>
 
                         <p class="order-info">
-                            ${escapeHTML(ordersError.message)}
+                            ${escapeHTML(
+                                ordersError.message
+                            )}
                         </p>
 
                     </div>
@@ -269,12 +390,6 @@
 
                 return;
             }
-
-
-            const container =
-                document.getElementById(
-                    "orders-container"
-                );
 
 
             // ==========================================
@@ -314,221 +429,422 @@
 
 
             // ==========================================
-            // SHOW ORDERS
+            // CLEAR LOADING
             // ==========================================
 
             container.innerHTML = "";
 
 
-               
+            // ==========================================
+            // COLLECT PRODUCT IDS
+            // ==========================================
+
+            const productIds = [];
 
 
-// ==========================================
-// LOAD PRODUCT DETAILS FOR ORDER ITEMS
-// ==========================================
+            orders.forEach(function(order) {
 
-const productIds = [];
-
-orders.forEach(function(order) {
-
-    if (!Array.isArray(order.products)) {
-        return;
-    }
-
-    order.products.forEach(function(product) {
-
-        const productId = Number(product.id);
-
-        if (
-            Number.isInteger(productId) &&
-            productId > 0 &&
-            !productIds.includes(productId)
-        ) {
-            productIds.push(productId);
-        }
-
-    });
-
-});
+                if (
+                    !Array.isArray(order.products)
+                ) {
+                    return;
+                }
 
 
-let productMap = new Map();
+                order.products.forEach(
+                    function(product) {
 
-if (productIds.length > 0) {
-
-    const {
-        data: productData,
-        error: productError
-    } = await supabaseClient
-        .from("products")
-        .select("id,name,price,image_url")
-        .in("id", productIds);
+                        const productId =
+                            Number(product.id);
 
 
-    if (productError) {
+                        if (
+                            Number.isInteger(
+                                productId
+                            ) &&
+                            productId > 0 &&
+                            !productIds.includes(
+                                productId
+                            )
+                        ) {
 
-        console.error(
-            "Product details loading error:",
-            productError
-        );
+                            productIds.push(
+                                productId
+                            );
 
-    } else {
+                        }
 
-        productData.forEach(function(product) {
+                    }
+                );
 
-            productMap.set(
-                Number(product.id),
-                product
+            });
+
+
+            // ==========================================
+            // LOAD CURRENT PRODUCT DATA
+            // ==========================================
+
+            const productMap =
+                new Map();
+
+
+            if (
+                productIds.length > 0
+            ) {
+
+                const {
+                    data: productData,
+                    error: productError
+                } =
+                    await supabaseClient
+                        .from("products")
+                        .select(
+                            "id,name,price,image_url"
+                        )
+                        .in(
+                            "id",
+                            productIds
+                        );
+
+
+                if (productError) {
+
+                    console.error(
+                        "Product details loading error:",
+                        productError
+                    );
+
+                } else if (productData) {
+
+                    productData.forEach(
+                        function(product) {
+
+                            productMap.set(
+                                Number(product.id),
+                                product
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+
+
+            // ==========================================
+            // SHOW EACH ORDER
+            // ==========================================
+
+            orders.forEach(
+                function(order) {
+
+                    let productsHTML =
+                        "";
+
+
+                    // ==========================================
+                    // PRODUCTS
+                    // ==========================================
+
+                    if (
+                        Array.isArray(
+                            order.products
+                        )
+                    ) {
+
+                        order.products.forEach(
+                            function(product) {
+
+                                const productId =
+                                    Number(
+                                        product.id
+                                    );
+
+
+                                const currentProduct =
+                                    productMap.get(
+                                        productId
+                                    );
+
+
+                                const productName =
+                                    currentProduct?.name ||
+                                    product.name ||
+                                    `Product #${
+                                        productId ||
+                                        "Unknown"
+                                    }`;
+
+
+                                const productPrice =
+                                    currentProduct?.price ??
+                                    product.price ??
+                                    0;
+
+
+                                const productQuantity =
+                                    Number(
+                                        product.quantity
+                                    ) || 1;
+
+
+                                productsHTML += `
+
+                                    <div class="order-info">
+
+                                        ${escapeHTML(
+                                            productName
+                                        )}
+
+                                        ×
+
+                                        ${escapeHTML(
+                                            productQuantity
+                                        )}
+
+                                        -
+
+                                        ${escapeHTML(
+                                            productPrice
+                                        )}
+                                        BDT
+
+                                    </div>
+
+                                `;
+
+                            }
+                        );
+
+                    }
+
+
+                    // ==========================================
+                    // DATE
+                    // ==========================================
+
+                    const orderDate =
+                        order.created_at
+                            ? new Date(
+                                order.created_at
+                            ).toLocaleDateString()
+                            : "N/A";
+
+
+                    // ==========================================
+                    // ORDER CARD
+                    // ==========================================
+
+                    const orderCard =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    orderCard.className =
+                        "order-card";
+
+
+                    orderCard.innerHTML = `
+
+                        <h3>
+                            Order #${escapeHTML(
+                                order.order_number
+                            )}
+                        </h3>
+
+
+                        <div class="order-status">
+
+                            Status:
+                            ${escapeHTML(
+                                order.order_status
+                            )}
+
+                        </div>
+
+
+                        <!-- HIDDEN DETAILS -->
+
+                        <div class="order-details">
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Date:
+                                </strong>
+
+                                ${escapeHTML(
+                                    orderDate
+                                )}
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Products:
+                                </strong>
+
+                            </div>
+
+
+                            ${productsHTML}
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Total:
+                                </strong>
+
+                                ${escapeHTML(
+                                    order.total_amount
+                                )}
+                                BDT
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Payment:
+                                </strong>
+
+                                ${escapeHTML(
+                                    order.payment_method
+                                )}
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Customer:
+                                </strong>
+
+                                ${escapeHTML(
+                                    order.customer_name
+                                )}
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Phone:
+                                </strong>
+
+                                ${escapeHTML(
+                                    order.customer_phone
+                                )}
+
+                            </div>
+
+
+                            <div class="order-info">
+
+                                <strong>
+                                    Address:
+                                </strong>
+
+                                ${escapeHTML(
+                                    order.customer_address
+                                )}
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- VIEW DETAILS -->
+
+                        <button
+                            type="button"
+                            class="details-button"
+                            onclick="toggleOrderDetails(this)"
+                        >
+                            📋 View Details
+                        </button>
+
+
+                        <!-- TRACK ORDER -->
+
+                        <a
+                            href="order-tracking.html?order=${encodeURIComponent(
+                                order.order_number
+                            )}"
+                            class="track-button"
+                        >
+                            🚚 Track This Order
+                        </a>
+
+                    `;
+
+
+                    container.appendChild(
+                        orderCard
+                    );
+
+                }
             );
 
-        });
-
-    }
-
-}
+        }
 
 
-// ==========================================
-// SHOW EACH ORDER
-// ==========================================
+        // ==========================================
+        // VIEW / HIDE ORDER DETAILS
+        // ==========================================
 
-orders.forEach(function(order) {
+        function toggleOrderDetails(button) {
 
-    let productsHTML = "";
-
-    // PRODUCTS
-    if (Array.isArray(order.products)) {
-
-        order.products.forEach(function(product) {
-
-            const productId =
-                Number(product.id);
-
-            const currentProduct =
-                productMap.get(productId);
-
-            const productName =
-                currentProduct?.name ||
-                product.name ||
-                `Product #${productId || "Unknown"}`;
-
-            const productPrice =
-                currentProduct?.price ??
-                product.price ??
-                0;
-
-            const productQuantity =
-                Number(product.quantity) || 1;
-
-            productsHTML += `
-
-                <div class="order-info">
-
-                    ${escapeHTML(productName)}
-
-                    ×
-
-                    ${escapeHTML(productQuantity)}
-
-                    -
-
-                    ${escapeHTML(productPrice)} BDT
-
-                </div>
-
-            `;
-
-        });
-
-    }
+            const orderCard =
+                button.closest(
+                    ".order-card"
+                );
 
 
-    // DATE
-
-    const orderDate =
-        order.created_at
-            ? new Date(
-                order.created_at
-            ).toLocaleDateString()
-            : "N/A";
+            if (!orderCard) {
+                return;
+            }
 
 
-    // ORDER CARD
-
-    const orderCard =
-        document.createElement("div");
-
-    orderCard.className =
-        "order-card";
+            const details =
+                orderCard.querySelector(
+                    ".order-details"
+                );
 
 
-    orderCard.innerHTML = `
-
-        <h3>
-            Order #${escapeHTML(order.order_number)}
-        </h3>
-
-        <div class="order-info">
-
-            <strong>
-                Date:
-            </strong>
-
-            ${escapeHTML(orderDate)}
-
-        </div>
-
-        <div class="order-info">
-
-            <strong>
-                Products:
-            </strong>
-
-        </div>
-
-        ${productsHTML}
-
-        <div class="order-info">
-
-            <strong>
-                Total:
-            </strong>
-
-            ${escapeHTML(order.total_amount)} BDT
-
-        </div>
-
-        <div class="order-info">
-
-            <strong>
-                Payment:
-            </strong>
-
-            ${escapeHTML(order.payment_method)}
-
-        </div>
-
-        <div class="order-status">
-
-            Status:
-
-            ${escapeHTML(order.order_status)}
-
-        </div>
-
-        <a
-            href="order-tracking.html?order=${encodeURIComponent(order.order_number)}"
-            class="track-button"
-        >
-            🚚 Track This Order
-        </a>
-
-    `;
+            if (!details) {
+                return;
+            }
 
 
-    container.appendChild(orderCard);
+            details.classList.toggle(
+                "show"
+            );
 
-});
+
+            if (
+                details.classList.contains(
+                    "show"
+                )
+            ) {
+
+                button.textContent =
+                    "📋 Hide Details";
+
+            } else {
+
+                button.textContent =
+                    "📋 View Details";
+
+            }
 
         }
 
@@ -540,7 +856,6 @@ orders.forEach(function(order) {
         loadMyOrders();
 
     </script>
-
 
 </body>
 
