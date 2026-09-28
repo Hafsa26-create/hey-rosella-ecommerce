@@ -89,7 +89,7 @@
     outline: none;
     color: #38221e;
     font-size: 14px;
-    font-family: Arial, sans-serif,Helvetica,;
+    font-family: Arial, Helvetica, sans-serif;
     background-color: transparent;
 }
 
@@ -805,6 +805,7 @@
             border-radius: 6px;
             font-size: 14px;
             font-family: Arial, sans-serif;
+
             outline: none;
         }
 
@@ -1508,41 +1509,22 @@ color: #3e2723 !important;
 
 
     <!-- SEARCH BAR -->
-    <div class="search-box">
+   <a href="#" onclick="openCart(); return false;">
+    Cart 🛒 
+    <span id="cart-count"></span>
+</a>
 
-<input
-    type="text"
-    id="search-input"
-    placeholder="Search jewellery..."
->
+<a href="#" onclick="openAccountPage(); return false;">
+    Account
+</a>
 
-<button
-    type="button"
-    onclick="setProductSearch(document.getElementById('search-input').value)"
->
-    🔍
-</button>
-
-    </div>
-
-
-    <!-- CART -->
-    <a
-        href="#"
-        onclick="openCart(); return false;"
-    >
-        🛒 Cart
-        <span id="cart-count"></span>
-    </a>
-
-
-    <!-- ACCOUNT -->
-    <a
-        href="#"
-        onclick="openAccountPage(); return false;"
-    >
-        Account
-    </a>
+<div class="search-box">
+    <input type="text" id="search-input" placeholder="Search jewellery...">
+    <button type="button"
+        onclick="setProductSearch(document.getElementById('search-input').value)">
+        🔍
+    </button>
+</div>
 
 </div>
 
