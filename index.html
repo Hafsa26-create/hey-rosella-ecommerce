@@ -1081,6 +1081,300 @@ color: #3e2723 !important;
 }
 
 
+
+/* =========================================
+   MOBILE RESPONSIVE — NAVBAR + HERO
+========================================= */
+
+@media (max-width: 768px) {
+
+    /* ---------- NAVBAR ---------- */
+
+    nav {
+        padding: 15px 18px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+
+    .logo {
+        text-align: center;
+        font-size: 28px;
+    }
+
+    .menu {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px 16px;
+    }
+
+    .menu a,
+    nav .category-btn {
+        font-size: 14px;
+    }
+
+    /* ---------- CATEGORY ---------- */
+
+    nav .category-menu {
+        position: relative;
+    }
+
+    nav .category-dropdown {
+        left: 50%;
+        transform: translateX(-50%);
+        width: 190px;
+        max-width: 80vw;
+    }
+
+    /* ---------- SEARCH ---------- */
+
+    .search-box {
+        width: 100%;
+        max-width: 360px;
+        margin: 4px auto 0;
+        height: 40px;
+    }
+
+    .search-box input {
+        width: 100%;
+        min-width: 0;
+        flex: 1;
+        font-size: 14px;
+    }
+
+    .search-box button {
+        flex-shrink: 0;
+        width: 44px;
+    }
+
+
+    /* ---------- HERO ---------- */
+
+    .hero {
+        min-height: auto;
+        flex-direction: column;
+        gap: 30px;
+        padding: 45px 20px;
+        text-align: center;
+    }
+
+    .hero-text {
+        max-width: 100%;
+    }
+
+    .hero-text h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        margin-bottom: 16px;
+    }
+
+    .hero-text p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .hero-button {
+        padding: 13px 25px;
+        font-size: 15px;
+    }
+
+    .hero-image {
+        width: min(100%, 320px);
+        height: 320px;
+        margin: 0 auto;
+    }
+
+
+    /* ---------- FEATURED PRODUCTS ---------- */
+
+    .featured {
+        padding: 45px 20px;
+        text-align: center;
+    }
+
+    .featured h2 {
+        font-size: 27px;
+    }
+
+    .featured > p {
+        font-size: 15px;
+        margin-bottom: 30px;
+    }
+
+    .products {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .product-card {
+        width: 100%;
+        max-width: 300px;
+        box-sizing: border-box;
+    }
+
+
+    /* ---------- WHY CHOOSE ---------- */
+
+    .why-choose {
+        padding: 50px 20px;
+        text-align: center;
+    }
+
+    .why-choose h2 {
+        font-size: 27px;
+    }
+
+    .benefits {
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .benefit-card {
+        width: 100%;
+        max-width: 320px;
+        box-sizing: border-box;
+    }
+
+
+    /* ---------- SHOP ---------- */
+
+    .shop {
+        padding: 50px 20px;
+        text-align: center;
+    }
+
+    .shop h2 {
+        font-size: 29px;
+    }
+
+    .shop-products {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .shop-card {
+        width: 100%;
+        max-width: 300px;
+        box-sizing: border-box;
+    }
+
+
+    /* ---------- OFFER ---------- */
+
+    .offer {
+        padding: 55px 20px;
+        text-align: center;
+    }
+
+    .offer h2 {
+        font-size: 30px;
+    }
+
+    .offer h3 {
+        font-size: 24px;
+    }
+
+    .offer p {
+        font-size: 16px;
+    }
+
+
+    /* ---------- FAQ ---------- */
+
+    .faq-section {
+        padding: 50px 15px;
+    }
+
+    .faq-section h2 {
+        font-size: 27px;
+    }
+
+    .faq-question {
+        padding: 15px;
+        font-size: 14px;
+    }
+
+
+    /* ---------- ORDER TRACKING ---------- */
+
+    .order-tracking {
+        padding: 50px 20px;
+    }
+
+    .order-tracking h2 {
+        font-size: 26px;
+    }
+
+    .tracking-box {
+        flex-direction: column;
+    }
+
+    .tracking-box input {
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .tracking-box button {
+        width: 100%;
+        max-width: 320px;
+    }
+
+
+    /* ---------- FOOTER ---------- */
+
+    footer {
+        padding: 45px 20px 20px;
+    }
+
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+        gap: 30px;
+    }
+
+    .footer-brand {
+        max-width: 340px;
+    }
+
+    .footer-column {
+        width: 100%;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
+
+
+    /* ---------- CART POPUP ---------- */
+
+    .cart-box {
+        width: calc(100% - 30px);
+        max-width: 380px;
+        box-sizing: border-box;
+        padding: 20px;
+    }
+
+
+    /* ---------- CHECKOUT POPUP ---------- */
+
+    .checkout-box {
+        width: calc(100% - 30px);
+        max-width: 450px;
+        box-sizing: border-box;
+        padding: 20px;
+    }
+
+}
+
+
 </style>
            
 
