@@ -1104,13 +1104,12 @@ color: #3e2723 !important;
 
     /* ---------- NAVBAR ---------- */
 
-
-
-    .mobile-nav-actions {
+.mobile-nav-actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-left: auto;
 }
 
 .mobile-nav-actions a {
@@ -1137,31 +1136,36 @@ color: #3e2723 !important;
     cursor: pointer;
 }
 
-    nav {
-        padding: 15px 18px;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-
-    .logo {
-        text-align: center;
-        font-size: 28px;
-    }
-
-    .menu {
-        width: 100%;
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 10px 16px;
-    }
-
-    .menu.mobile-menu-open {
-  display: none;
+   nav {
+    padding: 12px 18px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
+   .logo {
+    text-align: left;
+    font-size: 28px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+    .menu {
+    width: 100%;
+    display: none;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: stretch;
+    gap: 0;
+}
+
+.menu.mobile-menu-open {
+    display: flex;
+}
     .menu a,
     nav .category-btn {
         font-size: 14px;
