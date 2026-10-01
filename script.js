@@ -5173,3 +5173,12 @@ function renderWishlist() {
     });
 
 }
+
+
+function toggleMobileMenu() {
+    const menu = document.querySelector(".menu");
+
+    if (!menu) return;
+
+    menu.classList.toggle("mobile-menu-open");
+}

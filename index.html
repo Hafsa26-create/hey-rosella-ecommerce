@@ -962,7 +962,17 @@
             }
         }
 
-         
+         /* =========================
+   MOBILE NAV ACTIONS
+========================= */
+
+.mobile-nav-actions {
+    display: none;
+}
+
+.mobile-menu-btn {
+    display: none;
+}
 
    /* =========================
 CATEGORY MENU
@@ -999,6 +1009,9 @@ white-space: nowrap;
 nav .category-btn:hover {
 color: #d4af37;
 }
+
+
+
 
 /* =========================
 CATEGORY DROPDOWN
@@ -1091,6 +1104,39 @@ color: #3e2723 !important;
 
     /* ---------- NAVBAR ---------- */
 
+
+
+    .mobile-nav-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.mobile-nav-actions a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #38221e;
+    font-size: 22px;
+}
+
+.mobile-menu-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: #fff2c7;
+    color: #38221e;
+    font-size: 24px;
+    cursor: pointer;
+}
+
     nav {
         padding: 15px 18px;
         flex-direction: column;
@@ -1111,6 +1157,10 @@ color: #3e2723 !important;
         align-items: center;
         gap: 10px 16px;
     }
+
+    .menu.mobile-menu-open {
+  display: none;
+}
 
     .menu a,
     nav .category-btn {
@@ -1393,7 +1443,29 @@ color: #3e2723 !important;
 <nav>
 
 
+ 
+
+
  <div class="logo">Hey Rosella</div>
+
+<div class="mobile-nav-actions">
+
+    <a href="#" onclick="openCart(); return false;">
+        🛒
+        <span id="mobile-cart-count"></span>
+    </a>
+
+    <button
+        type="button"
+        class="mobile-menu-btn"
+        onclick="toggleMobileMenu()"
+        aria-label="Open navigation menu"
+    >
+        ☰
+    </button>
+
+</div>
+
 
 
 <div class="menu">
