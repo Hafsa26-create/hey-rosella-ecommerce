@@ -508,6 +508,17 @@
             "sb_publishable_7L4I_QN6C2yyiSjihG9L9Q_FyNBCwVQ";
 
 
+             function escapeHTML(value) {
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+
         const supabaseClient =
             supabase.createClient(
                 SUPABASE_URL,
@@ -873,7 +884,7 @@
 
                         <span class="product-name">
 
-                            ${name}
+                          ${escapeHTML(name)}
 
                             × ${quantity}
 
