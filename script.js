@@ -296,7 +296,7 @@ function showCartItems() {
 
         item.innerHTML = `
             <p>
-                <strong>${product.name}</strong>
+               <strong>${escapeHTML(product.name || "Product")}</strong>
 
                 <br><br>
 
@@ -2211,6 +2211,14 @@ async function openOrderDetails(orderNumber) {
         alert("Order number is missing.");
         return;
     }
+    
+    const account = await checkCustomerAccount();
+
+if (!account.loggedIn || !account.customer) {
+    alert("Please login to view your order details.");
+    openAuthPopup();
+    return;
+}
 
     const section =
         document.getElementById("order-details-section");
@@ -2291,6 +2299,7 @@ async function openOrderDetails(orderNumber) {
                 order_number
             `)
             .eq("order_number", orderNumber)
+            .eq("user_id", account.customer.id)
             .single();
 
         if (error) {
