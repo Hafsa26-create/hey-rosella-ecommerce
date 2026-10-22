@@ -1513,13 +1513,18 @@ color: #3e2723 !important;
     Account
 </a>
 
-<div class="search-box">
-    <input type="text" id="search-input" placeholder="Search jewellery...">
-    <button type="button"
-        onclick="setProductSearch(document.getElementById('search-input').value)">
+<form class="search-box" action="shop.html" method="get">
+    <input
+        type="search"
+        id="search-input"
+        name="search"
+        placeholder="Search jewellery..."
+        aria-label="Search jewellery"
+    >
+    <button type="submit" aria-label="Search products">
         🔍
     </button>
-</div>
+</form>
 
 </div>
 
