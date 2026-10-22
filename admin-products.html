@@ -1205,15 +1205,15 @@ async function checkAdminAccess() {
 
 
                     const originalPriceInput =
-    document
-        .getElementById("product-original-price")
-        .value
-        .trim();
+                      document
+                        .getElementById("product-original-price")
+                       .value
+                     .trim();
 
-const originalPrice =
-    originalPriceInput === ""
-        ? null
-        : Number(originalPriceInput);
+               const originalPrice =
+                  originalPriceInput === ""
+                    ? null
+                      : Number(originalPriceInput);
 
             const category =
                 document
@@ -1325,6 +1325,9 @@ if (editingProductId) {
                 description:
                     description,
 
+                original_price:
+                    originalPrice,
+
                 image_url:
                     imageUrl || null,
 
@@ -1391,6 +1394,9 @@ console.log(
 
     description:
         description,
+
+    original_price:
+        originalPrice,
 
     image_url:
         imageUrl || null
