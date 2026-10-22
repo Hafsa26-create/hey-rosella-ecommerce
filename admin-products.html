@@ -1242,19 +1242,24 @@ async function checkAdminAccess() {
 
 
             if (
-                !name ||
-                !price ||
-                !category
-            ) {
-
-                alert(
-                    "Please enter product name, price and category."
-                );
-
-
-                return;
-
+              !name ||
+              !price ||
+              !category
+                ) {
+             alert("Please enter product name, price and category.");
+             return;
             }
+
+            if (
+            originalPrice !== null &&
+    (
+        !Number.isFinite(originalPrice) ||
+        originalPrice <= Number(price)
+    )
+) {
+    alert("Original price must be higher than the current price.");
+    return;
+}
 
 
             const button =
