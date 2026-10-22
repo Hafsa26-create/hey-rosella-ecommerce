@@ -1204,6 +1204,17 @@ async function checkAdminAccess() {
                     .value;
 
 
+                    const originalPriceInput =
+    document
+        .getElementById("product-original-price")
+        .value
+        .trim();
+
+const originalPrice =
+    originalPriceInput === ""
+        ? null
+        : Number(originalPriceInput);
+
             const category =
                 document
                     .getElementById(
