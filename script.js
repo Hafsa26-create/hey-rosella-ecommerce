@@ -1450,23 +1450,25 @@ function closeCheckout() {
 }
 
 
-// =====================================================
-// PLACE ORDER
-// =====================================================
-
 function setupCheckoutForm() {
 
     const checkoutForm =
         document.getElementById("checkout-form");
 
     if (!checkoutForm) {
-
-        console.log(
-            "Checkout form not found."
-        );
-
+        console.log("Checkout form not found.");
         return;
     }
+
+    let orderSubmitting = false;
+
+    const submitButton =
+        checkoutForm.querySelector(".place-order-button");
+
+    const originalButtonText =
+        submitButton
+            ? submitButton.textContent
+            : "Place Order";
 
     checkoutForm.addEventListener(
         "submit",
@@ -1474,233 +1476,171 @@ function setupCheckoutForm() {
 
             event.preventDefault();
 
-
-            // =====================================================
-            // CHECK LOGIN SESSION
-            // =====================================================
-
-            const sessionResult =
-                await supabaseClient.auth.getSession();
-
-            const session =
-                sessionResult.data.session;
-
-            if (!session) {
-
-                alert(
-                    "🔐 Please login or sign up before placing your order."
-                );
-
-                closeCheckout();
-                openAuthPopup();
-
+            // Ekbar submit shuru hole, request shesh na howa porjonto
+            // porer click-gulo ignore hobe.
+            if (orderSubmitting) {
                 return;
             }
 
+            orderSubmitting = true;
 
-            // =====================================================
-            // CHECK CART
-            // =====================================================
-
-            if (!cart || cart.length === 0) {
-
-                alert(
-                    "Your cart is empty."
-                );
-
-                return;
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Placing order...";
             }
 
+            try {
 
-            // =====================================================
-            // CUSTOMER INFORMATION
-            // =====================================================
+                // LOGIN SESSION
+                const sessionResult =
+                    await supabaseClient.auth.getSession();
 
-            const nameElement =
-                document.getElementById("customer-name");
-
-            const phoneElement =
-                document.getElementById("customer-phone");
-
-            const addressElement =
-                document.getElementById("customer-address");
-
-
-            if (
-                !nameElement ||
-                !phoneElement ||
-                !addressElement
-            ) {
-
-                alert(
-                    "Delivery form fields are missing."
-                );
-
-                return;
-            }
-
-
-            const name =
-                nameElement.value.trim();
-
-            const phone =
-                phoneElement.value.trim();
-
-            const address =
-                addressElement.value.trim();
-
-
-            if (!name || !phone || !address) {
-
-                alert(
-                    "Please fill in all delivery information."
-                );
-
-                return;
-            }
-
-
-            // =====================================================
-            // PAYMENT METHOD
-            // =====================================================
-
-            const paymentElement =
-                document.querySelector(
-                    'input[name="payment"]:checked'
-                );
-
-
-            if (!paymentElement) {
-
-                alert(
-                    "Please select a payment method."
-                );
-
-                return;
-            }
-
-
-            const payment =
-                paymentElement.value;
-
-
-            // =====================================================
-            // PLACE ORDER THROUGH SUPABASE RPC
-            // =====================================================
-
-            const {
-                data: orderData,
-                error: orderError
-            } = await supabaseClient.rpc(
-                "place_order",
-                {
-                    p_customer_name: name,
-                    p_customer_phone: phone,
-                    p_customer_address: address,
-                    p_payment_method: payment,
-
-                    p_products: cart.map(function(item) {
-
-                        return {
-                            id: Number(item.id),
-                            quantity: Number(
-                                item.quantity || 1
-                            )
-                        };
-
-                    })
+                if (sessionResult.error) {
+                    throw sessionResult.error;
                 }
-            );
 
+                const session =
+                    sessionResult.data.session;
 
-            // =====================================================
-            // ORDER ERROR
-            // =====================================================
+                if (!session) {
+                    alert(
+                        "🔐 Please login or sign up before placing your order."
+                    );
 
-            if (orderError) {
+                    closeCheckout();
+                    openAuthPopup();
+                    return;
+                }
+
+                // CART
+                if (!cart || cart.length === 0) {
+                    alert("Your cart is empty.");
+                    return;
+                }
+
+                // CUSTOMER INFORMATION
+                const nameElement =
+                    document.getElementById("customer-name");
+
+                const phoneElement =
+                    document.getElementById("customer-phone");
+
+                const addressElement =
+                    document.getElementById("customer-address");
+
+                if (!nameElement || !phoneElement || !addressElement) {
+                    alert("Delivery form fields are missing.");
+                    return;
+                }
+
+                const name = nameElement.value.trim();
+                const phone = phoneElement.value.trim();
+                const address = addressElement.value.trim();
+
+                if (!name || !phone || !address) {
+                    alert("Please fill in all delivery information.");
+                    return;
+                }
+
+                // PAYMENT METHOD
+                const paymentElement =
+                    document.querySelector(
+                        'input[name="payment"]:checked'
+                    );
+
+                if (!paymentElement) {
+                    alert("Please select a payment method.");
+                    return;
+                }
+
+                const payment = paymentElement.value;
+
+                // PLACE ORDER
+                const {
+                    data: orderData,
+                    error: orderError
+                } = await supabaseClient.rpc(
+                    "place_order",
+                    {
+                        p_customer_name: name,
+                        p_customer_phone: phone,
+                        p_customer_address: address,
+                        p_payment_method: payment,
+                        p_products: cart.map(function (item) {
+                            return {
+                                id: Number(item.id),
+                                quantity: Number(item.quantity || 1)
+                            };
+                        })
+                    }
+                );
+
+                if (orderError) {
+                    console.error("Place order error:", orderError);
+
+                    alert(
+                        "❌ Order could not be placed.\n\n" +
+                        orderError.message
+                    );
+
+                    return;
+                }
+
+                console.log("Order placed successfully:", orderData);
+
+                const createdOrder =
+                    Array.isArray(orderData)
+                        ? orderData[0]
+                        : orderData;
+
+                const createdOrderNumber =
+                    createdOrder?.order_number || "";
+
+                alert(
+                    "🎉 Order placed successfully!" +
+                    (
+                        createdOrderNumber
+                            ? "\n\nOrder Number: " + createdOrderNumber
+                            : ""
+                    )
+                );
+
+                // CLEAR CART
+                cart = [];
+
+                localStorage.removeItem("heyRosellaCart");
+
+                updateCartCount();
+                showCartItems();
+
+                // RESET FORM AND CLOSE
+                checkoutForm.reset();
+                closeCheckout();
+
+            } catch (error) {
 
                 console.error(
-                    "Place order error:",
-                    orderError
+                    "Unexpected place order error:",
+                    error
                 );
 
                 alert(
-                    "❌ Order could not be placed.\n\n" +
-                    orderError.message
+                    "❌ Something went wrong while placing your order. Please try again."
                 );
 
-                return;
+            } finally {
+
+                // Error ba success—dui khetrei button abar usable hobe.
+                orderSubmitting = false;
+
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.textContent = originalButtonText;
+                }
             }
-
-
-            // =====================================================
-            // ORDER SUCCESS
-            // =====================================================
-
-            console.log(
-                "Order placed successfully:",
-                orderData
-            );
-
-
-            const createdOrder =
-                Array.isArray(orderData)
-                    ? orderData[0]
-                    : orderData;
-
-
-            const createdOrderNumber =
-                createdOrder?.order_number || "";
-
-
-            alert(
-                "🎉 Order placed successfully!" +
-                (
-                    createdOrderNumber
-                        ? "\n\nOrder Number: " +
-                          createdOrderNumber
-                        : ""
-                )
-            );
-
-
-            // =====================================================
-            // CLEAR CART
-            // =====================================================
-
-            cart = [];
-
-            localStorage.removeItem(
-                "heyRosellaCart"
-            );
-
-
-            // =====================================================
-            // UPDATE CART UI
-            // =====================================================
-
-            updateCartCount();
-
-            showCartItems();
-
-
-            // =====================================================
-            // RESET CHECKOUT FORM
-            // =====================================================
-
-            checkoutForm.reset();
-
-
-            // =====================================================
-            // CLOSE CHECKOUT
-            // =====================================================
-
-            closeCheckout();
-
         }
     );
 }
-
 
 // =====================================================
 // LOGOUT CUSTOMER
