@@ -4377,6 +4377,55 @@ function createProductCard(
     const productPrice =
         Number(product.price) || 0;
 
+        const originalPrice =
+    Number(product.original_price) || 0;
+
+const isOffer =
+    originalPrice > productPrice;
+
+const discountPercent =
+    isOffer
+        ? Math.round(
+            ((originalPrice - productPrice) / originalPrice) * 100
+        )
+        : 0;
+
+const priceHTML =
+    isOffer
+        ? `
+            <p style="
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                gap:8px;
+                flex-wrap:wrap;
+            ">
+                <del style="color:#82716c;font-size:14px;">
+                    ৳${originalPrice.toLocaleString("en-BD")}
+                </del>
+
+                <strong style="color:#3e2723;">
+                    ৳${productPrice.toLocaleString("en-BD")}
+                </strong>
+
+                <span style="
+                    background:#f8e8e8;
+                    color:#a42323;
+                    padding:3px 7px;
+                    border-radius:999px;
+                    font-size:12px;
+                    font-weight:700;
+                ">
+                    ${discountPercent}% OFF
+                </span>
+            </p>
+        `
+        : `
+            <p>
+                ৳${productPrice.toLocaleString("en-BD")}
+            </p>
+        `;
+
     const productImage =
         product.image_url || "";
 
@@ -4458,9 +4507,7 @@ function createProductCard(
         </h3>
 
 
-        <p>
-            ৳${productPrice.toLocaleString("en-BD")}
-        </p>
+        ${priceHTML}
 
 
         <div
