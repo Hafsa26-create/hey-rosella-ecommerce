@@ -502,6 +502,7 @@
             const params = new URLSearchParams(window.location.search);
             const category = params.get("category");
             const search = params.get("search");
+            const offers = params.get("offers") === "true";
             const categoryFilter = document.getElementById("category-filter");
             const searchInput = document.getElementById("search-input");
 
@@ -520,6 +521,10 @@
                 searchInput.value = search;
                 setProductSearch(search);
             }
+
+            if (offers) {
+    setProductOfferFilter(true);
+             }
         });
     </script>
 </body>
