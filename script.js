@@ -2854,7 +2854,7 @@ function closeProductDetails() {
 
 let currentSearchTerm = "";
 let currentCategory = "all";
-
+let showOffersOnly = false;
 
 // =====================================================
 // SEARCH PRODUCTS
@@ -2885,6 +2885,11 @@ function setProductCategory(category) {
     applyProductFilters();
 }
 
+
+function setProductOfferFilter(offerOnly) {
+    showOffersOnly = Boolean(offerOnly);
+    applyProductFilters();
+}
 
 // =====================================================
 // APPLY SEARCH + CATEGORY FILTER
@@ -2937,12 +2942,22 @@ function applyProductFilters() {
 
 
         // =========================================
+        // OFFER MATCH
+        // =========================================
+
+        const offerMatch =
+            !showOffersOnly ||
+            card.dataset.productIsOffer === "true";
+
+
+        // =========================================
         // SHOW / HIDE
         // =========================================
 
         if (
             searchMatch &&
-            categoryMatch
+            categoryMatch &&
+            offerMatch
         ) {
 
             card.style.display = "";
