@@ -4454,7 +4454,7 @@ const priceHTML =
     card.dataset.productPrice =
         productPrice;
 
-
+     card.dataset.productIsOffer = String(isOffer);
     
     const imageClass =
         type === "featured"
