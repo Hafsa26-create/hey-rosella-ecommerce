@@ -1,69 +1,67 @@
-# Hey Rosella – Jewellery E-commerce Website
+# Hey Rosella — Jewellery E-commerce Website
 
-A responsive jewellery e-commerce website built using HTML, CSS and JavaScript.
+A responsive jewellery e-commerce website for the Hey Rosella brand, with customer shopping pages and a separate admin area.
 
-## Live Demo
+<p align="center">
+  <a href="https://hafsa26-create.github.io/hey-rosella-ecommerce/"><strong>View Live Website</strong></a>
+  ·
+  <a href="https://github.com/Hafsa26-create/hey-rosella-ecommerce"><strong>Source Code</strong></a>
+</p>
 
-[Visit Hey Rosella Website](https://hafsa26-create.github.io/hey-rosella-ecommerce/)
+## Project Overview
 
-## About the Project
+Hey Rosella is a practical e-commerce project built to present jewellery products online and support customer account and order-related workflows. It also includes administration pages for managing store information.
 
-Hey Rosella is a jewellery e-commerce website designed to provide customers with a clean, elegant and user-friendly online shopping experience.
+## Customer-facing Features
 
-The project includes customer-facing pages as well as an admin interface for managing products, customers, orders and order tracking.
-
-## Features
-
-### Customer Features
-
-- Responsive homepage
-- Product showcase
-- Product categories
+- Responsive home and shop pages
+- Product browsing and categories
 - Shopping cart
 - Wishlist
-- Customer account
-- Edit profile
-- Change password
-- Forgot password page
-- My Orders
-- Order tracking
+- Customer account and profile management
+- Password change and password recovery pages
+- Order history and order tracking
 
-### Admin Features
+## Admin Features
 
-- Admin dashboard
+- Admin login and dashboard
 - Product management
 - Customer management
-- Order management
-- Order tracking
+- Order management and tracking
+- Inventory and sales management pages
+- Account settings
 
-## Technologies Used
+## Technology
 
 - HTML5
 - CSS3
 - JavaScript
-- Git
-- GitHub
+- Supabase (project backend services)
+- Git and GitHub
 - GitHub Pages
 
-## Project Structure
+## Main Pages
 
-```text
-hey-rosella-ecommerce/
-│
-├── index.html
-├── script.js
-├── images/
-│
-├── admin.html
-├── admin-products.html
-├── admin-customers.html
-├── admin-orders.html
-├── admin-tracking.html
-│
-├── my-account.html
-├── my-orders.html
-├── order-tracking.html
-├── wishlist.html
-├── forgot-password.html
-├── change-password.html
-└── edit-profile.html
+| Area | Files |
+|---|---|
+| Storefront | `index.html`, `shop.html`, `about.html` |
+| Customer | `my-account.html`, `edit-profile.html`, `my-orders.html`, `wishlist.html` |
+| Order support | `order-tracking.html`, `forgot-password.html`, `reset-password.html`, `change-password.html` |
+| Admin | `admin-login.html`, `admin.html`, `admin-products.html`, `admin-customers.html`, `admin-orders.html` |
+| Admin tools | `admin-inventory.html`, `admin-sales.html`, `admin-tracking.html`, `admin-account-settings.html`, `admin-change-password.html` |
+
+## Run Locally
+
+1. Clone or download this repository.
+2. Open the project folder in Visual Studio Code.
+3. Run the site using a local development server such as the Live Server extension.
+4. Configure the required Supabase project settings for backend-dependent features.
+
+## Links
+
+- **Live website:** https://hafsa26-create.github.io/hey-rosella-ecommerce/
+- **GitHub profile:** https://github.com/Hafsa26-create
+
+## Author
+
+Hafsa Akter
