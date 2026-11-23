@@ -846,18 +846,20 @@ async function checkAdminAccess() {
 
             <div class="form-group">
 
-                <label for="product-image-url">
+                <label for="product-image-file">Upload Product Image</label>
 
-                    Product Image URL
+                <input type="file" id="product-image-file" accept="image/jpeg,image/png,image/webp">
 
-                </label>
+                <small>JPG, PNG or WEBP. Maximum size: 5 MB.</small>
 
+                <div id="product-image-preview" style="margin-top:12px; display:none;">
+                    <img id="product-image-preview-img" alt="Product image preview"
+                         style="max-width:180px; max-height:180px; object-fit:contain; border-radius:8px;">
+                </div>
 
-                <input
-                    type="url"
-                    id="product-image-url"
-                    placeholder="https://example.com/image.jpg"
-                >
+                <label for="product-image-url" style="margin-top:16px;">Or use Product Image URL</label>
+
+                <input type="url" id="product-image-url" placeholder="https://example.com/image.jpg">
 
             </div>
 
@@ -952,6 +954,46 @@ async function checkAdminAccess() {
 
         }
 
+
+
+        // =====================================================
+        // PRODUCT IMAGE PREVIEW
+        // =====================================================
+
+        function showProductImagePreview(source) {
+            const preview = document.getElementById("product-image-preview");
+            const image = document.getElementById("product-image-preview-img");
+
+            if (!source) {
+                preview.style.display = "none";
+                image.removeAttribute("src");
+                return;
+            }
+
+            image.src = source;
+            preview.style.display = "block";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("product-image-file").addEventListener("change", function () {
+                const file = this.files[0];
+
+                if (!file) {
+                    showProductImagePreview("");
+                    return;
+                }
+
+                if (!["image/jpeg", "image/png", "image/webp"].includes(file.type) ||
+                    file.size > 5 * 1024 * 1024) {
+                    alert("Choose a JPG, PNG or WEBP image up to 5 MB.");
+                    this.value = "";
+                    showProductImagePreview("");
+                    return;
+                }
+
+                showProductImagePreview(URL.createObjectURL(file));
+            });
+        });
 
 
         // =====================================================
@@ -1232,13 +1274,9 @@ async function checkAdminAccess() {
                     .trim();
 
 
-            const imageUrl =
-                document
-                    .getElementById(
-                        "product-image-url"
-                    )
-                    .value
-                    .trim();
+            let imageUrl = document.getElementById("product-image-url").value.trim();
+
+            const imageFile = document.getElementById("product-image-file").files[0];
 
 
             if (
@@ -1279,9 +1317,43 @@ async function checkAdminAccess() {
 
             let result;
 
+            // Upload selected image before saving the product record.
+            if (imageFile) {
+                const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+                if (!allowedTypes.includes(imageFile.type) || imageFile.size > 5 * 1024 * 1024) {
+                    alert("Choose a JPG, PNG or WEBP image up to 5 MB.");
+                    button.disabled = false;
+                    button.textContent = editingProductId ? "✏️ Update Product" : "➕ Add Product";
+                    return;
+                }
+
+                const extension = imageFile.type === "image/jpeg" ? "jpg" :
+                    imageFile.type === "image/png" ? "png" : "webp";
+                const imagePath = "products/" + Date.now() + "-" + crypto.randomUUID() + "." + extension;
+
+                const { data: uploadedImage, error: uploadError } =
+                    await supabaseClient.storage.from("product-images").upload(imagePath, imageFile, {
+                        cacheControl: "3600",
+                        contentType: imageFile.type,
+                        upsert: false
+                    });
+
+                if (uploadError) {
+                    console.error("Product image upload error:", uploadError);
+                    alert("❌ Image upload failed:\\n\\n" + uploadError.message);
+                    button.disabled = false;
+                    button.textContent = editingProductId ? "✏️ Update Product" : "➕ Add Product";
+                    return;
+                }
+
+                const { data: publicImage } = supabaseClient.storage
+                    .from("product-images").getPublicUrl(uploadedImage.path);
+                imageUrl = publicImage.publicUrl;
+            }
 
             // =================================================
-// UPDATE PRODUCT
+            // UPDATE PRODUCT
 // =================================================
 
 if (editingProductId) {
@@ -1528,10 +1600,9 @@ console.log(
                 data.description || "";
 
 
-            document.getElementById(
-                "product-image-url"
-            ).value =
-                data.image_url || "";
+            document.getElementById("product-image-url").value = data.image_url || "";
+            document.getElementById("product-image-file").value = "";
+            showProductImagePreview(data.image_url || "");
 
 
             editingProductId =
@@ -1702,9 +1773,10 @@ async function deleteProduct(productId) {
             ).value = "";
 
 
-            document.getElementById(
-                "product-image-url"
-            ).value = "";
+            document.getElementById("product-image-url").value = "";
+            document.getElementById("product-image-file").value = "";
+            document.getElementById("product-image-preview").style.display = "none";
+            document.getElementById("product-image-preview-img").removeAttribute("src");
 
             document.getElementById(
     "product-stock"
