@@ -1962,6 +1962,30 @@ color: #3e2723 !important;
                         Cash on Delivery
                     </label>
 
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment"
+                            value="bKash - Send Money"
+                            required
+                        >
+                        bKash (Send Money)
+                    </label>
+
+                    <div id="bkash-payment-instructions" hidden>
+                        <p><strong>Send Money to:</strong> 01797034153</p>
+                        <p>Send the exact order total to this bKash number using Send Money. Then enter the Transaction ID (TrxID) below.</p>
+                        <label for="bkash-transaction-id">bKash Transaction ID (TrxID)</label>
+                        <input
+                            type="text"
+                            id="bkash-transaction-id"
+                            placeholder="Enter your bKash TrxID"
+                            maxlength="30"
+                            autocomplete="off"
+                        >
+                        <small>Your payment will remain pending until we verify it.</small>
+                    </div>
+
                     
 
                 </fieldset>
