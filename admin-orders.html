@@ -949,6 +949,8 @@ async function loadOrders() {
                 customer_phone,
                 customer_address,
                 payment_method,
+                payment_reference,
+                payment_status,
                 products,
                 total_amount,
                 order_status,
@@ -1334,6 +1336,12 @@ async function loadOrders() {
                         order.payment_method ||
                         "Not specified";
 
+                    const paymentReference =
+                        order.payment_reference || "Not provided";
+
+                    const paymentStatus =
+                        order.payment_status || "not_required";
+
 
 
                     // CARD HTML
@@ -1458,6 +1466,11 @@ async function loadOrders() {
                                 )}
 
                             </p>
+
+                            ${paymentMethod === "bKash - Send Money"
+                                ? `<p><strong>🧾 bKash TrxID:</strong> ${escapeHTML(paymentReference)}</p>
+                                   <p><strong>Payment verification:</strong> ${escapeHTML(paymentStatus.replaceAll("_", " "))}</p>`
+                                : ""}
 
 
 
