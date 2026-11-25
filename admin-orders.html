@@ -1469,7 +1469,11 @@ async function loadOrders() {
 
                             ${paymentMethod === "bKash - Send Money"
                                 ? `<p><strong>🧾 bKash TrxID:</strong> ${escapeHTML(paymentReference)}</p>
-                                   <p><strong>Payment verification:</strong> ${escapeHTML(paymentStatus.replaceAll("_", " "))}</p>`
+                                   <p><strong>Payment verification:</strong> ${escapeHTML(paymentStatus.replaceAll("_", " "))}</p>
+                                   ${paymentStatus === "pending_verification"
+                                        ? `<button type="button" onclick="verifyBkashPayment('${escapeJS(order.id)}')">Verify bKash Payment</button>`
+                                        : ""}
+                                `
                                 : ""}
 
 
@@ -1679,6 +1683,33 @@ async function loadOrders() {
 
 
         // =====================================================
+// VERIFY BКASH PAYMENT
+// =====================================================
+
+async function verifyBkashPayment(orderId) {
+    if (!confirm("Have you checked your bKash account and confirmed that this payment was received?")) {
+        return;
+    }
+
+    try {
+        const { error } = await supabaseClient.rpc(
+            "verify_bkash_payment",
+            { p_order_id: Number(orderId) }
+        );
+
+        if (error) throw error;
+
+        alert("bKash payment marked as verified.");
+        await loadOrders();
+    } catch (error) {
+        console.error("bKash verification error:", error);
+        alert("Could not verify payment.\n\n" + error.message);
+        await loadOrders();
+    }
+}
+
+
+// =====================================================
 // UPDATE ORDER STATUS
 // =====================================================
 
