@@ -1462,6 +1462,26 @@ function setupCheckoutForm() {
 
     let orderSubmitting = false;
 
+    const bkashInstructions =
+        document.getElementById("bkash-payment-instructions");
+    const paymentOptions =
+        checkoutForm.querySelectorAll('input[name="payment"]');
+
+    paymentOptions.forEach(function (option) {
+        option.addEventListener("change", function () {
+            const showBkash = this.value === "bKash - Send Money" && this.checked;
+            if (bkashInstructions) {
+                bkashInstructions.hidden = !showBkash;
+            }
+            const trxInput =
+                document.getElementById("bkash-transaction-id");
+            if (trxInput) {
+                trxInput.required = showBkash;
+                if (!showBkash) trxInput.value = "";
+            }
+        });
+    });
+
     const submitButton =
         checkoutForm.querySelector(".place-order-button");
 
@@ -1554,6 +1574,23 @@ function setupCheckoutForm() {
                 }
 
                 const payment = paymentElement.value;
+                const paymentReferenceElement =
+                    document.getElementById("bkash-transaction-id");
+                const paymentReference =
+                    payment === "bKash - Send Money" && paymentReferenceElement
+                        ? paymentReferenceElement.value.trim()
+                        : null;
+
+                if (
+                    payment === "bKash - Send Money" &&
+                    (!paymentReference || !/^[A-Za-z0-9]{6,30}$/.test(paymentReference))
+                ) {
+                    alert("Please enter a valid bKash Transaction ID (6-30 letters or numbers).");
+                    if (paymentReferenceElement) {
+                        paymentReferenceElement.focus();
+                    }
+                    return;
+                }
 
                 // PLACE ORDER
                 const {
@@ -1571,7 +1608,8 @@ function setupCheckoutForm() {
                                 id: Number(item.id),
                                 quantity: Number(item.quantity || 1)
                             };
-                        })
+                        }),
+                        p_payment_reference: paymentReference
                     }
                 );
 
