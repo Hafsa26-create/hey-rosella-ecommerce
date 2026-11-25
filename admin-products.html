@@ -1228,313 +1228,127 @@ async function checkAdminAccess() {
         // =====================================================
 
         async function saveProduct() {
-
-            const name =
-                document
-                    .getElementById(
-                        "product-name"
-                    )
-                    .value
-                    .trim();
-
-
-            const price =
-                document
-                    .getElementById(
-                        "product-price"
-                    )
-                    .value;
-
-
-                    const originalPriceInput =
-                      document
-                        .getElementById("product-original-price")
-                       .value
-                     .trim();
-
-               const originalPrice =
-                  originalPriceInput === ""
-                    ? null
-                      : Number(originalPriceInput);
-
-            const category =
-                document
-                    .getElementById(
-                        "product-category"
-                    )
-                    .value;
-
-
-            const description =
-                document
-                    .getElementById(
-                        "product-description"
-                    )
-                    .value
-                    .trim();
-
-
+            const name = document.getElementById("product-name").value.trim();
+            const price = document.getElementById("product-price").value;
+            const originalPriceInput = document.getElementById("product-original-price").value.trim();
+            const originalPrice = originalPriceInput === "" ? null : Number(originalPriceInput);
+            const category = document.getElementById("product-category").value;
+            const description = document.getElementById("product-description").value.trim();
             let imageUrl = document.getElementById("product-image-url").value.trim();
-
             const imageFile = document.getElementById("product-image-file").files[0];
 
-
-            if (
-              !name ||
-              !price ||
-              !category
-                ) {
-             alert("Please enter product name, price and category.");
-             return;
+            if (!name || !price || !category) {
+                alert("Please enter product name, price and category.");
+                return;
             }
 
-            if (
-            originalPrice !== null &&
-    (
-        !Number.isFinite(originalPrice) ||
-        originalPrice <= Number(price)
-    )
-) {
-    alert("Original price must be higher than the current price.");
-    return;
-}
+            if (originalPrice !== null &&
+                (!Number.isFinite(originalPrice) || originalPrice <= Number(price))) {
+                alert("Original price must be higher than the current price.");
+                return;
+            }
 
-
-            const button =
-                document.getElementById(
-                    "submit-product-button"
-                );
-
+            const button = document.getElementById("submit-product-button");
+            const originalButtonText = editingProductId ? "✏️ Update Product" : "➕ Add Product";
+            let uploadedImagePath = null;
+            let saveSucceeded = false;
 
             button.disabled = true;
+            button.textContent = editingProductId ? "Updating..." : "Adding...";
 
+            try {
+                if (imageFile) {
+                    const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+                    if (!allowedTypes.includes(imageFile.type) || imageFile.size > 5 * 1024 * 1024) {
+                        alert("Choose a JPG, PNG or WEBP image up to 5 MB.");
+                        return;
+                    }
 
-            button.textContent =
-                editingProductId
-                    ? "Updating..."
-                    : "Adding...";
+                    const extension = imageFile.type === "image/jpeg" ? "jpg" :
+                        imageFile.type === "image/png" ? "png" : "webp";
+                    const imagePath = "products/" + Date.now() + "-" + crypto.randomUUID() + "." + extension;
 
+                    const { data: uploadedImage, error: uploadError } =
+                        await supabaseClient.storage.from("product-images").upload(imagePath, imageFile, {
+                            cacheControl: "3600",
+                            contentType: imageFile.type,
+                            upsert: false
+                        });
 
-            let result;
+                    if (uploadError) throw uploadError;
+                    uploadedImagePath = uploadedImage.path;
 
-            // Upload selected image before saving the product record.
-            if (imageFile) {
-                const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
-
-                if (!allowedTypes.includes(imageFile.type) || imageFile.size > 5 * 1024 * 1024) {
-                    alert("Choose a JPG, PNG or WEBP image up to 5 MB.");
-                    button.disabled = false;
-                    button.textContent = editingProductId ? "✏️ Update Product" : "➕ Add Product";
-                    return;
+                    const { data: publicImage } = supabaseClient.storage
+                        .from("product-images").getPublicUrl(uploadedImagePath);
+                    imageUrl = publicImage.publicUrl;
                 }
 
-                const extension = imageFile.type === "image/jpeg" ? "jpg" :
-                    imageFile.type === "image/png" ? "png" : "webp";
-                const imagePath = "products/" + Date.now() + "-" + crypto.randomUUID() + "." + extension;
+                let result;
 
-                const { data: uploadedImage, error: uploadError } =
-                    await supabaseClient.storage.from("product-images").upload(imagePath, imageFile, {
-                        cacheControl: "3600",
-                        contentType: imageFile.type,
-                        upsert: false
-                    });
-
-                if (uploadError) {
-                    console.error("Product image upload error:", uploadError);
-                    alert("❌ Image upload failed:\\n\\n" + uploadError.message);
-                    button.disabled = false;
-                    button.textContent = editingProductId ? "✏️ Update Product" : "➕ Add Product";
-                    return;
-                }
-
-                const { data: publicImage } = supabaseClient.storage
-                    .from("product-images").getPublicUrl(uploadedImage.path);
-                imageUrl = publicImage.publicUrl;
-            }
-
-            // =================================================
-            // UPDATE PRODUCT
-// =================================================
-
-if (editingProductId) {
-
-    const stockInput =
-        document.getElementById(
-            "product-stock"
-        );
-
-    const stockValue =
-        Number(
-            stockInput.value
-        );
-
-
-    console.log(
-        "Editing Product ID:",
-        editingProductId
-    );
-
-    console.log(
-        "Stock being saved:",
-        stockValue
-    );
-
-
-    result =
-        await supabaseClient
-
-            .from("products")
-
-            .update({
-
-                name:
-                    name,
-
-                price:
-                    Number(price),
-
-                stock_quantity:
-                    stockValue,
-
-                category:
-                    category,
-
-                description:
-                    description,
-
-                original_price:
-                    originalPrice,
-
-                image_url:
-                    imageUrl || null,
-
-                updated_at:
-                    new Date().toISOString()
-
-            })
-
-            .eq(
-                "id",
-                editingProductId
-            )
-
-            .select();
-
-
-    console.log(
-        "Supabase update result:",
-        result
-    );
-
-
-    console.log(
-    "Updated data:",
-    result.data
-);
-
-console.log(
-    "Update error:",
-    result.error
-);
-
-}
-
-
-            // =================================================
-            // INSERT
-            // =================================================
-
-            else {
-
-                result =
-                    await supabaseClient
-
+                if (editingProductId) {
+                    const stockValue = Number(document.getElementById("product-stock").value);
+                    result = await supabaseClient
                         .from("products")
-
+                        .update({
+                            name,
+                            price: Number(price),
+                            stock_quantity: stockValue,
+                            category,
+                            description,
+                            original_price: originalPrice,
+                            image_url: imageUrl || null,
+                            updated_at: new Date().toISOString()
+                        })
+                        .eq("id", editingProductId)
+                        .select();
+                } else {
+                    result = await supabaseClient
+                        .from("products")
                         .insert({
+                            name,
+                            price: Number(price),
+                            stock_quantity: Number(document.getElementById("product-stock").value),
+                            category,
+                            description,
+                            original_price: originalPrice,
+                            image_url: imageUrl || null
+                        });
+                }
 
-    name:
-        name,
+                if (result.error) throw result.error;
 
-    price:
-        Number(price),
+                saveSucceeded = true;
+                uploadedImagePath = null;
 
-    stock_quantity:
-        Number(
-            document.getElementById(
-                "product-stock"
-            ).value
-        ),
-
-    category:
-        category,
-
-    description:
-        description,
-
-    original_price:
-        originalPrice,
-
-    image_url:
-        imageUrl || null
-
-});
-            }
-
-
-            button.disabled = false;
-
-
-            if (result.error) {
-
-                console.error(
-                    "Product save error:",
-                    result.error
-                );
-
-
-                alert(
-                    "❌ Product save failed:\n\n" +
-                    result.error.message
-                );
-
-
-                button.textContent =
-                    editingProductId
-                        ? "✏️ Update Product"
-                        : "➕ Add Product";
-
-
-                return;
-
-            }
-
-
-            alert(
-
-                editingProductId
-
+                alert(editingProductId
                     ? "✅ Product updated successfully!"
+                    : "❤️ Product added successfully!");
 
-                    : "❤️ Product added successfully!"
+                clearForm();
+                await loadProducts();
 
-            );
+            } catch (error) {
+                console.error("Product save/upload error:", error);
 
+                if (uploadedImagePath && !saveSucceeded) {
+                    const { error: cleanupError } = await supabaseClient.storage
+                        .from("product-images")
+                        .remove([uploadedImagePath]);
 
-            clearForm();
+                    if (cleanupError) {
+                        console.error("Orphan image cleanup failed:", cleanupError);
+                    }
+                }
 
-
-            await loadProducts();
-
+                alert("❌ Product could not be saved.\n\n" + (error.message || "Please try again."));
+            } finally {
+                button.disabled = false;
+                if (!saveSucceeded) button.textContent = originalButtonText;
+            }
         }
 
 
-
-        // =====================================================
-        // EDIT PRODUCT
-        // =====================================================
-
-        async function editProduct(productId) {
+async function editProduct(productId) {
 
             const {
                 data,
