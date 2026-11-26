@@ -535,6 +535,7 @@
 
     </style>
 
+    <script src="custom-dialog.js"></script>
 </head>
 
 
@@ -1687,7 +1688,7 @@ async function loadOrders() {
 // =====================================================
 
 async function verifyBkashPayment(orderId) {
-    if (!confirm("Have you checked your bKash account and confirmed that this payment was received?")) {
+    if (!(await showConfirmDialog("Have you checked your bKash account and confirmed that this payment was received?", { title: "Verify bKash payment", primaryText: "Yes, verify" }))) {
         return;
     }
 
@@ -1832,8 +1833,9 @@ async function deleteOrder(
 ) {
 
     const confirmed =
-        confirm(
-            "Are you sure you want to permanently delete this order?"
+        await showConfirmDialog(
+            "Are you sure you want to permanently delete this order?",
+            { title: "Delete order", primaryText: "Delete" }
         );
 
     if (!confirmed) {
