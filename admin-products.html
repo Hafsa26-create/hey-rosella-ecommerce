@@ -614,6 +614,7 @@ async function checkAdminAccess() {
 
     </style>
 
+    <script src="custom-dialog.js"></script>
 </head>
 
 
@@ -1477,9 +1478,7 @@ async function deleteProduct(productId) {
 
 
     const confirmed =
-        confirm(
-            `Are you sure you want to deactivate "${product.name}"?`
-        );
+        await showConfirmDialog(`Are you sure you want to deactivate "${product.name}"?`, { title: "Deactivate product", primaryText: "Deactivate" });
 
 
     if (!confirmed) {
