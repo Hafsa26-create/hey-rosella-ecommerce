@@ -1520,7 +1520,23 @@
         </section>
 
 
-        <!-- =========================
+                <!-- HOMEPAGE HERO BANNER MANAGEMENT -->
+        <section class="admin-card" id="homepage-banner-manager" style="margin-top: 24px;">
+            <h2>🖼️ Homepage Main Banner</h2>
+            <p>Upload or replace the large image shown at the top of your homepage.</p>
+            <div style="display:flex; flex-direction:column; gap:12px; max-width:520px;">
+                <img id="homepage-banner-preview" alt="Homepage banner preview"
+                    style="display:none; width:100%; max-height:280px; object-fit:cover; border-radius:10px; border:1px solid #ead9e0;">
+                <input id="homepage-banner-file" type="file" accept="image/jpeg,image/png,image/webp">
+                <button type="button" id="homepage-banner-save" class="admin-button gold-button" style="margin-top:0;">
+                    Upload & Save Banner
+                </button>
+                <p id="homepage-banner-message" role="status" style="margin:0; font-size:13px;"></p>
+                <small>Accepted formats: JPG, PNG, WEBP. Maximum size: 5 MB.</small>
+            </div>
+        </section>
+
+<!-- =========================
      RECENT ORDERS
 ========================= -->
 
@@ -3349,6 +3365,123 @@ document.addEventListener(
 
 </script>
 
+<script>
+/* HOMEPAGE BANNER MANAGEMENT */
+(function () {
+    const fileInput = document.getElementById("homepage-banner-file");
+    const preview = document.getElementById("homepage-banner-preview");
+    const saveButton = document.getElementById("homepage-banner-save");
+    const message = document.getElementById("homepage-banner-message");
+    if (!fileInput || !preview || !saveButton || !message) return;
+
+    let selectedFile = null;
+    let previewUrl = null;
+
+    async function loadCurrentBanner() {
+        const { data, error } = await supabaseClient
+            .from("homepage_settings")
+            .select("hero_banner_url")
+            .eq("id", true)
+            .maybeSingle();
+        if (error) {
+            console.error("Homepage banner settings load failed:", error);
+            message.textContent = "Could not load the current banner. You can still upload a new one.";
+            return;
+        }
+        if (data && data.hero_banner_url) {
+            preview.src = data.hero_banner_url;
+            preview.style.display = "block";
+        }
+    }
+
+    fileInput.addEventListener("change", function () {
+        const file = fileInput.files && fileInput.files[0];
+        selectedFile = null;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = null;
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowedTypes.includes(file.type)) {
+            message.textContent = "Please select a JPG, PNG, or WEBP image.";
+            fileInput.value = "";
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            message.textContent = "Image size must be 5 MB or less.";
+            fileInput.value = "";
+            return;
+        }
+        selectedFile = file;
+        previewUrl = URL.createObjectURL(file);
+        preview.src = previewUrl;
+        preview.style.display = "block";
+        message.textContent = "Preview ready. Click Upload & Save Banner.";
+    });
+
+    saveButton.addEventListener("click", async function () {
+        if (!selectedFile) {
+            message.textContent = "Please choose an image first.";
+            return;
+        }
+        saveButton.disabled = true;
+        saveButton.textContent = "Uploading...";
+        message.textContent = "Please wait while your banner is uploaded.";
+        let uploadedPath = null;
+
+        try {
+            const extensionByType = {
+                "image/jpeg": "jpg",
+                "image/png": "png",
+                "image/webp": "webp"
+            };
+            uploadedPath = "homepage-banner/" + Date.now() + "-" +
+                Math.random().toString(36).slice(2) + "." + extensionByType[selectedFile.type];
+
+            const { error: uploadError } = await supabaseClient.storage
+                .from("product-images")
+                .upload(uploadedPath, selectedFile, {
+                    cacheControl: "3600",
+                    contentType: selectedFile.type,
+                    upsert: false
+                });
+            if (uploadError) throw uploadError;
+
+            const { data: publicData } = supabaseClient.storage
+                .from("product-images")
+                .getPublicUrl(uploadedPath);
+
+            const { error: saveError } = await supabaseClient
+                .from("homepage_settings")
+                .upsert({
+                    id: true,
+                    hero_banner_url: publicData.publicUrl,
+                    updated_at: new Date().toISOString()
+                }, { onConflict: "id" });
+            if (saveError) throw saveError;
+
+            preview.src = publicData.publicUrl;
+            preview.style.display = "block";
+            selectedFile = null;
+            fileInput.value = "";
+            message.textContent = "Banner updated successfully! Refresh your homepage to see it.";
+        } catch (error) {
+            console.error("Homepage banner upload failed:", error);
+            if (uploadedPath) {
+                const { error: cleanupError } = await supabaseClient.storage
+                    .from("product-images")
+                    .remove([uploadedPath]);
+                if (cleanupError) console.error("Banner cleanup failed:", cleanupError);
+            }
+            message.textContent = error.message || "Banner upload failed. Please try again.";
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = "Upload & Save Banner";
+        }
+    });
+    loadCurrentBanner();
+})();
+</script>
 </body>
 
 </html>
