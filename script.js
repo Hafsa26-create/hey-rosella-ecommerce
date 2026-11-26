@@ -5231,3 +5231,36 @@ function toggleMobileMenu() {
 
     menu.classList.toggle("mobile-menu-open");
 }
+
+// =====================================================
+// HOMEPAGE HERO BANNER
+// =====================================================
+document.addEventListener("DOMContentLoaded", async function () {
+    const bannerImage = document.getElementById("hero-banner-image");
+    const placeholder = document.getElementById("hero-banner-placeholder");
+    if (!bannerImage) return;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("homepage_settings")
+            .select("hero_banner_url")
+            .eq("id", true)
+            .maybeSingle();
+        if (error) throw error;
+
+        if (data && data.hero_banner_url) {
+            bannerImage.onload = function () {
+                bannerImage.style.display = "block";
+                if (placeholder) placeholder.style.display = "none";
+            };
+            bannerImage.onerror = function () {
+                bannerImage.style.display = "none";
+                if (placeholder) placeholder.style.display = "block";
+                console.error("Homepage hero banner could not be displayed.");
+            };
+            bannerImage.src = data.hero_banner_url;
+        }
+    } catch (error) {
+        console.error("Homepage hero banner load failed:", error);
+    }
+});
