@@ -1089,8 +1089,15 @@ async function resendVerificationEmail() {
     if (!email) {
 
         email =
-            prompt(
-                "Enter the email address you used to create your account:"
+            await showPromptDialog(
+                "Enter the email address you used to create your account:",
+                "",
+                {
+                    title: "Email verification",
+                    placeholder: "Enter your email address",
+                    inputType: "email",
+                    primaryText: "Continue"
+                }
             );
     }
 
