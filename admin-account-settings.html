@@ -423,6 +423,7 @@
 
     </style>
 
+    <script src="custom-dialog.js"></script>
 </head>
 
 
@@ -792,9 +793,7 @@ const email =
         async function adminLogout() {
 
             const confirmed =
-                confirm(
-                    "Are you sure you want to logout?"
-                );
+                await showConfirmDialog("Are you sure you want to logout?", { title: "Confirm logout", primaryText: "Logout" });
 
 
             if (!confirmed) {
