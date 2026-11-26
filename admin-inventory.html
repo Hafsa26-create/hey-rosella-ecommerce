@@ -1097,6 +1097,7 @@
 
     </style>
 
+    <script src="custom-dialog.js"></script>
 </head>
 
 
@@ -1807,11 +1808,7 @@ async function reorderProduct(productId) {
 
 
     const quantity =
-        prompt(
-            `Reorder ${product.name}\n\n` +
-            `Current stock: ${currentStock}\n\n` +
-            `Enter quantity to add:`
-        );
+        await showPromptDialog(`Reorder ${product.name}\n\nCurrent stock: ${currentStock}\n\nEnter quantity to add:`, "", { title: "Restock product", placeholder: "Enter quantity", inputType: "number", primaryText: "Continue" });
 
 
     // Cancel pressed
