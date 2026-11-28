@@ -1190,10 +1190,10 @@ async function signupCustomer() {
     }
 
 
-    if (password.length < 6) {
+    if (password.length < 8) {
 
         alert(
-            "Password must be at least 6 characters."
+            "Password must be at least 8 characters."
         );
 
         return;
@@ -2061,8 +2061,8 @@ async function changeCustomerPassword(currentPassword, newPassword, confirmPassw
         return false;
     }
 
-    if (newPassword.length < 6) {
-        alert("Password must be at least 6 characters.");
+    if (newPassword.length < 8) {
+        alert("Password must be at least 8 characters.");
         return false;
     }
 
@@ -2115,8 +2115,8 @@ async function resetCustomerPassword(newPassword, confirmPassword) {
         return false;
     }
 
-    if (newPassword.length < 6) {
-        alert("Password must be at least 6 characters.");
+    if (newPassword.length < 8) {
+        alert("Password must be at least 8 characters.");
         return false;
     }
 
@@ -3533,10 +3533,10 @@ async function handleChangePassword() {
     // PASSWORD LENGTH
     // =====================================================
 
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
 
         alert(
-            "Password must be at least 6 characters."
+            "Password must be at least 8 characters."
         );
 
         return;
