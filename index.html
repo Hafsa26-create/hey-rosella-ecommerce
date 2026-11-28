@@ -2129,19 +2129,9 @@ We currently accept Cash on Delivery and bKash Send Money. For bKash, send the e
         function enterHeyRosella() {
             const intro = document.getElementById("hey-rosella-intro");
             if (!intro) return;
-            try { sessionStorage.setItem("heyRosellaIntroSeen", "yes"); } catch (error) {}
             intro.classList.add("is-leaving");
             window.setTimeout(() => intro.remove(), 850);
         }
-
-        (function showHeyRosellaIntro() {
-            try {
-                if (sessionStorage.getItem("heyRosellaIntroSeen") === "yes") {
-                    const intro = document.getElementById("hey-rosella-intro");
-                    if (intro) intro.remove();
-                }
-            } catch (error) {}
-        })();
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
