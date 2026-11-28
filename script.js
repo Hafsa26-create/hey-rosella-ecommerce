@@ -610,12 +610,14 @@ function createAuthPopup() {
                 <input
                     type="password"
                     id="signup-password"
+                    minlength="8"
                     placeholder="Create Password"
                 >
 
                 <input
                     type="password"
                     id="signup-confirm-password"
+                    minlength="8"
                     placeholder="Confirm Password"
                 >
 
